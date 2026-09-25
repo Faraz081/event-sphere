@@ -52,7 +52,7 @@ const register = async (req, res) => {
         return res.status(400).json({msg:"Phone number must contain exactly 11 digits"})
     }
 
-    if(!["admin", "exhibitor", "attendee"].includes(role)){
+    if(!["admin", "organizer", "exhibitor", "attendee"].includes(role)){
         return res.status(400).json({msg:"Invalid role"})
     }
 

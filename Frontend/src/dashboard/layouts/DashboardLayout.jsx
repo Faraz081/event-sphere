@@ -30,7 +30,8 @@ const DashboardLayout = ({ role, children }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const { currentUser } = useSelector((state) => state.auth);
+  const { currentUser, user } = useSelector((state) => state.auth);
+  const activeUser = currentUser || user;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -153,11 +154,11 @@ const DashboardLayout = ({ role, children }) => {
                     className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2 text-left transition-colors hover:bg-background"
                   >
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/15 text-gold">
-                      {currentUser?.name?.[0] ?? "U"}
+                      {activeUser?.name?.[0] ?? "U"}
                     </div>
                     <div className="hidden text-left sm:block">
                       <p className="text-sm font-medium text-foreground">
-                        {currentUser?.name ?? "User"}
+                        {activeUser?.name ?? "User"}
                       </p>
                       <p className="text-xs text-muted">
                         {roleLabels[role]}
@@ -170,9 +171,9 @@ const DashboardLayout = ({ role, children }) => {
                     <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-surface p-4 shadow-2xl shadow-black/30">
                       <div className="mb-4 border-b border-border pb-4">
                         <p className="text-sm font-semibold text-foreground">
-                          {currentUser?.name}
+                          {activeUser?.name}
                         </p>
-                        <p className="text-xs text-muted">{currentUser?.email}</p>
+                        <p className="text-xs text-muted">{activeUser?.email}</p>
                         <div className="mt-3 inline-flex rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted">
                           {roleLabels[role]} account
                         </div>

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import AdminDashboard from './dashboard/admin/AdminDashboard'
+import AdminUsers from './dashboard/admin/AdminUsers'
 import ExhibitorPortal from './dashboard/exhibitor/ExhibitorPortal'
 import AttendeeHome from './dashboard/attendee/AttendeeHome'
 import AdminExpos from './dashboard/admin/AdminExpos'
@@ -50,6 +51,7 @@ function App() {
 
         <Route element={<RequireRole allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/expos" element={<AdminExpos />} />
           <Route path="/admin/booths" element={<AdminBooths />} />
           <Route path="/admin/schedule" element={<AdminSchedule />} />
