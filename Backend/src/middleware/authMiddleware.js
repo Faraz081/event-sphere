@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 /**
@@ -8,27 +8,30 @@ import User from "../models/User.js";
  */
 export const adminAuth = async (req, res, next) => {
   try {
-    const authHeader = req.headers["authorization"];
-    const xUserId = req.headers["x-user-id"];
-
-    let userId = null;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      userId = authHeader.substring(7).trim();
-    } else if (xUserId) {
-      userId = xUserId.trim();
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        error: "Access denied. A valid bearer token is required.",
+      });
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not configured");
+      return res.status(500).json({ error: "Authentication is not configured." });
+    }
+
+    let payload;
+    try {
+      payload = jwt.verify(authHeader.slice(7).trim(), process.env.JWT_SECRET);
+    } catch {
+      return res.status(401).json({
+        error: "Invalid or expired authentication token.",
+      });
+    }
+
+    const userId = payload?.sub || payload?.id || payload?._id;
     if (!userId) {
-      return res.status(401).json({
-        error: "Access denied. Authentication required. Please log in with an administrator account.",
-      });
-    }
-
-    // Validate that the provided ID is a valid MongoDB ObjectId
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(401).json({
-        error: "Invalid authentication identifier format.",
-      });
+      return res.status(401).json({ error: "Invalid authentication token." });
     }
 
     const user = await User.findById(userId);
@@ -38,13 +41,13 @@ export const adminAuth = async (req, res, next) => {
       });
     }
 
-    if (user.status === "suspended") {
+    if (user.status !== "active") {
       return res.status(403).json({
-        error: "Your account has been suspended. Please contact support.",
+        error: "Your account is not active. Please contact support.",
       });
     }
 
-    if (user.role !== "admin") {
+    if (user.role !== "admin" || payload.role !== user.role) {
       return res.status(403).json({
         error: "Forbidden. Administrator privileges are required to access this resource.",
       });

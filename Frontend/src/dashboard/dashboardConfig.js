@@ -8,6 +8,7 @@ import {
   Search,
   User,
   Users,
+  UserCheck,
   MessageSquare,
 } from "lucide-react";
 
@@ -28,6 +29,7 @@ export const dashboardNavigation = {
   admin: [
     { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
     { label: "Users", path: "/admin/users", icon: Users },
+    { label: "Attendees", path: "/admin/attendees", icon: UserCheck },
     { label: "Expos", path: "/admin/expos", icon: CalendarDays },
     { label: "Booths", path: "/admin/booths", icon: Store },
     { label: "Schedule", path: "/admin/schedule", icon: ClipboardList },

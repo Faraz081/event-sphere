@@ -179,10 +179,6 @@ const RegisterForm = () => {
             </SelectTrigger>
 
             <SelectContent className="bg-surface border-border">
-              <SelectItem value="admin">
-                Admin
-              </SelectItem>
-
               <SelectItem value="exhibitor">
                 Exhibitor
               </SelectItem>

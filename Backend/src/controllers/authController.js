@@ -1,5 +1,18 @@
 import User from "../models/User.js";
 import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
+
+const createAuthToken = (user) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not configured");
+  }
+
+  return jwt.sign(
+    { sub: user._id.toString(), role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+};
 
 const login = async (req, res) => {
   try {
@@ -16,13 +29,19 @@ const login = async (req, res) => {
     const check= await User.findOne({email}).select("+password")
 
     if(check){
-        var checkPassword = await bcrypt.compare(password, check.password)
+        const checkPassword = await bcrypt.compare(password, check.password)
 
         if(!checkPassword){
             return res.status(401).json({error:"Password or Email is incorrect"})
         } else{
-            check.password = undefined
-            return res.status(200).json({msg:"User login successfully", user: check})
+            if (check.status !== "active") {
+              return res.status(403).json({ error: "This account is not active. Please contact support." });
+            }
+
+            const token = createAuthToken(check);
+            const user = check.toObject();
+            delete user.password;
+            return res.status(200).json({msg:"User login successfully", user, token})
         }
     } else{
         return res.status(404).json({msg:"User not found"})
@@ -36,7 +55,7 @@ const register = async (req, res) => {
   try {
     const { name, email, password, confirmPassword, role, companyName, phone } = req.body;
 
-    if(!name || !email || !password || !confirmPassword || !role || !phone){
+    if(!name || !email || !password || !confirmPassword || !phone){
         return res.status(400).json({msg:"All fields are required"})
     }
 
@@ -48,12 +67,17 @@ const register = async (req, res) => {
         return res.status(400).json({msg:"Passwords do not match"})
     }
 
-    if(!/^\d{11}$/.test(phone)){
-        return res.status(400).json({msg:"Phone number must contain exactly 11 digits"})
+    if (role === "admin") {
+      return res.status(403).json({ error: "Admin accounts cannot be created through public registration." });
     }
 
-    if(!["admin", "organizer", "exhibitor", "attendee"].includes(role)){
-        return res.status(400).json({msg:"Invalid role"})
+    const publicRole = role || "attendee";
+    if (!["attendee", "exhibitor"].includes(publicRole)) {
+      return res.status(400).json({ msg: "Invalid public registration role" });
+    }
+
+    if(!/^\d{11}$/.test(phone)){
+        return res.status(400).json({msg:"Phone number must contain exactly 11 digits"})
     }
 
     const oldUsers = await User.findOne({email})
@@ -64,7 +88,7 @@ const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password,10)
 
-    const addUser = await User.create({ name, email, password:hashedPassword, role, companyName, phone });
+    const addUser = await User.create({ name, email, password:hashedPassword, role: publicRole, companyName, phone });
 
     addUser.password = undefined
 

@@ -7,6 +7,7 @@ import expoRoute from './src/routes/expoRoute.js';
 import boothRoute from './src/routes/boothRoute.js';
 import scheduleRoute from './src/routes/scheduleRoute.js';
 import userRoute from './src/routes/userRoute.js';
+import attendeeRoute from './src/routes/attendeeRoute.js';
 
 const app = express()
 const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
@@ -29,6 +30,7 @@ app.use(async (req, res, next) => {
 
 app.use("/api", authRouter)
 app.use("/api/users", userRoute)
+app.use("/api/attendees", attendeeRoute)
 app.use("/api/expo", expoRoute)
 app.use("/api/booth", boothRoute)
 app.use("/api/schedule", scheduleRoute)

@@ -12,13 +12,9 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     try {
-      const stored = localStorage.getItem("eventsphere_current_user");
-      if (stored) {
-        const user = JSON.parse(stored);
-        if (user?._id) {
-          config.headers["Authorization"] = `Bearer ${user._id}`;
-          config.headers["x-user-id"] = user._id;
-        }
+      const token = localStorage.getItem("eventsphere_auth_token");
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
       }
     } catch (e) {
       console.error("Error reading current user for request interceptor:", e);
