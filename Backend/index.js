@@ -1,19 +1,33 @@
-import express from 'express';
-import "dotenv/config"
+import express from "express";
+import "dotenv/config";
 import cors from "cors";
-import database from "./src/config/dbConfig.js"
-import authRouter from './src/routes/authRoute.js';
-import expoRoute from './src/routes/expoRoute.js';
-import boothRoute from './src/routes/boothRoute.js';
-import scheduleRoute from './src/routes/scheduleRoute.js';
+import database from "./src/config/dbConfig.js";
 
-const app = express()
-const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
-app.use(cors({origin: allowedOrigins, credentials: true}))
-app.use(express.json())
+import authRouter from "./src/routes/authRoute.js";
+import expoRoute from "./src/routes/expoRoute.js";
+import boothRoute from "./src/routes/boothRoute.js";
+import scheduleRoute from "./src/routes/scheduleRoute.js";
+import websiteSettingsRoute from "./src/routes/websiteSettingsRoute.js";
+
+const app = express();
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ status: "ok", message: "EventSphere backend is running" });
+  res.json({
+    status: "ok",
+    message: "EventSphere backend is running",
+  });
 });
 
 app.use(async (req, res, next) => {
@@ -22,19 +36,26 @@ app.use(async (req, res, next) => {
     next();
   } catch (err) {
     console.log("DB connection error:", err.message);
-    res.status(500).json({ msg: "Database connection failed" });
+
+    res.status(500).json({
+      msg: "Database connection failed",
+    });
   }
 });
 
-app.use("/api", authRouter)
-app.use("/api/expo", expoRoute)
-app.use("/api/booth", boothRoute)
-app.use("/api/schedule", scheduleRoute)
+app.use("/api", authRouter);
+app.use("/api/expo", expoRoute);
+app.use("/api/booth", boothRoute);
+app.use("/api/schedule", scheduleRoute);
+app.use("/api/website-settings", websiteSettingsRoute);
 
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;
+
   database().then(() => {
-    app.listen(port, ()=> console.log(`http://localhost:${port}`));
+    app.listen(port, () => {
+      console.log(`http://localhost:${port}`);
+    });
   });
 }
 

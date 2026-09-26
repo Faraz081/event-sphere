@@ -16,7 +16,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-
 // REGISTER
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
@@ -32,7 +31,6 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-
 const storedUser = localStorage.getItem("eventsphere_current_user");
 
 const initialState = {
@@ -41,35 +39,33 @@ const initialState = {
   loading: false,
 };
 
-
 const authSlice = createSlice({
   name: "auth",
+
   initialState,
+
   reducers: {
     logout: (state) => {
       state.user = null;
       state.error = null;
       state.loading = false;
+
       localStorage.removeItem("eventsphere_current_user");
+      localStorage.removeItem("eventsphere_token");
     },
   },
 
   extraReducers: (builder) => {
-
     builder
 
       // LOGIN PENDING
       .addCase(loginUser.pending, (state) => {
-
         state.loading = true;
         state.error = null;
-
       })
-
 
       // LOGIN FULFILLED
       .addCase(loginUser.fulfilled, (state, action) => {
-
         state.user = action.payload.user;
         state.loading = false;
         state.error = null;
@@ -79,48 +75,37 @@ const authSlice = createSlice({
           JSON.stringify(action.payload.user)
         );
 
+        localStorage.setItem(
+          "eventsphere_token",
+          action.payload.token
+        );
       })
-
 
       // LOGIN REJECTED
       .addCase(loginUser.rejected, (state, action) => {
-
         state.loading = false;
         state.error = action.payload;
-
       })
-
 
       // REGISTER PENDING
       .addCase(registerUser.pending, (state) => {
-
         state.loading = true;
         state.error = null;
-
       })
-
 
       // REGISTER FULFILLED
-      .addCase(registerUser.fulfilled, (state, action) => {
-
+      .addCase(registerUser.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
-
       })
-
 
       // REGISTER REJECTED
       .addCase(registerUser.rejected, (state, action) => {
-
         state.loading = false;
         state.error = action.payload;
-
       });
-
   },
-
 });
-
 
 export const { logout } = authSlice.actions;
 
