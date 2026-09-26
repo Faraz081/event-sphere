@@ -7,12 +7,15 @@ import {
   House,
   Search,
   User,
+  Users,
+  UserCheck,
   MessageSquare,
   Settings,
 } from "lucide-react";
 
 export const roleLabels = {
   admin: "Admin",
+  organizer: "Organizer",
   attendee: "Attendee",
   exhibitor: "Exhibitor",
 };
@@ -26,6 +29,8 @@ export const roleHomePaths = {
 export const dashboardNavigation = {
   admin: [
     { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
+    { label: "Users", path: "/admin/users", icon: Users },
+    { label: "Attendees", path: "/admin/attendees", icon: UserCheck },
     { label: "Expos", path: "/admin/expos", icon: CalendarDays },
     { label: "Booths", path: "/admin/booths", icon: Store },
     { label: "Schedule", path: "/admin/schedule", icon: ClipboardList },

@@ -32,9 +32,10 @@ export const registerUser = createAsyncThunk(
 );
 
 const storedUser = localStorage.getItem("eventsphere_current_user");
+const storedToken = localStorage.getItem("eventsphere_auth_token");
 
 const initialState = {
-  user: storedUser ? JSON.parse(storedUser) : null,
+  user: storedToken && storedUser ? JSON.parse(storedUser) : null,
   error: null,
   loading: false,
 };
@@ -52,6 +53,7 @@ const authSlice = createSlice({
 
       localStorage.removeItem("eventsphere_current_user");
       localStorage.removeItem("eventsphere_token");
+      localStorage.removeItem("eventsphere_auth_token");
     },
   },
 
@@ -69,6 +71,10 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.loading = false;
         state.error = null;
+
+        if (action.payload.token) {
+          localStorage.setItem("eventsphere_auth_token", action.payload.token);
+        }
 
         localStorage.setItem(
           "eventsphere_current_user",

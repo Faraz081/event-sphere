@@ -2,12 +2,13 @@ import express from "express";
 import "dotenv/config";
 import cors from "cors";
 import database from "./src/config/dbConfig.js";
-
 import authRouter from "./src/routes/authRoute.js";
 import expoRoute from "./src/routes/expoRoute.js";
 import boothRoute from "./src/routes/boothRoute.js";
 import scheduleRoute from "./src/routes/scheduleRoute.js";
 import websiteSettingsRoute from "./src/routes/websiteSettingsRoute.js";
+import userRoute from "./src/routes/userRoute.js";
+import attendeeRoute from "./src/routes/attendeeRoute.js";
 
 const app = express();
 
@@ -48,6 +49,8 @@ app.use("/api/expo", expoRoute);
 app.use("/api/booth", boothRoute);
 app.use("/api/schedule", scheduleRoute);
 app.use("/api/website-settings", websiteSettingsRoute);
+app.use("/api/users", userRoute);
+app.use("/api/attendees", attendeeRoute);
 
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;

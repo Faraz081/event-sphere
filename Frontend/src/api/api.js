@@ -9,20 +9,21 @@ const api = axios.create({
   },
 });
 
-// Automatically attach JWT token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("eventsphere_token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const token =
+        localStorage.getItem("eventsphere_auth_token") ||
+        localStorage.getItem("eventsphere_token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error("Error reading authentication token:", error);
     }
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default api;

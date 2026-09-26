@@ -1,6 +1,8 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import AdminDashboard from './dashboard/admin/AdminDashboard'
+import AdminUsers from './dashboard/admin/AdminUsers'
+import AdminAttendees from './dashboard/admin/AdminAttendees'
 import ExhibitorPortal from './dashboard/exhibitor/ExhibitorPortal'
 import AttendeeHome from './dashboard/attendee/AttendeeHome'
 import AdminExpos from './dashboard/admin/AdminExpos'
@@ -66,6 +68,16 @@ function App() {
             <Route
               path="/admin"
               element={<AdminDashboard />}
+            />
+
+            <Route
+              path="/admin/users"
+              element={<AdminUsers />}
+            />
+
+            <Route
+              path="/admin/attendees"
+              element={<AdminAttendees />}
             />
 
             <Route

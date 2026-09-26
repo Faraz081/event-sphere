@@ -2,6 +2,18 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+const createAuthToken = (user) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not configured");
+  }
+
+  return jwt.sign(
+    { sub: user._id.toString(), role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+};
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -26,10 +38,7 @@ const login = async (req, res) => {
       });
     }
 
-    const checkPassword = await bcrypt.compare(
-      password,
-      check.password
-    );
+    const checkPassword = await bcrypt.compare(password, check.password);
 
     if (!checkPassword) {
       return res.status(401).json({
@@ -37,22 +46,19 @@ const login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: check._id,
-        role: check.role,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
-      }
-    );
+    if (check.status !== "active") {
+      return res.status(403).json({
+        error: "This account is not active. Please contact support.",
+      });
+    }
 
-    check.password = undefined;
+    const token = createAuthToken(check);
+    const user = check.toObject();
+    delete user.password;
 
     return res.status(200).json({
       msg: "User login successfully",
-      user: check,
+      user,
       token,
     });
   } catch (error) {
@@ -79,7 +85,6 @@ const register = async (req, res) => {
       !email ||
       !password ||
       !confirmPassword ||
-      !role ||
       !phone
     ) {
       return res.status(400).json({
@@ -105,9 +110,16 @@ const register = async (req, res) => {
       });
     }
 
-    if (!["admin", "exhibitor", "attendee"].includes(role)) {
+    if (role === "admin") {
+      return res.status(403).json({
+        error: "Admin accounts cannot be created through public registration.",
+      });
+    }
+
+    const publicRole = role || "attendee";
+    if (!["exhibitor", "attendee"].includes(publicRole)) {
       return res.status(400).json({
-        msg: "Invalid role",
+        msg: "Invalid public registration role",
       });
     }
 
@@ -125,16 +137,17 @@ const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role,
+      role: publicRole,
       companyName,
       phone,
     });
 
-    addUser.password = undefined;
+    const user = addUser.toObject();
+    delete user.password;
 
     return res.status(201).json({
       msg: "registered",
-      addUser,
+      addUser: user,
     });
   } catch (error) {
     return res.status(500).json({
