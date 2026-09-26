@@ -110,6 +110,7 @@ const AdminUsers = () => {
       }
     } catch (err) {
       console.error("Failed to load user stats:", err);
+      toast.error(err.response?.data?.error || "Failed to load user statistics.");
     }
   }, []);
 

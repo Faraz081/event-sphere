@@ -5,13 +5,25 @@ import User from "../models/User.js";
 const VALID_REGISTRATION_STATUSES = ["registered", "confirmed", "attended", "cancelled"];
 const VALID_BOOKING_STATUSES = ["confirmed", "pending", "cancelled"];
 const VALID_PASS_STATUSES = ["issued", "claimed", "scanned", "revoked"];
+const eventKey = (expoId, name) => expoId
+  ? `expo:${expoId}`
+  : name?.trim() && name.trim() !== "General Platform Event"
+    ? `name:${name.trim().toLowerCase()}`
+    : undefined;
+const isDuplicateKeyError = (error) => error?.code === 11000;
+const duplicateResponse = (res, error) => res.status(409).json({
+  error: error?.keyPattern?.passCode || error?.keyValue?.passCode
+    ? "This pass code is already in use."
+    : "This user is already registered for this event.",
+});
 
 // GET /api/attendees
 export const getAllAttendees = async (req, res) => {
   try {
     const { search, registrationStatus, bookingStatus, passStatus, expo } = req.query;
 
-    const filter = {};
+    const attendeeUserIds = await User.find({ role: "attendee" }).distinct("_id");
+    const filter = { user: { $in: attendeeUserIds } };
 
     // Registration status filter
     if (registrationStatus && registrationStatus !== "all") {
@@ -90,7 +102,7 @@ export const getAttendeeById = async (req, res) => {
       return res.status(400).json({ error: "Invalid attendee ID format" });
     }
 
-    const attendee = await Attendee.findById(id)
+    const attendee = await Attendee.findOne({ _id: id, user: { $in: await User.find({ role: "attendee" }).distinct("_id") } })
       .populate("user", "name email phone role companyName")
       .populate("expo", "title date location status");
 
@@ -132,6 +144,9 @@ export const createAttendee = async (req, res) => {
     if (!existingUser) {
       return res.status(404).json({ error: "Selected user does not exist in the database." });
     }
+    if (existingUser.role !== "attendee") {
+      return res.status(403).json({ error: "Attendee records can only be associated with users whose role is attendee." });
+    }
 
     if (expoId && !mongoose.Types.ObjectId.isValid(expoId)) {
       return res.status(400).json({ error: "Invalid event identifier format." });
@@ -165,7 +180,10 @@ export const createAttendee = async (req, res) => {
         });
       }
     } else if (eventName && eventName.trim() !== "" && eventName.trim() !== "General Platform Event") {
-      const duplicate = await Attendee.findOne({ user: userId, eventName: eventName.trim() });
+      const duplicate = await Attendee.findOne({
+        user: userId,
+        eventName: eventName.trim(),
+      });
       if (duplicate) {
         return res.status(409).json({
           error: `This user is already registered for "${eventName.trim()}".`,
@@ -174,10 +192,19 @@ export const createAttendee = async (req, res) => {
     }
 
     // Auto-generate passCode if none provided
-    const finalPassCode =
-      passCode && passCode.trim() !== ""
-        ? passCode.trim().toUpperCase()
-        : `PASS-${Math.floor(100000 + Math.random() * 900000)}`;
+    let finalPassCode = passCode?.trim() ? passCode.trim().toUpperCase() : "";
+    if (!finalPassCode) {
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        const candidate = `PASS-${Math.floor(100000 + Math.random() * 900000)}`;
+        if (!(await Attendee.exists({ passCode: candidate }))) {
+          finalPassCode = candidate;
+          break;
+        }
+      }
+      if (!finalPassCode) return res.status(503).json({ error: "Unable to generate a unique pass code. Please try again." });
+    } else if (await Attendee.exists({ passCode: finalPassCode })) {
+      return res.status(409).json({ error: "This pass code is already in use." });
+    }
 
     const newAttendee = await Attendee.create({
       user: userId,
@@ -188,6 +215,8 @@ export const createAttendee = async (req, res) => {
       passStatus: passStatus || "issued",
       ticketType: ticketType ? ticketType.trim() : "Standard Pass",
       passCode: finalPassCode,
+      registrationEventKey: eventKey(expoId, eventName),
+      uniqueKeysEnforced: true,
       notes: notes ? notes.trim() : undefined,
     });
 
@@ -202,6 +231,7 @@ export const createAttendee = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating attendee:", error);
+    if (isDuplicateKeyError(error)) return duplicateResponse(res, error);
     res.status(500).json({ error: error.message || "Failed to create attendee" });
   }
 };
@@ -211,6 +241,7 @@ export const updateAttendee = async (req, res) => {
   try {
     const { id } = req.params;
     const {
+      user: userId,
       registrationStatus,
       bookingStatus,
       passStatus,
@@ -228,6 +259,15 @@ export const updateAttendee = async (req, res) => {
     const attendee = await Attendee.findById(id);
     if (!attendee) {
       return res.status(404).json({ error: "Attendee record not found." });
+    }
+
+    const nextUserId = userId || attendee.user;
+    if (userId !== undefined) {
+      if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).json({ error: "Invalid user identifier format." });
+      const nextUser = await User.findById(userId);
+      if (!nextUser) return res.status(404).json({ error: "Selected user does not exist in the database." });
+      if (nextUser.role !== "attendee") return res.status(403).json({ error: "Attendee records can only be associated with users whose role is attendee." });
+      attendee.user = userId;
     }
 
     if (registrationStatus) {
@@ -269,6 +309,23 @@ export const updateAttendee = async (req, res) => {
       attendee.expo = expo || undefined;
     }
 
+    const nextExpo = expo !== undefined ? expo : attendee.expo;
+    const nextEventName = eventName !== undefined ? eventName : attendee.eventName;
+    const nextKey = eventKey(nextExpo, nextEventName);
+    if (nextKey) {
+      const duplicateFilter = nextExpo ? { user: nextUserId, expo: nextExpo } :
+        nextEventName && nextEventName !== "General Platform Event"
+          ? { user: nextUserId, eventName: nextEventName.trim() }
+          : { user: nextUserId, registrationEventKey: nextKey };
+      const duplicate = await Attendee.exists({ _id: { $ne: id }, ...duplicateFilter });
+      if (duplicate) return res.status(409).json({ error: "This user is already registered for this event." });
+    }
+    if (passCode !== undefined && passCode.trim() && await Attendee.exists({ _id: { $ne: id }, passCode: passCode.trim().toUpperCase() })) {
+      return res.status(409).json({ error: "This pass code is already in use." });
+    }
+    attendee.registrationEventKey = nextKey;
+    attendee.uniqueKeysEnforced = true;
+
     await attendee.save();
 
     const populated = await Attendee.findById(id)
@@ -282,6 +339,7 @@ export const updateAttendee = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating attendee:", error);
+    if (isDuplicateKeyError(error)) return duplicateResponse(res, error);
     res.status(500).json({ error: error.message || "Failed to update attendee" });
   }
 };
@@ -313,6 +371,8 @@ export const deleteAttendee = async (req, res) => {
 // GET /api/attendees/stats
 export const getAttendeeStats = async (req, res) => {
   try {
+    const attendeeUserIds = await User.find({ role: "attendee" }).distinct("_id");
+    const scope = { user: { $in: attendeeUserIds } };
     const [
       total,
       pendingRegistrations,
@@ -323,16 +383,18 @@ export const getAttendeeStats = async (req, res) => {
       issuedPasses,
       claimedPasses,
       scannedPasses,
+      generatedPasses,
     ] = await Promise.all([
-      Attendee.countDocuments(),
-      Attendee.countDocuments({ registrationStatus: "registered" }),
-      Attendee.countDocuments({ registrationStatus: "confirmed" }),
-      Attendee.countDocuments({ registrationStatus: "attended" }),
-      Attendee.countDocuments({ bookingStatus: "confirmed" }),
-      Attendee.countDocuments({ bookingStatus: "pending" }),
-      Attendee.countDocuments({ passStatus: "issued" }),
-      Attendee.countDocuments({ passStatus: "claimed" }),
-      Attendee.countDocuments({ passStatus: "scanned" }),
+      Attendee.countDocuments(scope),
+      Attendee.countDocuments({ ...scope, registrationStatus: "registered" }),
+      Attendee.countDocuments({ ...scope, registrationStatus: "confirmed" }),
+      Attendee.countDocuments({ ...scope, registrationStatus: "attended" }),
+      Attendee.countDocuments({ ...scope, bookingStatus: "confirmed" }),
+      Attendee.countDocuments({ ...scope, bookingStatus: "pending" }),
+      Attendee.countDocuments({ ...scope, passStatus: "issued", passCode: { $exists: true, $ne: "" } }),
+      Attendee.countDocuments({ ...scope, passStatus: "claimed", passCode: { $exists: true, $ne: "" } }),
+      Attendee.countDocuments({ ...scope, passStatus: "scanned", passCode: { $exists: true, $ne: "" } }),
+      Attendee.countDocuments({ ...scope, passCode: { $exists: true, $ne: "" } }),
     ]);
 
     res.status(200).json({
@@ -345,6 +407,7 @@ export const getAttendeeStats = async (req, res) => {
         confirmedBookings,
         pendingBookings,
         issuedPasses,
+        generatedPasses,
         claimedPasses,
         scannedPasses,
       },

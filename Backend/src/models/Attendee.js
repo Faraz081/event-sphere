@@ -15,6 +15,7 @@ const attendeeSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    registrationEventKey: { type: String, select: false },
     registrationStatus: {
       type: String,
       enum: ["registered", "confirmed", "attended", "cancelled"],
@@ -42,12 +43,27 @@ const attendeeSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // Legacy records remain outside unique indexes until safely validated by the API.
+    uniqueKeysEnforced: { type: Boolean, default: false, select: false },
     notes: {
       type: String,
       trim: true,
     },
   },
   { timestamps: true }
+);
+
+attendeeSchema.index(
+  { user: 1, expo: 1 },
+  { unique: true, partialFilterExpression: { uniqueKeysEnforced: true, expo: { $type: "objectId" } } }
+);
+attendeeSchema.index(
+  { user: 1, registrationEventKey: 1 },
+  { unique: true, partialFilterExpression: { uniqueKeysEnforced: true, registrationEventKey: { $type: "string" } } }
+);
+attendeeSchema.index(
+  { passCode: 1 },
+  { unique: true, partialFilterExpression: { uniqueKeysEnforced: true, passCode: { $type: "string", $gt: "" } } }
 );
 
 export default mongoose.model("Attendee", attendeeSchema);

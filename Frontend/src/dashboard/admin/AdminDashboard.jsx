@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     totalExhibitors: 0,
     pendingRegistrations: 0,
     confirmedBookings: 0,
-    issuedPasses: 0,
+    generatedPasses: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,7 +40,7 @@ const AdminDashboard = () => {
         totalExhibitors: userStats.exhibitors ?? 0,
         pendingRegistrations: attendeeStats.pendingRegistrations ?? 0,
         confirmedBookings: attendeeStats.confirmedBookings ?? 0,
-        issuedPasses: attendeeStats.issuedPasses ?? 0,
+        generatedPasses: attendeeStats.generatedPasses ?? 0,
       });
     } catch (err) {
       console.error("Error loading dashboard statistics:", err);
@@ -63,7 +63,7 @@ const AdminDashboard = () => {
     { label: "Total Exhibitors", value: loading ? "..." : (stats.totalExhibitors ?? 0) },
     { label: "Pending Registrations", value: loading ? "..." : (stats.pendingRegistrations ?? 0) },
     { label: "Confirmed Bookings", value: loading ? "..." : (stats.confirmedBookings ?? 0) },
-    { label: "Generated/Issued Passes", value: loading ? "..." : (stats.issuedPasses ?? 0) },
+    { label: "Generated Passes", value: loading ? "..." : (stats.generatedPasses ?? 0) },
   ];
 
   return (
