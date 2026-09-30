@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Mail,
   Phone,
@@ -8,7 +8,10 @@ import {
   MessageCircle,
 } from 'lucide-react'
 
+import api from '../../api/api'
+
 const ContactUs = () => {
+  const [settings, setSettings] = useState(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -17,6 +20,33 @@ const ContactUs = () => {
     subject: '',
     message: '',
   })
+
+  useEffect(() => {
+    const fetchWebsiteSettings = async () => {
+      try {
+        const response = await api.get('/api/website-settings')
+        setSettings(response.data.settings)
+      } catch (error) {
+        console.error('Failed to load website settings:', error)
+      }
+    }
+
+    fetchWebsiteSettings()
+  }, [])
+
+  const contactSettings = settings?.contact || {}
+
+  const contactEmail =
+    contactSettings.email || 'info@eventsphere.com'
+
+  const contactPhone =
+    contactSettings.phone || '+92 300 1234567'
+
+  const contactAddress =
+    contactSettings.address || 'Karachi, Pakistan'
+
+  const contactOfficeHours =
+    contactSettings.officeHours || 'Mon - Fri, 9 AM - 6 PM'
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -47,7 +77,6 @@ const ContactUs = () => {
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
 
       {/* ================= HERO ================= */}
-
       <section className="mx-auto max-w-4xl text-center">
 
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -68,9 +97,7 @@ const ContactUs = () => {
 
       </section>
 
-
       {/* ================= CONTACT INFO ================= */}
-
       <section className="mx-auto mt-14 max-w-7xl">
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -87,11 +114,10 @@ const ContactUs = () => {
             </h3>
 
             <p className="mt-2 text-sm text-[#5d574f]">
-              info@eventsphere.com
+              {contactEmail}
             </p>
 
           </div>
-
 
           {/* Phone */}
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
@@ -105,11 +131,10 @@ const ContactUs = () => {
             </h3>
 
             <p className="mt-2 text-sm text-[#5d574f]">
-              +92 300 1234567
+              {contactPhone}
             </p>
 
           </div>
-
 
           {/* Location */}
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
@@ -123,11 +148,10 @@ const ContactUs = () => {
             </h3>
 
             <p className="mt-2 text-sm text-[#5d574f]">
-              Karachi, Pakistan
+              {contactAddress}
             </p>
 
           </div>
-
 
           {/* Hours */}
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
@@ -141,7 +165,7 @@ const ContactUs = () => {
             </h3>
 
             <p className="mt-2 text-sm text-[#5d574f]">
-              Mon - Fri, 9 AM - 6 PM
+              {contactOfficeHours}
             </p>
 
           </div>
@@ -150,15 +174,12 @@ const ContactUs = () => {
 
       </section>
 
-
       {/* ================= FORM + MAP ================= */}
-
       <section className="mx-auto mt-16 max-w-7xl">
 
         <div className="grid gap-10 lg:grid-cols-2">
 
           {/* Contact Form */}
-
           <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-7 shadow-xl sm:p-10">
 
             <div className="mb-8">
@@ -177,14 +198,12 @@ const ContactUs = () => {
 
             </div>
 
-
             <form
               onSubmit={handleSubmit}
               className="space-y-5"
             >
 
               {/* Name */}
-
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Full Name
@@ -201,9 +220,7 @@ const ContactUs = () => {
                 />
               </div>
 
-
               {/* Email + Phone */}
-
               <div className="grid gap-5 sm:grid-cols-2">
 
                 <div>
@@ -221,7 +238,6 @@ const ContactUs = () => {
                     className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
                   />
                 </div>
-
 
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
@@ -241,9 +257,7 @@ const ContactUs = () => {
 
               </div>
 
-
               {/* Subject */}
-
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Subject
@@ -260,9 +274,7 @@ const ContactUs = () => {
                 />
               </div>
 
-
               {/* Message */}
-
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Message
@@ -279,9 +291,7 @@ const ContactUs = () => {
                 />
               </div>
 
-
               {/* Submit */}
-
               <button
                 type="submit"
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg"
@@ -294,9 +304,7 @@ const ContactUs = () => {
 
           </div>
 
-
           {/* Map */}
-
           <div className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-xl">
 
             <div className="p-7 sm:p-10">
@@ -316,7 +324,6 @@ const ContactUs = () => {
 
             </div>
 
-
             <div className="h-[450px] w-full">
 
               <iframe
@@ -335,9 +342,7 @@ const ContactUs = () => {
 
       </section>
 
-
       {/* ================= BOTTOM CTA ================= */}
-
       <section className="mx-auto mt-16 max-w-7xl">
 
         <div className="rounded-[2rem] bg-[#c49424] px-7 py-14 text-center text-white shadow-xl sm:px-12">

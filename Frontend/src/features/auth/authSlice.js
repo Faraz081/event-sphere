@@ -80,11 +80,7 @@ const authSlice = createSlice({
           "eventsphere_current_user",
           JSON.stringify(action.payload.user)
         );
-
-        localStorage.setItem(
-          "eventsphere_token",
-          action.payload.token
-        );
+        localStorage.removeItem("eventsphere_token");
       })
 
       // LOGIN REJECTED

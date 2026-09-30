@@ -8,9 +8,14 @@
   --color-background: #14161C;
   --color-surface: #1C1F27;
   --color-gold: #C9A227;
+  --color-gold-100: #a8790d;
+  --color-gold-200: #8f690d;
   --color-emerald: #1F6F5C;
+  --color-emerald-300: #17604f;
   --color-foreground: #F0EDE4;
   --color-muted: #8B8F9B;
+  --color-muted-100: #6a6259;
+  --color-muted-200: #6a6259;
   --color-border: #2A2E38;
 
   --animate-fade-in-up: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -113,6 +118,85 @@
   --image-overlay: rgba(247, 245, 239, 0.15);
 }
 
+.dashboard-theme {
+  color-scheme: light;
+  --color-background: #f8f5ef;
+  --color-surface: #fffdf9;
+  --color-gold: #c49424;
+  --color-gold-100: #a8790d;
+  --color-gold-200: #8f690d;
+  --color-emerald: #17604f;
+  --color-emerald-300: #17604f;
+  --color-foreground: #2f2a24;
+  --color-muted: #5d574f;
+  --color-muted-100: #6a6259;
+  --color-muted-200: #6a6259;
+  --color-border: #eadfc9;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Tailwind's opacity utilities can bake in the original theme color. Keep
+   those dashboard-only surfaces tied to the dashboard palette as well. */
+.dashboard-theme .bg-background\/50 {
+  background-color: color-mix(in srgb, var(--color-background) 50%, transparent);
+}
+
+.dashboard-theme .bg-background\/90 {
+  background-color: color-mix(in srgb, var(--color-background) 90%, transparent);
+}
+
+.dashboard-theme .bg-surface\/50 {
+  background-color: color-mix(in srgb, var(--color-surface) 50%, transparent);
+}
+
+.dashboard-theme .bg-surface\/60 {
+  background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
+}
+
+.dashboard-theme .bg-surface\/95 {
+  background-color: color-mix(in srgb, var(--color-surface) 95%, transparent);
+}
+
+.auth-theme {
+  color-scheme: light;
+  --color-background: #f8f5ef;
+  --color-surface: #fffdf9;
+  --color-gold: #c49424;
+  --color-gold-100: #a8790d;
+  --color-gold-200: #8f690d;
+  --color-emerald: #17604f;
+  --color-emerald-300: #17604f;
+  --color-foreground: #2f2a24;
+  --color-muted: #5d574f;
+  --color-muted-100: #6a6259;
+  --color-muted-200: #6a6259;
+  --color-border: #eadfc9;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.auth-theme [data-slot="input"] {
+  border-color: var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-foreground);
+}
+
+.auth-theme [data-slot="input"]::placeholder {
+  color: var(--color-muted);
+}
+
+.auth-theme [data-slot="checkbox"] {
+  border-color: var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.auth-theme [data-slot="checkbox"][data-checked] {
+  border-color: var(--color-gold);
+  background-color: var(--color-gold);
+  color: #fff;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
@@ -151,6 +235,9 @@ body {
     display: block;
     width: 100%;
   }
+  .dashboard-theme .responsive-table tr {
+    border-color: var(--color-border);
+  }
   .responsive-table tr {
     margin-bottom: 0.75rem;
     border: 1px solid #2A2E38;
@@ -174,5 +261,8 @@ body {
     font-size: 0.75rem;
     margin-right: 1rem;
     flex-shrink: 0;
+  }
+  .dashboard-theme .responsive-table td::before {
+    color: var(--color-muted);
   }
 }
