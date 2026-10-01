@@ -64,32 +64,32 @@ const LoginForm = () => {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {/* Email */}
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="text-sm font-semibold text-foreground">Email address</Label>
 
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
 
           <Input
             id="email"
             name="email"
             type="email"
-            placeholder="Enter your email"
+            placeholder="you@example.com"
             value={formData.email}
             onChange={handleInputChange}
-            className="pl-10"
+            className="h-12 rounded-xl pl-11 text-sm shadow-sm placeholder:text-muted/70 focus-visible:ring-gold/20"
           />
         </div>
       </div>
 
       {/* Password */}
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="text-sm font-semibold text-foreground">Password</Label>
 
         <div className="relative">
-          <LockKeyhole className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <LockKeyhole className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
 
           <Input
             id="password"
@@ -98,14 +98,14 @@ const LoginForm = () => {
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleInputChange}
-            className="pl-10"
+            className="h-12 rounded-xl pl-11 text-sm shadow-sm placeholder:text-muted/70 focus-visible:ring-gold/20"
           />
         </div>
       </div>
 
       {/* Remember Me */}
       <div className="flex items-center space-x-2">
-        <Checkbox id="remember" />
+        <Checkbox id="remember" className="rounded-md data-checked:border-gold data-checked:bg-gold" />
 
         <Label
           htmlFor="remember"
@@ -119,7 +119,7 @@ const LoginForm = () => {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-gold text-background hover:bg-gold/90"
+          className="h-12 w-full rounded-xl bg-gold font-semibold text-white shadow-md shadow-[#c49424]/20 transition hover:-translate-y-0.5 hover:bg-gold/90"
       >
         {loading ? "Signing In..." : "Sign In"}
       </Button>

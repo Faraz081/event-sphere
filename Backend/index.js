@@ -9,6 +9,11 @@ import scheduleRoute from "./src/routes/scheduleRoute.js";
 import websiteSettingsRoute from "./src/routes/websiteSettingsRoute.js";
 import userRoute from "./src/routes/userRoute.js";
 import attendeeRoute from "./src/routes/attendeeRoute.js";
+import uploadRoute from "./src/routes/uploadRoute.js";
+import eventRoute from "./src/routes/eventRoute.js";
+import messageRoute from "./src/routes/messageRoute.js";
+import exhibitorRoute from "./src/routes/exhibitorRoute.js";
+import analyticsRoute from "./src/routes/analyticsRoute.js";
 
 const app = express();
 
@@ -23,6 +28,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
 
 app.get("/", (req, res) => {
   res.json({
@@ -51,15 +57,19 @@ app.use("/api/schedule", scheduleRoute);
 app.use("/api/website-settings", websiteSettingsRoute);
 app.use("/api/users", userRoute);
 app.use("/api/attendees", attendeeRoute);
+app.use("/api/upload", uploadRoute);
+app.use("/api/event", eventRoute);
+app.use("/api/message", messageRoute);
+app.use("/api/exhibitors", exhibitorRoute);
+app.use("/api/analytics", analyticsRoute);
 
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;
 
-  database().then(() => {
-    app.listen(port, () => {
+  database()
+  app.listen(port, () => {
       console.log(`http://localhost:${port}`);
     });
-  });
 }
 
 export default app;

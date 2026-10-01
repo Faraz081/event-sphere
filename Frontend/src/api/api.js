@@ -12,9 +12,13 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     try {
-      const token =
-        localStorage.getItem("eventsphere_auth_token") ||
-        localStorage.getItem("eventsphere_token");
+      const isPublicAuthRequest = /^\/api\/(login|register)(\/|$)/.test(
+        config.url || ""
+      );
+      const token = isPublicAuthRequest
+        ? null
+        : localStorage.getItem("eventsphere_auth_token");
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -24,6 +28,28 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const request = error.config;
+    const sentToken = Boolean(
+      request?.headers?.Authorization || request?.headers?.authorization
+    );
+
+    if (error.response?.status === 401 && sentToken) {
+      localStorage.removeItem("eventsphere_auth_token");
+      localStorage.removeItem("eventsphere_token");
+      localStorage.removeItem("eventsphere_current_user");
+
+      if (window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 export default api;

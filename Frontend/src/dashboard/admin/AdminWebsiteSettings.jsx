@@ -1,53 +1,53 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AdminLayout from "@/dashboard/layouts/AdminLayout";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import api from "@/api/api";
 
+const defaultSettings = {
+  websiteName: "EventSphere",
+  logo: "",
+  favicon: "",
+  tagline: "",
+
+  hero: {
+    title: "",
+    description: "",
+    buttonText: "",
+    image: "",
+  },
+
+  about: {
+    title: "",
+    description: "",
+    image: "",
+  },
+
+  contact: {
+    email: "",
+    phone: "",
+    address: "",
+    officeHours: "",
+  },
+
+  socialLinks: {
+    facebook: "",
+    instagram: "",
+    linkedin: "",
+    youtube: "",
+    twitter: "",
+  },
+
+  footer: {
+    description: "",
+    copyright: "",
+  },
+};
+
 const AdminWebsiteSettings = () => {
+  const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  const [formData, setFormData] = useState({
-    websiteName: "",
-    logo: "",
-    favicon: "",
-    tagline: "",
-
-    hero: {
-      title: "",
-      description: "",
-      buttonText: "",
-      image: "",
-    },
-
-    about: {
-      title: "",
-      description: "",
-      image: "",
-    },
-
-    contact: {
-      email: "",
-      phone: "",
-      address: "",
-      officeHours: "",
-    },
-
-    socialLinks: {
-      facebook: "",
-      instagram: "",
-      linkedin: "",
-      youtube: "",
-      twitter: "",
-    },
-
-    footer: {
-      description: "",
-      copyright: "",
-    },
-  });
+  const [uploading, setUploading] = useState("");
 
   useEffect(() => {
     fetchSettings();
@@ -55,79 +55,335 @@ const AdminWebsiteSettings = () => {
 
   const fetchSettings = async () => {
     try {
+      setLoading(true);
+
       const response = await api.get("/api/website-settings");
 
-      if (response.data?.settings) {
-        setFormData(response.data.settings);
+      if (response.data && response.data.settings) {
+        const data = response.data.settings;
+
+        setSettings({
+          ...defaultSettings,
+          ...data,
+
+          hero: {
+            ...defaultSettings.hero,
+            ...(data.hero || {}),
+          },
+
+          about: {
+            ...defaultSettings.about,
+            ...(data.about || {}),
+          },
+
+          contact: {
+            ...defaultSettings.contact,
+            ...(data.contact || {}),
+          },
+
+          socialLinks: {
+            ...defaultSettings.socialLinks,
+            ...(data.socialLinks || {}),
+          },
+
+          footer: {
+            ...defaultSettings.footer,
+            ...(data.footer || {}),
+          },
+        });
       }
     } catch (error) {
-      console.error("Website settings fetch error:", error);
-      toast.error("Failed to load website settings");
+      console.error("Failed to load website settings:", error);
+
+      toast.error(
+        error.response?.data?.msg ||
+          error.response?.data?.error ||
+          "Failed to load website settings"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
+  const updateRootField = (field, value) => {
+    setSettings((previous) => ({
+      ...previous,
+      [field]: value,
     }));
   };
 
-  const handleNestedChange = (section, field, value) => {
-    setFormData((prev) => ({
-      ...prev,
+  const updateNestedField = (section, field, value) => {
+    setSettings((previous) => ({
+      ...previous,
       [section]: {
-        ...prev[section],
+        ...previous[section],
         [field]: value,
       },
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setSaving(true);
+  const handleSave = async (event) => {
+    event.preventDefault();
 
     try {
-      const response = await api.put(
-        "/api/website-settings",
-        formData
-      );
+      setSaving(true);
 
-      if (response.data?.settings) {
-        setFormData(response.data.settings);
+      const response = await api.put("/api/website-settings", settings);
+
+      if (response.data && response.data.settings) {
+        const data = response.data.settings;
+
+        setSettings({
+          ...defaultSettings,
+          ...data,
+
+          hero: {
+            ...defaultSettings.hero,
+            ...(data.hero || {}),
+          },
+
+          about: {
+            ...defaultSettings.about,
+            ...(data.about || {}),
+          },
+
+          contact: {
+            ...defaultSettings.contact,
+            ...(data.contact || {}),
+          },
+
+          socialLinks: {
+            ...defaultSettings.socialLinks,
+            ...(data.socialLinks || {}),
+          },
+
+          footer: {
+            ...defaultSettings.footer,
+            ...(data.footer || {}),
+          },
+        });
       }
 
       toast.success("Website settings saved successfully");
     } catch (error) {
-      console.error("Website settings update error:", error);
+      console.error("Failed to save website settings:", error);
 
-      const message =
+      toast.error(
         error.response?.data?.msg ||
-        error.response?.data?.error ||
-        "Failed to save website settings";
-
-      toast.error(message);
+          error.response?.data?.error ||
+          "Failed to save website settings"
+      );
     } finally {
       setSaving(false);
     }
   };
 
+  const handleImageUpload = async (event, fieldType) => {
+    const file = event.target.files && event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be 5 MB or less");
+      event.target.value = "";
+      return;
+    }
+
+    try {
+      setUploading(fieldType);
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await api.post("/api/upload/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const uploadedUrl =
+        response.data &&
+        response.data.image &&
+        response.data.image.url
+          ? response.data.image.url
+          : "";
+
+      if (!uploadedUrl) {
+        throw new Error("Upload URL was not returned by server");
+      }
+
+      if (fieldType === "logo") {
+        updateRootField("logo", uploadedUrl);
+      }
+
+      if (fieldType === "favicon") {
+        updateRootField("favicon", uploadedUrl);
+      }
+
+      if (fieldType === "hero") {
+        updateNestedField("hero", "image", uploadedUrl);
+      }
+
+      if (fieldType === "about") {
+        updateNestedField("about", "image", uploadedUrl);
+      }
+
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Image upload failed:", error);
+
+      toast.error(
+        error.response?.data?.msg ||
+          error.response?.data?.error ||
+          error.message ||
+          "Image upload failed"
+      );
+    } finally {
+      setUploading("");
+      event.target.value = "";
+    }
+  };
+
+  const handleImageDelete = async (fieldType, currentValue) => {
+    if (!currentValue) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this image?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setUploading(fieldType);
+
+      await api.delete("/api/upload/image", {
+        data: {
+          url: currentValue,
+        },
+      });
+
+      let updatedSettings;
+
+      if (fieldType === "logo") {
+        updatedSettings = {
+          ...settings,
+          logo: "",
+        };
+      } else if (fieldType === "favicon") {
+        updatedSettings = {
+          ...settings,
+          favicon: "",
+        };
+      } else if (fieldType === "hero") {
+        updatedSettings = {
+          ...settings,
+          hero: {
+            ...settings.hero,
+            image: "",
+          },
+        };
+      } else if (fieldType === "about") {
+        updatedSettings = {
+          ...settings,
+          about: {
+            ...settings.about,
+            image: "",
+          },
+        };
+      } else {
+        updatedSettings = settings;
+      }
+
+      setSettings(updatedSettings);
+
+      await api.put("/api/website-settings", updatedSettings);
+
+      toast.success("Image deleted successfully");
+    } catch (error) {
+      console.error("Image delete failed:", error);
+
+      toast.error(
+        error.response?.data?.msg ||
+          error.response?.data?.error ||
+          "Image delete failed"
+      );
+    } finally {
+      setUploading("");
+    }
+  };
+
+  const renderImageUpload = (label, fieldType, currentValue) => {
+    return (
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-white">
+          {label}
+        </label>
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(event) => handleImageUpload(event, fieldType)}
+          disabled={uploading === fieldType}
+          className="block w-full rounded-xl border border-white/10 bg-[#11151f] px-3 py-3 text-sm text-gray-300 file:mr-4 file:rounded-lg file:border-0 file:bg-[#c49424] file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-[#b18420] disabled:cursor-not-allowed disabled:opacity-50"
+        />
+
+        {uploading === fieldType && (
+          <p className="text-sm text-yellow-400">
+            Please wait...
+          </p>
+        )}
+
+        {currentValue ? (
+          <div className="rounded-xl border border-white/10 bg-[#11151f] p-4">
+            <p className="mb-3 text-xs text-gray-400">
+              Current Image
+            </p>
+
+            <img
+              src={currentValue}
+              alt={label}
+              className="max-h-48 w-auto max-w-full rounded-lg object-contain"
+            />
+
+            <button
+              type="button"
+              onClick={() =>
+                handleImageDelete(fieldType, currentValue)
+              }
+              disabled={uploading === fieldType}
+              className="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Delete Image
+            </button>
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500">
+            No image uploaded.
+          </p>
+        )}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <AdminLayout>
-        <div className="p-4 md:p-8">
-          <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground">
-            Website Settings
-          </h1>
-
-          <p className="text-muted mt-2">
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="text-sm text-gray-400">
             Loading website settings...
-          </p>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -135,383 +391,493 @@ const AdminWebsiteSettings = () => {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-8">
-        <div className="mb-6">
-          <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground">
+      <div className="mx-auto w-full max-w-6xl space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">
             Website Settings
           </h1>
 
-          <p className="text-muted mt-2 text-sm md:text-base">
-            Manage your website content and contact information.
+          <p className="mt-1 text-sm text-gray-400">
+            Manage the public website content and general information.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-
+        <form onSubmit={handleSave} className="space-y-6">
           {/* General Settings */}
-          <section className="rounded-xl border border-border bg-background p-5">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              General Settings
-            </h2>
+          <section className="rounded-2xl border border-white/10 bg-[#181c26] p-6">
+            <div className="mb-5">
+              <h2 className="text-lg font-semibold text-white">
+                General Settings
+              </h2>
 
-            <div className="grid gap-4 md:grid-cols-2">
+              <p className="mt-1 text-sm text-gray-400">
+                Basic website information.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium text-white">
                   Website Name
                 </label>
 
-                <Input
-                  name="websiteName"
-                  value={formData.websiteName}
-                  onChange={handleChange}
+                <input
+                  type="text"
+                  value={settings.websiteName}
+                  onChange={(event) =>
+                    updateRootField(
+                      "websiteName",
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
                   placeholder="EventSphere"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium text-white">
                   Tagline
                 </label>
 
-                <Input
-                  name="tagline"
-                  value={formData.tagline}
-                  onChange={handleChange}
+                <input
+                  type="text"
+                  value={settings.tagline}
+                  onChange={(event) =>
+                    updateRootField(
+                      "tagline",
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
                   placeholder="Your event management platform"
                 />
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  Logo URL
-                </label>
-
-                <Input
-                  name="logo"
-                  value={formData.logo}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                />
+              <div className="md:col-span-2">
+                {renderImageUpload(
+                  "Website Logo",
+                  "logo",
+                  settings.logo
+                )}
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  Favicon URL
-                </label>
-
-                <Input
-                  name="favicon"
-                  value={formData.favicon}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                />
+              <div className="md:col-span-2">
+                {renderImageUpload(
+                  "Favicon",
+                  "favicon",
+                  settings.favicon
+                )}
               </div>
             </div>
           </section>
 
-          {/* Hero Settings */}
-          <section className="rounded-xl border border-border bg-background p-5">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Hero Section
-            </h2>
+          {/* Main Banner */}
+          <section className="rounded-2xl border border-white/10 bg-[#181c26] p-6">
+            <div className="mb-5">
+              <h2 className="text-lg font-semibold text-white">
+                Main Banner Settings
+              </h2>
 
-            <div className="space-y-4">
+              <p className="mt-1 text-sm text-gray-400">
+                Content saved here can be used by the public website.
+              </p>
+            </div>
+
+            <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  Hero Title
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Main Banner Title
                 </label>
 
-                <Input
-                  value={formData.hero.title}
-                  onChange={(e) =>
-                    handleNestedChange(
+                <input
+                  type="text"
+                  value={settings.hero.title}
+                  onChange={(event) =>
+                    updateNestedField(
                       "hero",
                       "title",
-                      e.target.value
+                      event.target.value
                     )
                   }
-                  placeholder="Welcome to EventSphere"
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="Create unforgettable events"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  Hero Description
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Main Banner Description
                 </label>
 
                 <textarea
-                  value={formData.hero.description}
-                  onChange={(e) =>
-                    handleNestedChange(
+                  rows={4}
+                  value={settings.hero.description}
+                  onChange={(event) =>
+                    updateNestedField(
                       "hero",
                       "description",
-                      e.target.value
+                      event.target.value
                     )
                   }
-                  rows={4}
-                  className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
-                  placeholder="Enter hero description..."
+                  className="w-full resize-none rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="Write your main banner description..."
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-foreground">
-                    Button Text
-                  </label>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Button Text
+                </label>
 
-                  <Input
-                    value={formData.hero.buttonText}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        "hero",
-                        "buttonText",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Explore Events"
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={settings.hero.buttonText}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "hero",
+                      "buttonText",
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="Book Now"
+                />
+              </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-foreground">
-                    Hero Image URL
-                  </label>
-
-                  <Input
-                    value={formData.hero.image}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        "hero",
-                        "image",
-                        e.target.value
-                      )
-                    }
-                    placeholder="https://..."
-                  />
-                </div>
+              <div>
+                {renderImageUpload(
+                  "Main Banner Image",
+                  "hero",
+                  settings.hero.image
+                )}
               </div>
             </div>
           </section>
 
-          {/* About Settings */}
-          <section className="rounded-xl border border-border bg-background p-5">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              About Section
-            </h2>
+          {/* About */}
+          <section className="rounded-2xl border border-white/10 bg-[#181c26] p-6">
+            <div className="mb-5">
+              <h2 className="text-lg font-semibold text-white">
+                About Section
+              </h2>
 
-            <div className="space-y-4">
+              <p className="mt-1 text-sm text-gray-400">
+                Manage the public About section content.
+              </p>
+            </div>
+
+            <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium text-white">
                   About Title
                 </label>
 
-                <Input
-                  value={formData.about.title}
-                  onChange={(e) =>
-                    handleNestedChange(
+                <input
+                  type="text"
+                  value={settings.about.title}
+                  onChange={(event) =>
+                    updateNestedField(
                       "about",
                       "title",
-                      e.target.value
+                      event.target.value
                     )
                   }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
                   placeholder="About EventSphere"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium text-white">
                   About Description
                 </label>
 
                 <textarea
-                  value={formData.about.description}
-                  onChange={(e) =>
-                    handleNestedChange(
+                  rows={5}
+                  value={settings.about.description}
+                  onChange={(event) =>
+                    updateNestedField(
                       "about",
                       "description",
-                      e.target.value
+                      event.target.value
                     )
                   }
-                  rows={4}
-                  className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
-                  placeholder="Enter about description..."
+                  className="w-full resize-none rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="Write your About section description..."
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  About Image URL
-                </label>
-
-                <Input
-                  value={formData.about.image}
-                  onChange={(e) =>
-                    handleNestedChange(
-                      "about",
-                      "image",
-                      e.target.value
-                    )
-                  }
-                  placeholder="https://..."
-                />
+                {renderImageUpload(
+                  "About Image",
+                  "about",
+                  settings.about.image
+                )}
               </div>
             </div>
           </section>
 
-          {/* Contact Settings */}
-          <section className="rounded-xl border border-border bg-background p-5">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Contact Information
-            </h2>
+          {/* Contact */}
+          <section className="rounded-2xl border border-white/10 bg-[#181c26] p-6">
+            <div className="mb-5">
+              <h2 className="text-lg font-semibold text-white">
+                Contact Information
+              </h2>
 
-            <div className="grid gap-4 md:grid-cols-2">
+              <p className="mt-1 text-sm text-gray-400">
+                Contact details displayed on the public website.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium text-white">
                   Email
                 </label>
 
-                <Input
+                <input
                   type="email"
-                  value={formData.contact.email}
-                  onChange={(e) =>
-                    handleNestedChange(
+                  value={settings.contact.email}
+                  onChange={(event) =>
+                    updateNestedField(
                       "contact",
                       "email",
-                      e.target.value
+                      event.target.value
                     )
                   }
-                  placeholder="info@example.com"
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="info@eventsphere.com"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium text-white">
                   Phone
                 </label>
 
-                <Input
-                  value={formData.contact.phone}
-                  onChange={(e) =>
-                    handleNestedChange(
+                <input
+                  type="text"
+                  value={settings.contact.phone}
+                  onChange={(event) =>
+                    updateNestedField(
                       "contact",
                       "phone",
-                      e.target.value
+                      event.target.value
                     )
                   }
-                  placeholder="+92..."
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="+92 300 1234567"
                 />
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-medium text-white">
                   Address
                 </label>
 
-                <Input
-                  value={formData.contact.address}
-                  onChange={(e) =>
-                    handleNestedChange(
+                <input
+                  type="text"
+                  value={settings.contact.address}
+                  onChange={(event) =>
+                    updateNestedField(
                       "contact",
                       "address",
-                      e.target.value
+                      event.target.value
                     )
                   }
-                  placeholder="Office address"
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="Karachi, Pakistan"
                 />
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-medium text-white">
                   Office Hours
                 </label>
 
-                <Input
-                  value={formData.contact.officeHours}
-                  onChange={(e) =>
-                    handleNestedChange(
+                <input
+                  type="text"
+                  value={settings.contact.officeHours}
+                  onChange={(event) =>
+                    updateNestedField(
                       "contact",
                       "officeHours",
-                      e.target.value
+                      event.target.value
                     )
                   }
-                  placeholder="Mon - Fri, 9 AM - 5 PM"
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="Monday - Friday, 9:00 AM - 6:00 PM"
                 />
               </div>
             </div>
           </section>
 
           {/* Social Links */}
-          <section className="rounded-xl border border-border bg-background p-5">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Social Links
-            </h2>
+          <section className="rounded-2xl border border-white/10 bg-[#181c26] p-6">
+            <div className="mb-5">
+              <h2 className="text-lg font-semibold text-white">
+                Social Links
+              </h2>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              {Object.keys(formData.socialLinks).map((platform) => (
-                <div key={platform}>
-                  <label className="mb-2 block text-sm font-medium capitalize text-foreground">
-                    {platform}
-                  </label>
-
-                  <Input
-                    value={formData.socialLinks[platform]}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        "socialLinks",
-                        platform,
-                        e.target.value
-                      )
-                    }
-                    placeholder={`https://${platform}.com/...`}
-                  />
-                </div>
-              ))}
+              <p className="mt-1 text-sm text-gray-400">
+                Add the social media URLs for the public website.
+              </p>
             </div>
-          </section>
 
-          {/* Footer Settings */}
-          <section className="rounded-xl border border-border bg-background p-5">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Footer
-            </h2>
-
-            <div className="space-y-4">
+            <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  Footer Description
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Facebook
                 </label>
 
-                <textarea
-                  value={formData.footer.description}
-                  onChange={(e) =>
-                    handleNestedChange(
-                      "footer",
-                      "description",
-                      e.target.value
+                <input
+                  type="url"
+                  value={settings.socialLinks.facebook}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "socialLinks",
+                      "facebook",
+                      event.target.value
                     )
                   }
-                  rows={3}
-                  className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
-                  placeholder="Enter footer description..."
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="https://facebook.com/..."
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  Copyright
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Instagram
                 </label>
 
-                <Input
-                  value={formData.footer.copyright}
-                  onChange={(e) =>
-                    handleNestedChange(
-                      "footer",
-                      "copyright",
-                      e.target.value
+                <input
+                  type="url"
+                  value={settings.socialLinks.instagram}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "socialLinks",
+                      "instagram",
+                      event.target.value
                     )
                   }
-                  placeholder="© 2026 EventSphere"
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-white">
+                  LinkedIn
+                </label>
+
+                <input
+                  type="url"
+                  value={settings.socialLinks.linkedin}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "socialLinks",
+                      "linkedin",
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="https://linkedin.com/..."
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-white">
+                  YouTube
+                </label>
+
+                <input
+                  type="url"
+                  value={settings.socialLinks.youtube}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "socialLinks",
+                      "youtube",
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="https://youtube.com/..."
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Twitter / X
+                </label>
+
+                <input
+                  type="url"
+                  value={settings.socialLinks.twitter}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "socialLinks",
+                      "twitter",
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="https://x.com/..."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <section className="rounded-2xl border border-white/10 bg-[#181c26] p-6">
+            <div className="mb-5">
+              <h2 className="text-lg font-semibold text-white">
+                Footer Settings
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-400">
+                Manage footer information shown on the public website.
+              </p>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Footer Description
+                </label>
+
+                <textarea
+                  rows={4}
+                  value={settings.footer.description}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "footer",
+                      "description",
+                      event.target.value
+                    )
+                  }
+                  className="w-full resize-none rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="Footer description..."
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-white">
+                  Copyright Text
+                </label>
+
+                <input
+                  type="text"
+                  value={settings.footer.copyright}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "footer",
+                      "copyright",
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#11151f] px-4 py-3 text-sm text-white outline-none transition focus:border-[#c49424]"
+                  placeholder="© 2026 EventSphere. All rights reserved."
                 />
               </div>
             </div>
@@ -519,13 +885,13 @@ const AdminWebsiteSettings = () => {
 
           {/* Save */}
           <div className="flex justify-end">
-            <Button
+            <button
               type="submit"
-              size="lg"
               disabled={saving}
+              className="rounded-xl bg-[#c49424] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#b18420] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving ? "Saving..." : "Save Settings"}
-            </Button>
+              {saving ? "Saving..." : "Save Website Settings"}
+            </button>
           </div>
         </form>
       </div>
