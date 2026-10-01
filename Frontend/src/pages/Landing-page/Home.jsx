@@ -33,7 +33,6 @@ const Home = () => {
   const mainBannerImage =
     websiteSettings?.hero?.image || heroImage
 
-<<<<<<< HEAD
   const mainBannerTitle =
     websiteSettings?.hero?.title || ''
 
@@ -42,13 +41,6 @@ const Home = () => {
 
   const mainBannerButtonText =
     websiteSettings?.hero?.buttonText || ''
-=======
-  // Keep the established landing-page copy; website settings can still supply
-  // the hero image without replacing the requested headline and description.
-  const mainBannerTitle = ''
-  const mainBannerDescription = ''
-  const mainBannerButtonText = ''
->>>>>>> 4fbf22f05d9b62028af624493e155ee028122863
 
   const faqs = [
     {
@@ -1138,8 +1130,4 @@ const Home = () => {
   )
 }
 
-<<<<<<< HEAD
 export default Home
-=======
-export default Home
->>>>>>> 4fbf22f05d9b62028af624493e155ee028122863

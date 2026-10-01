@@ -133,13 +133,16 @@ const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const addUser = await User.create({
+       const addUser = await User.create({
       name,
       email,
       password: hashedPassword,
       role: publicRole,
       companyName,
       phone,
+      // Agar exhibitor register kare to pending approval pe rakho
+      status: publicRole === "exhibitor" ? "inactive" : "active",
+      exhibitorStatus: publicRole === "exhibitor" ? "pending" : null,
     });
 
     const user = addUser.toObject();

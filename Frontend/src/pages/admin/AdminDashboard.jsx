@@ -2,21 +2,25 @@ import React, { useState, useEffect, useCallback } from "react";
 import StatGrid from "@/components/ui/StatGrid";
 import StatCard from "@/components/StatCard";
 import AdminLayout from "@/layouts/DashboardLayout/AdminLayout";
-import BoothTrafficChart from "@/components/BoothTrafficChart";
 import { fetchUserStats } from "@/api/userService";
 import { fetchAttendeeStats } from "@/api/attendeeService";
+import { fetchAnalytics } from "@/api/analyticsService";
 import { RotateCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalAttendees: 0,
-    totalOrganizers: 0,
     totalExhibitors: 0,
+    pendingExhibitors: 0,
+    totalExpos: 0,
+    publishedExpos: 0,
+    totalBooths: 0,
+    occupancyRate: 0,
     pendingRegistrations: 0,
     confirmedBookings: 0,
-    generatedPasses: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,26 +29,34 @@ const AdminDashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const [userRes, attendeeRes] = await Promise.all([
+      const [userRes, attendeeRes, analyticsRes] = await Promise.all([
         fetchUserStats(),
         fetchAttendeeStats(),
+        fetchAnalytics(),
       ]);
 
       const userStats = userRes?.stats || {};
       const attendeeStats = attendeeRes?.stats || {};
+      const overview = analyticsRes?.analytics?.overview || {};
+      const exhibitors = analyticsRes?.analytics?.exhibitors || {};
 
       setStats({
-        totalUsers: userStats.total ?? 0,
-        totalAttendees: attendeeStats.total ?? userStats.attendees ?? 0,
-        totalOrganizers: userStats.organizers ?? 0,
-        totalExhibitors: userStats.exhibitors ?? 0,
+        totalUsers: userStats.total ?? overview.totalUsers ?? 0,
+        totalAttendees: attendeeStats.total ?? overview.totalAttendees ?? 0,
+        totalExhibitors: exhibitors.total ?? userStats.exhibitors ?? 0,
+        pendingExhibitors: exhibitors.pending ?? 0,
+        totalExpos: overview.totalExpos ?? 0,
+        publishedExpos: overview.publishedExpos ?? 0,
+        totalBooths: overview.totalBooths ?? 0,
+        occupancyRate: overview.occupancyRate ?? 0,
         pendingRegistrations: attendeeStats.pendingRegistrations ?? 0,
         confirmedBookings: attendeeStats.confirmedBookings ?? 0,
-        generatedPasses: attendeeStats.generatedPasses ?? 0,
       });
     } catch (err) {
       console.error("Error loading dashboard statistics:", err);
-      const msg = err.response?.data?.error || "Failed to load dashboard statistics from database.";
+      const msg =
+        err.response?.data?.error ||
+        "Failed to load dashboard statistics from database.";
       setError(msg);
       toast.error(msg);
     } finally {
@@ -56,14 +68,17 @@ const AdminDashboard = () => {
     loadDashboardStats();
   }, [loadDashboardStats]);
 
+  const v = (n) => (loading ? "..." : n ?? 0);
+
   const cards = [
-    { label: "Total Users", value: loading ? "..." : (stats.totalUsers ?? 0) },
-    { label: "Total Attendees", value: loading ? "..." : (stats.totalAttendees ?? 0) },
-    { label: "Total Organizers", value: loading ? "..." : (stats.totalOrganizers ?? 0) },
-    { label: "Total Exhibitors", value: loading ? "..." : (stats.totalExhibitors ?? 0) },
-    { label: "Pending Registrations", value: loading ? "..." : (stats.pendingRegistrations ?? 0) },
-    { label: "Confirmed Bookings", value: loading ? "..." : (stats.confirmedBookings ?? 0) },
-    { label: "Generated Passes", value: loading ? "..." : (stats.generatedPasses ?? 0) },
+    { label: "Total Expos", value: v(stats.totalExpos) },
+    { label: "Published Expos", value: v(stats.publishedExpos) },
+    { label: "Total Booths", value: v(stats.totalBooths) },
+    { label: "Booth Occupancy", value: loading ? "..." : `${stats.occupancyRate}%` },
+    { label: "Total Exhibitors", value: v(stats.totalExhibitors) },
+    { label: "Pending Exhibitors", value: v(stats.pendingExhibitors) },
+    { label: "Total Attendees", value: v(stats.totalAttendees) },
+    { label: "Total Users", value: v(stats.totalUsers) },
   ];
 
   return (
@@ -75,7 +90,7 @@ const AdminDashboard = () => {
               Admin Dashboard
             </h1>
             <p className="text-muted text-sm md:text-base">
-              Manage your platform users, attendee registrations, expos, and schedules.
+              Overview of expos, booths, exhibitors and attendees.
             </p>
           </div>
           <button
@@ -83,7 +98,6 @@ const AdminDashboard = () => {
             onClick={loadDashboardStats}
             disabled={loading}
             className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-background self-start sm:self-auto"
-            title="Refresh statistics"
           >
             <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
             <span>{loading ? "Refreshing..." : "Refresh Stats"}</span>
@@ -112,8 +126,46 @@ const AdminDashboard = () => {
           ))}
         </StatGrid>
 
-        <div className="mt-6">
-          <BoothTrafficChart />
+        {/* Quick links */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <Link
+            to="/admin/exhibitors"
+            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
+          >
+            <p className="text-sm text-muted">Pending approvals</p>
+            <p className="text-2xl font-semibold text-gold mt-1">
+              {loading ? "..." : stats.pendingExhibitors}
+            </p>
+            <p className="text-xs text-muted mt-1">Review exhibitors →</p>
+          </Link>
+          <Link
+            to="/admin/booths"
+            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
+          >
+            <p className="text-sm text-muted">Booth occupancy</p>
+            <p className="text-2xl font-semibold text-foreground mt-1">
+              {loading ? "..." : `${stats.occupancyRate}%`}
+            </p>
+            <p className="text-xs text-muted mt-1">Manage booths →</p>
+          </Link>
+          <Link
+            to="/admin/expos"
+            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
+          >
+            <p className="text-sm text-muted">Expos</p>
+            <p className="text-2xl font-semibold text-foreground mt-1">
+              {loading ? "..." : stats.totalExpos}
+            </p>
+            <p className="text-xs text-muted mt-1">Manage expos →</p>
+          </Link>
+          <Link
+            to="/admin/analytics"
+            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
+          >
+            <p className="text-sm text-muted">Full analytics</p>
+            <p className="text-2xl font-semibold text-foreground mt-1">View</p>
+            <p className="text-xs text-muted mt-1">Charts & reports →</p>
+          </Link>
         </div>
       </div>
     </AdminLayout>

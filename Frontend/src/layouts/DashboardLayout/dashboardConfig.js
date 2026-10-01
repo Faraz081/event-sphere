@@ -11,6 +11,7 @@ import {
   UserCheck,
   MessageSquare,
   Settings,
+  Building2,
 } from "lucide-react";
 
 export const roleLabels = {
@@ -31,6 +32,7 @@ export const dashboardNavigation = {
     { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
     { label: "Users", path: "/admin/users", icon: Users },
     { label: "Attendees", path: "/admin/attendees", icon: UserCheck },
+    { label: "Exhibitors", path: "/admin/exhibitors", icon: Building2 },
     { label: "Expos", path: "/admin/expos", icon: CalendarDays },
     { label: "Booths", path: "/admin/booths", icon: Store },
     { label: "Schedule", path: "/admin/schedule", icon: ClipboardList },

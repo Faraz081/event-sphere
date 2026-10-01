@@ -144,7 +144,6 @@ const Navbar = () => {
           >
             Login
           </Link>
-<<<<<<< HEAD
 
           <Link
             to="/register"
@@ -163,11 +162,6 @@ const Navbar = () => {
           Dashboard
         </Link>
 
-=======
-
-        </div>
-
->>>>>>> 4fbf22f05d9b62028af624493e155ee028122863
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -249,7 +243,6 @@ const Navbar = () => {
                 Login
               </Link>
 
-<<<<<<< HEAD
               {/* Sign Up */}
               <Link
                 to="/register"
@@ -268,8 +261,6 @@ const Navbar = () => {
                 Dashboard
               </Link>
 
-=======
->>>>>>> 4fbf22f05d9b62028af624493e155ee028122863
             </div>
           </div>
         </div>

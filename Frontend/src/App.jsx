@@ -15,6 +15,7 @@ import BookNow from './pages/Landing-page/Book-Now'
 import BookTicket from './pages/Landing-page/Book-Ticket'
 import Feedback from './pages/Landing-page/Feedback'
 
+
 /* =========================
    Existing Admin
 ========================= */
@@ -26,6 +27,7 @@ import AdminBooths from './pages/admin/AdminBooths'
 import AdminSchedule from './pages/admin/AdminSchedule'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
 import AdminWebsiteSettings from './pages/admin/AdminWebsiteSettings'
+import AdminExhibitors from './pages/admin/AdminExhibitors'
 
 /* =========================
    Existing Attendee
@@ -140,7 +142,10 @@ function App() {
               path="/admin/booths"
               element={<AdminBooths />}
             />
-
+             <Route
+              path="/admin/exhibitors"
+              element={<AdminExhibitors />}
+            />
             <Route
               path="/admin/schedule"
               element={<AdminSchedule />}
