@@ -99,22 +99,22 @@ const RegisterForm = () => {
 };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
-      <div className="grid gap-5 md:grid-cols-2">
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <div className="grid gap-x-5 gap-y-4 md:grid-cols-2">
 
         {/* Full Name */}
         <div className="space-y-2">
-          <Label htmlFor="fullName">Full Name</Label>
+          <Label htmlFor="fullName" className="text-sm font-semibold text-foreground">Full Name</Label>
 
           <div className="relative">
-            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
 
             <Input
               id="fullName"
               name="name"
               type="text"
               placeholder="John Doe"
-              className="pl-10"
+              className="h-12 rounded-xl pl-11 text-sm shadow-sm placeholder:text-muted/70 focus-visible:ring-gold/20"
               value={formData.name}
               onChange={handleChange}
             />
@@ -123,19 +123,19 @@ const RegisterForm = () => {
 
         {/* Company */}
         <div className="space-y-2">
-          <Label htmlFor="company">
+          <Label htmlFor="company" className="text-sm font-semibold text-foreground">
             Company / Organization
           </Label>
 
           <div className="relative">
-            <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Building2 className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
 
             <Input
               id="company"
               name="companyName"
               type="text"
               placeholder="ABC Technologies"
-              className="pl-10"
+              className="h-12 rounded-xl pl-11 text-sm shadow-sm placeholder:text-muted/70 focus-visible:ring-gold/20"
               value={formData.companyName}
               onChange={handleChange}
             />
@@ -144,17 +144,17 @@ const RegisterForm = () => {
 
         {/* Email */}
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-sm font-semibold text-foreground">Email</Label>
 
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
 
             <Input
               id="email"
               name="email"
               type="email"
               placeholder="john@example.com"
-              className="pl-10"
+              className="h-12 rounded-xl pl-11 text-sm shadow-sm placeholder:text-muted/70 focus-visible:ring-gold/20"
               value={formData.email}
               onChange={handleChange}
             />
@@ -163,7 +163,7 @@ const RegisterForm = () => {
 
         {/* Role */}
         <div className="space-y-2">
-          <Label>Role</Label>
+          <Label className="text-sm font-semibold text-foreground">Role</Label>
 
           <Select
             value={formData.role}
@@ -174,11 +174,11 @@ const RegisterForm = () => {
               })
             }
           >
-            <SelectTrigger className="w-full bg-background">
+            <SelectTrigger className="h-12 w-full rounded-xl border-[#eadfc9] bg-[#fffdf9] text-sm shadow-sm">
               <SelectValue placeholder="Select your role" />
             </SelectTrigger>
 
-            <SelectContent className="bg-surface border-border">
+            <SelectContent className="border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24]">
               <SelectItem value="exhibitor">
                 Exhibitor
               </SelectItem>
@@ -192,17 +192,17 @@ const RegisterForm = () => {
 
         {/* Password */}
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="text-sm font-semibold text-foreground">Password</Label>
 
           <div className="relative">
-            <LockKeyhole className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <LockKeyhole className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
 
             <Input
               id="password"
               name="password"
               type="password"
               placeholder="Create a password"
-              className="pl-10"
+              className="h-12 rounded-xl pl-11 text-sm shadow-sm placeholder:text-muted/70 focus-visible:ring-gold/20"
               value={formData.password}
               onChange={handleChange}
             />
@@ -211,19 +211,19 @@ const RegisterForm = () => {
 
         {/* Confirm Password */}
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">
+          <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground">
             Confirm Password
           </Label>
 
           <div className="relative">
-            <LockKeyhole className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <LockKeyhole className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
 
             <Input
               id="confirmPassword"
               name="confirmPassword"
               type="password"
               placeholder="Confirm your password"
-              className="pl-10"
+              className="h-12 rounded-xl pl-11 text-sm shadow-sm placeholder:text-muted/70 focus-visible:ring-gold/20"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
@@ -232,7 +232,7 @@ const RegisterForm = () => {
 
         {/* Phone */}
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="phone">Phone</Label>
+          <Label htmlFor="phone" className="text-sm font-semibold text-foreground">Phone</Label>
 
           <Input
             id="phone"
@@ -248,7 +248,7 @@ const RegisterForm = () => {
 
       <Button
         type="submit"
-        className="w-full bg-gold text-background hover:bg-gold/90"
+        className="h-12 w-full rounded-xl bg-gold font-semibold text-white shadow-md shadow-[#c49424]/20 transition hover:-translate-y-0.5 hover:bg-gold/90"
       >
         Create Account
       </Button>

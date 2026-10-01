@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { getRoleHomePath } from "@/dashboard/dashboardConfig";
+import { getRoleHomePath } from "@/layouts/DashboardLayout/dashboardConfig";
 
 export const RequireAuth = () => {
   const { user } = useSelector((state) => state.auth);

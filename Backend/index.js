@@ -10,6 +10,11 @@ import websiteSettingsRoute from "./src/routes/websiteSettingsRoute.js";
 import userRoute from "./src/routes/userRoute.js";
 import attendeeRoute from "./src/routes/attendeeRoute.js";
 import uploadRoute from "./src/routes/uploadRoute.js";
+<<<<<<< HEAD
+=======
+import eventRoute from "./src/routes/eventRoute.js";
+import messageRoute from "./src/routes/messageRoute.js";
+>>>>>>> 4fbf22f05d9b62028af624493e155ee028122863
 
 const app = express();
 
@@ -53,6 +58,11 @@ app.use("/api/website-settings", websiteSettingsRoute);
 app.use("/api/users", userRoute);
 app.use("/api/attendees", attendeeRoute);
 app.use("/api/upload", uploadRoute);
+<<<<<<< HEAD
+=======
+app.use("/api/event", eventRoute);
+app.use("/api/message", messageRoute);
+>>>>>>> 4fbf22f05d9b62028af624493e155ee028122863
 
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;

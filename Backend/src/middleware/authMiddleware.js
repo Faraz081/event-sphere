@@ -36,6 +36,10 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
+const protect = authMiddleware;
+
+export { protect };
+
 export default authMiddleware;
 export const adminAuth = async (req, res, next) => {
   try {
