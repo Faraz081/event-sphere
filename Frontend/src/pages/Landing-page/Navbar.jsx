@@ -1,15 +1,47 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Sparkles } from 'lucide-react'
+import api from '../../api/api'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [settings, setSettings] = useState(null)
+
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchWebsiteSettings = async () => {
+      try {
+        const response = await api.get('/api/website-settings')
+        setSettings(response.data.settings)
+      } catch (error) {
+        console.error('Failed to load website settings:', error)
+      }
+    }
+
+    fetchWebsiteSettings()
+  }, [])
+
+  const websiteName = settings?.websiteName || 'EventSphere'
+  const logo = settings?.logo || ''
+
+  const renderLogo = () => {
+    if (logo) {
+      return (
+        <img
+          src={logo}
+          alt={websiteName}
+          className="mr-2 h-8 w-8 rounded-full object-cover"
+        />
+      )
+    }
+
+    return <Sparkles className="mr-2 h-6 w-6 text-[#c49424]" />
+  }
 
   const scrollToSection = (id) => {
     if (window.location.pathname !== '/') {
       navigate('/')
-      
 
       setTimeout(() => {
         const section = document.getElementById(id)
@@ -47,10 +79,9 @@ const Navbar = () => {
 
     setMenuOpen(false)
   }
-  
 
   return (
-   <nav className="fixed inset-x-0 top-6 z-50 mx-auto max-w-7xl px-4 sm:px-6 font-bold">
+    <nav className="fixed inset-x-0 top-6 z-50 mx-auto max-w-7xl px-4 font-bold sm:px-6">
       <div className="flex h-16 items-center justify-between rounded-full border border-white/80 bg-white/20 px-6 shadow-[0_8px_32px_0_rgba(196,148,36,0.15)] backdrop-blur-2xl transition-all duration-300 md:px-8">
 
         {/* Logo */}
@@ -58,8 +89,8 @@ const Navbar = () => {
           to="/"
           className="inline-flex items-center font-serif text-2xl font-medium tracking-wider text-white transition-opacity hover:opacity-80"
         >
-          <Sparkles className="mr-2 h-6 w-6 text-[#c49424]" />
-          Event<span className="text-[#c49424]">Sphere</span>
+          {renderLogo()}
+          {websiteName}
         </Link>
 
         {/* Desktop Navigation */}
@@ -93,39 +124,39 @@ const Navbar = () => {
             Gallery
           </button>
 
-         <Link
-  to="/contact"
-  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
->
-  Contact
-</Link>
-
+          <Link
+            to="/contact"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+          >
+            Contact
+          </Link>
 
           <button
-  onClick={() => navigate('/book-now')}
-   className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
->
-  Book Now
-</button>
-
-
-          <Link 
-           to="/login"
-           className="text-sm text-[#c49424] transition-opacity hover:opacity-70">Login</Link>
-
+            onClick={() => navigate('/book-now')}
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+          >
+            Book Now
+          </button>
 
           <Link
-          to="/signup"
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70">Sign Up</Link>
+            to="/login"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+          >
+            Login
+          </Link>
 
+          <Link
+            to="/register"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+          >
+            Sign Up
+          </Link>
 
         </div>
 
-        
-
         {/* Dashboard */}
         <Link
-          to="/Dashboard"
+          to="/dashboard"
           className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 md:block"
         >
           Dashboard
@@ -137,7 +168,7 @@ const Navbar = () => {
           className="text-xl text-neutral-900 focus:outline-none md:hidden"
           aria-label="Toggle menu"
         >
-          {menuOpen ? '✕' : '☰'}
+          {menuOpen ? '×' : '☰'}
         </button>
       </div>
 
@@ -183,51 +214,54 @@ const Navbar = () => {
               Gallery
             </button>
 
-          <Link
-  to="/contact"
-  onClick={() => setMenuOpen(false)}
-  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
->
-  Contact
-</Link>
+            <Link
+              to="/contact"
+              onClick={() => setMenuOpen(false)}
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            >
+              Contact
+            </Link>
 
             <button
-  onClick={() => navigate('/book-now')}
-   className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
->
-  Book Now
-</button>
+              onClick={() => {
+                navigate('/book-now')
+                setMenuOpen(false)
+              }}
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            >
+              Book Now
+            </button>
 
             <div className="flex flex-col gap-4 pt-2">
 
-  {/* Login */}
-  <Link
-    to="/login"
-    onClick={() => setMenuOpen(false)}
-    className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-  >
-    Login
-  </Link>
+              {/* Login */}
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              >
+                Login
+              </Link>
 
-  {/* Sign Up */}
-  <Link
-    to="/signup"
-    onClick={() => setMenuOpen(false)}
-    className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-  >
-    Sign Up
-  </Link>
+              {/* Sign Up */}
+              <Link
+                to="/register"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              >
+                Sign Up
+              </Link>
 
-  {/* Dashboard */}
-  <Link
-    to="/Dashboard"
-    onClick={() => setMenuOpen(false)}
-    className="inline-block w-full rounded-full border border-[#c49424] bg-white/30 py-3 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition hover:bg-[#c49424] hover:text-white"
-  >
-    Dashboard
-  </Link>
+              {/* Dashboard */}
+              <Link
+                to="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className="inline-block w-full rounded-full border border-[#c49424] bg-white/30 py-3 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition hover:bg-[#c49424] hover:text-white"
+              >
+                Dashboard
+              </Link>
 
-</div>
+            </div>
           </div>
         </div>
       )}
