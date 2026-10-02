@@ -8,7 +8,7 @@ import loginSignupBg from "../../assets/login-signup-bg.jpg";
 import {
   resetPassword,
   clearForgotPassword,
-} from "@/features/auth/forgotPasswordSlice";
+} from "@/store/slices/forgotPasswordSlice";
 
 const NewPassword = () => {
   const [password, setPassword] = useState("");

@@ -8,12 +8,12 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { logout } from "@/features/auth/authSlice";
+import { logout } from "@/store/slices/authSlice";
 import {
   dashboardNavigation,
   getRoleHomePath,
   roleLabels,
-} from "@/layouts/DashboardLayout/dashboardConfig";
+} from "@/layouts/dashboardConfig";
 import { toast } from "sonner";
 
 const navLinkClassName = ({ isActive }) =>

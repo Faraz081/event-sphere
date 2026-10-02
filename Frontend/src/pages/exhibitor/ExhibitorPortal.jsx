@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { MessageSquare, Store, ClipboardList, User } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 import StatGrid from "@/components/ui/StatGrid";
-import ExhibitorLayout from "@/layouts/DashboardLayout/ExhibitorLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import StatCard from "@/components/StatCard";
-import { fetchMyBooth } from "@/features/boothSlice";
-import { fetchContacts, fetchUnreadCounts } from "@/features/messageSlice";
+import { fetchMyBooth } from "@/store/slices/boothSlice";
+import { fetchContacts, fetchUnreadCounts } from "@/store/slices/messageSlice";
 
 const ExhibitorPortal = () => {
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ const ExhibitorPortal = () => {
   ];
 
   return (
-    <ExhibitorLayout>
+    <DashboardLayout role="exhibitor">
       <div className="p-4 md:p-8">
         <h1 className="mb-2 font-display text-2xl md:text-4xl font-bold text-foreground">
           Exhibitor Dashboard
@@ -119,7 +119,7 @@ const ExhibitorPortal = () => {
 
         </div>
       </div>
-    </ExhibitorLayout>
+    </DashboardLayout>
   );
 };
 

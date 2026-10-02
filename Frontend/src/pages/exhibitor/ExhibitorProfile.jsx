@@ -1,10 +1,10 @@
 import React from "react";
-import ExhibitorLayout from "@/layouts/DashboardLayout/ExhibitorLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/DashboardSectionPage";
-import { dashboardSummaries } from "@/layouts/DashboardLayout/dashboardConfig";
+import { dashboardSummaries } from "@/layouts/dashboardConfig";
 
 const ExhibitorProfile = () => (
-  <ExhibitorLayout>
+  <DashboardLayout role="exhibitor">
     <DashboardSectionPage
       title="Profile"
       description="Edit company and contact details from the shared exhibitor area."
@@ -17,7 +17,7 @@ const ExhibitorProfile = () => (
         </p>
       </div>
     </DashboardSectionPage>
-  </ExhibitorLayout>
+  </DashboardLayout>
 );
 
 export default ExhibitorProfile;

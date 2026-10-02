@@ -8,7 +8,7 @@ import loginSignupBg from "../../assets/login-signup-bg.jpg";
 import {
   setOtp,
   verifyResetOtp,
-} from "@/features/auth/forgotPasswordSlice";
+} from "@/store/slices/forgotPasswordSlice";
 
 const VerifyOtp = () => {
   const [otpInput, setOtpInput] = useState("");

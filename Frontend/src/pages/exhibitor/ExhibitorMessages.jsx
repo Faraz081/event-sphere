@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import ExhibitorLayout from "@/layouts/DashboardLayout/ExhibitorLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/DashboardSectionPage";
-import { dashboardSummaries } from "@/layouts/DashboardLayout/dashboardConfig";
-import { fetchContacts, fetchConversation, sendMessage, fetchUnreadCounts, markAsRead } from "@/features/messageSlice";
+import { dashboardSummaries } from "@/layouts/dashboardConfig";
+import { fetchContacts, fetchConversation, sendMessage, fetchUnreadCounts, markAsRead } from "@/store/slices/messageSlice";
 
 const ExhibitorMessages = () => {
   const dispatch = useDispatch();
@@ -55,7 +55,7 @@ const ExhibitorMessages = () => {
   };
 
   return (
-    <ExhibitorLayout>
+    <DashboardLayout role="exhibitor">
             <DashboardSectionPage
         title="Messages"
         description="Keep track of conversations, leads, and meeting requests inside the same dashboard chrome."
@@ -111,7 +111,7 @@ const ExhibitorMessages = () => {
 
         </div>
       </DashboardSectionPage>
-    </ExhibitorLayout>
+    </DashboardLayout>
   );
 };
 

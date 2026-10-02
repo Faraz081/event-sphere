@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
-import AdminLayout from "@/layouts/DashboardLayout/AdminLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/ui/ResponsiveTable";
 import StatGrid from "@/components/ui/StatGrid";
 import StatCard from "@/components/StatCard";
@@ -279,7 +279,7 @@ const AdminUsers = () => {
   };
 
   return (
-    <AdminLayout>
+    <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
         {/* Header & Primary Action */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -889,7 +889,7 @@ const AdminUsers = () => {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   );
 };
 

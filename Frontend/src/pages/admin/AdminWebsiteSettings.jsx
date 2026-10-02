@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import AdminLayout from "@/layouts/DashboardLayout/AdminLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import api from "@/api/api";
 
 const defaultSettings = {
@@ -379,18 +379,18 @@ const AdminWebsiteSettings = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <DashboardLayout role="admin">
         <div className="flex min-h-[60vh] items-center justify-center">
           <div className="text-sm text-muted">
             Loading website settings...
           </div>
         </div>
-      </AdminLayout>
+      </DashboardLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    <DashboardLayout role="admin">
       <div className="mx-auto w-full max-w-6xl space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">
@@ -895,7 +895,7 @@ const AdminWebsiteSettings = () => {
           </div>
         </form>
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import StatGrid from "@/components/ui/StatGrid";
 import StatCard from "@/components/StatCard";
-import AdminLayout from "@/layouts/DashboardLayout/AdminLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import { fetchUserStats } from "@/api/userService";
 import { fetchAttendeeStats } from "@/api/attendeeService";
 import { fetchAnalytics } from "@/api/analyticsService";
@@ -82,7 +82,7 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <AdminLayout>
+    <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -168,7 +168,7 @@ const AdminDashboard = () => {
           </Link>
         </div>
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   );
 };
 

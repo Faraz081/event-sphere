@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { X, Plus, Trash2 } from "lucide-react";
-import ExhibitorLayout from "@/layouts/DashboardLayout/ExhibitorLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/DashboardSectionPage";
-import { fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails } from "@/features/boothSlice";
+import { fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails } from "@/store/slices/boothSlice";
 
 const ExhibitorBooth = () => {
   const dispatch = useDispatch();
@@ -81,7 +81,7 @@ const ExhibitorBooth = () => {
   const isPending = myBooth?.status === "pending";
 
   return (
-    <ExhibitorLayout>
+    <DashboardLayout role="exhibitor">
       <DashboardSectionPage
         title="My Booth"
         description="Reserve a booth space and manage your presence on the expo floor."
@@ -217,7 +217,7 @@ const ExhibitorBooth = () => {
           </div>
         )}
       </DashboardSectionPage>
-    </ExhibitorLayout>
+    </DashboardLayout>
   );
 };
 

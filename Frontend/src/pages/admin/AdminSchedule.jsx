@@ -1,5 +1,5 @@
 import React from 'react'
-import AdminLayout from "@/layouts/DashboardLayout/AdminLayout"
+import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/ui/ResponsiveTable"
 import { mockSchedule } from "@/data/mockData"
 
@@ -12,7 +12,7 @@ const formatTime = (time24) => {
 }
 
 const AdminSchedule = () => (
-  <AdminLayout>
+  <DashboardLayout role="admin">
     <div className="p-4 md:p-8">
       <div className="mb-6">
         <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-2">
@@ -44,7 +44,7 @@ const AdminSchedule = () => (
 </tbody>
       </ResponsiveTable>
     </div>
-  </AdminLayout>
+  </DashboardLayout>
 )
 
 export default AdminSchedule

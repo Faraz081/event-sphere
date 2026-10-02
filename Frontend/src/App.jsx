@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 /* =========================
    Saim Public Website
 ========================= */
-import WebsiteLayout from './layouts/WebsiteLayout/WebsiteLayout'
+import WebsiteLayout from './layouts/WebsiteLayout'
 import Home from './pages/Landing-page/Home'
 import EventGallery from './pages/Landing-page/Event-Gallery'
 import Service from './pages/Landing-page/Service'

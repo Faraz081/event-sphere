@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 import loginSignupBg from "../../assets/login-signup-bg.jpg";
-import { sendResetOtp, setEmail } from "@/features/auth/forgotPasswordSlice";
+import { sendResetOtp, setEmail } from "@/store/slices/forgotPasswordSlice";
 
 const ForgotPassword = () => {
   const [emailInput, setEmailInput] = useState("");

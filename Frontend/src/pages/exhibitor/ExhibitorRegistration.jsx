@@ -1,10 +1,10 @@
 import React from "react";
-import ExhibitorLayout from "@/layouts/DashboardLayout/ExhibitorLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/DashboardSectionPage";
-import { dashboardSummaries } from "@/layouts/DashboardLayout/dashboardConfig";
+import { dashboardSummaries } from "@/layouts/dashboardConfig";
 
 const ExhibitorRegistration = () => (
-  <ExhibitorLayout>
+  <DashboardLayout role="exhibitor">
     <DashboardSectionPage
       title="Registration"
       description="Review exhibitor registration details and approval workflow from the shared shell."
@@ -17,7 +17,7 @@ const ExhibitorRegistration = () => (
         </p>
       </div>
     </DashboardSectionPage>
-  </ExhibitorLayout>
+  </DashboardLayout>
 );
 
 export default ExhibitorRegistration;

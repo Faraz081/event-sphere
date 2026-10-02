@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
-import ExhibitorLayout from "@/layouts/DashboardLayout/ExhibitorLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/DashboardSectionPage";
-import { fetchMyEvents, createEvent, deleteEvent } from "@/features/eventSlice";
+import { fetchMyEvents, createEvent, deleteEvent } from "@/store/slices/eventSlice";
 
 const ExhibitorEvents = () => {
   const dispatch = useDispatch();
@@ -45,7 +45,7 @@ const ExhibitorEvents = () => {
   };
 
   return (
-    <ExhibitorLayout>
+    <DashboardLayout role="exhibitor">
       <DashboardSectionPage
         title="My Events"
         description="Create showcase events for your booth. Approved events appear on the public landing page."
@@ -84,7 +84,7 @@ const ExhibitorEvents = () => {
           ))}
         </div>
       </DashboardSectionPage>
-    </ExhibitorLayout>
+    </DashboardLayout>
   );
 };
 

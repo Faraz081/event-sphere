@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AdminLayout from "@/layouts/DashboardLayout/AdminLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import StatGrid from "@/components/ui/StatGrid";
 import StatCard from "@/components/StatCard";
 import { fetchAnalytics } from "@/api/analyticsService";
@@ -67,7 +67,7 @@ const AdminAnalytics = () => {
   ];
 
   return (
-    <AdminLayout>
+    <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -238,7 +238,7 @@ const AdminAnalytics = () => {
           </>
         )}
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   );
 };
 

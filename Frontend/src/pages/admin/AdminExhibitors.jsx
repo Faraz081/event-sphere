@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import AdminLayout from "@/layouts/DashboardLayout/AdminLayout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/ui/ResponsiveTable";
 import {
   AlertDialog,
@@ -99,7 +99,7 @@ const AdminExhibitors = () => {
   };
 
   return (
-    <AdminLayout>
+    <DashboardLayout role="admin">
       <div className="p-4 md:p-8">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
@@ -291,7 +291,7 @@ const AdminExhibitors = () => {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   );
 };
 

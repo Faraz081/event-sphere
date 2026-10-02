@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { LogOut, Sparkles } from 'lucide-react'
 import api from '../../api/api'
-import { logout } from '@/features/auth/authSlice'
+import { logout } from '@/store/slices/authSlice'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
