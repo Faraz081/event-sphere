@@ -59,12 +59,10 @@ import {
 } from './components/shared/RouteGuards'
 
 import { Toaster } from 'sonner'
-import useInitTheme from './lib/useInitTheme'
 import { useSelector } from "react-redux";
 
 function App() {
   const { email, otp } = useSelector((state) => state.forgotPassword);
-  useInitTheme()
 
   return (
     <>
