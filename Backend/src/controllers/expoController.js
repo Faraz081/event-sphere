@@ -1,11 +1,17 @@
 import Expo from "../models/Expo.js";
 import mongoose from "mongoose";
 
+<<<<<<< HEAD
+=======
+const VALID_STATUSES = ["draft", "published", "completed", "cancelled"];
+
+>>>>>>> dup-event
 // CREATE Expo
 export const createExpo = async (req, res) => {
   try {
     const { title, description, theme, date, location, status, banner } = req.body;
 
+<<<<<<< HEAD
     if (!title || !description || !date || !location) {
       return res.status(400).json({ error: "Title, description, date and location are required" });
     }
@@ -13,11 +19,50 @@ export const createExpo = async (req, res) => {
     // logged-in admin se createdBy lo
     const createdBy = req.user?._id || req.user?.id || req.user?.sub;
 
+=======
+    if (!title || !title.trim()) {
+      return res.status(400).json({ error: "Title is required" });
+    }
+    if (!description || !description.trim()) {
+      return res.status(400).json({ error: "Description is required" });
+    }
+    if (!location || !location.trim()) {
+      return res.status(400).json({ error: "Location is required" });
+    }
+    if (!date) {
+      return res.status(400).json({ error: "Date is required" });
+    }
+
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    if (parsedDate < startOfToday) {
+      return res.status(400).json({ error: "Expo date must be today or in the future" });
+    }
+
+    let expoStatus = "draft";
+    if (status) {
+      if (!VALID_STATUSES.includes(status)) {
+        return res.status(400).json({
+          error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+        });
+      }
+      expoStatus = status;
+    }
+
+    // Extract createdBy from authenticated user
+    const createdBy = req.user?._id || req.user?.id || req.user?.sub;
+>>>>>>> dup-event
     if (!createdBy) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
     const expo = await Expo.create({
+<<<<<<< HEAD
       title,
       description,
       theme,
@@ -29,12 +74,28 @@ export const createExpo = async (req, res) => {
     });
 
     res.status(201).json({
+=======
+      title: title.trim(),
+      description: description.trim(),
+      theme: theme?.trim() || "",
+      date: parsedDate,
+      location: location.trim(),
+      status: expoStatus,
+      banner: banner || "",
+      createdBy,
+    });
+
+    await expo.populate("createdBy", "name email");
+
+    return res.status(201).json({
+>>>>>>> dup-event
       success: true,
       msg: "Expo created successfully",
       expo,
     });
   } catch (error) {
     console.error("createExpo error:", error);
+<<<<<<< HEAD
     res.status(500).json({ error: error.message || "Failed to create expo" });
   }
 };
@@ -61,11 +122,69 @@ export const getAllExpos = async (req, res) => {
     res.status(200).json({
       success: true,
       total: expos.length,
+=======
+    return res.status(500).json({ error: error.message || "Failed to create expo" });
+  }
+};
+
+// GET All Expos (with search by title, status filtering, and pagination)
+export const getAllExpos = async (req, res) => {
+  try {
+    const { status, search, page, limit } = req.query;
+    const filter = {};
+
+    // Status filter
+    if (status && status !== "all") {
+      if (!VALID_STATUSES.includes(status)) {
+        return res.status(400).json({
+          error: `Invalid status filter. Must be one of: ${VALID_STATUSES.join(", ")}`,
+        });
+      }
+      filter.status = status;
+    }
+
+    // Search by title
+    if (search && search.trim()) {
+      const cleanSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.title = new RegExp(cleanSearch, "i");
+    }
+
+    const total = await Expo.countDocuments(filter);
+
+    const isLimitSpecified = limit !== undefined && limit !== "";
+    const isPageSpecified = page !== undefined && page !== "";
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = isLimitSpecified
+      ? (limit === "all" ? 0 : Math.max(1, parseInt(limit, 10) || 10))
+      : (isPageSpecified ? 10 : 0);
+
+    let query = Expo.find(filter)
+      .populate("createdBy", "name email")
+      .sort({ date: -1 });
+
+    if (limitNum > 0) {
+      query = query.skip((pageNum - 1) * limitNum).limit(limitNum);
+    }
+
+    const expos = await query;
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: pageNum,
+      limit: limitNum > 0 ? limitNum : total,
+      totalPages: limitNum > 0 ? (Math.ceil(total / limitNum) || 1) : 1,
+>>>>>>> dup-event
       expos,
     });
   } catch (error) {
     console.error("getAllExpos error:", error);
+<<<<<<< HEAD
     res.status(500).json({ error: error.message || "Failed to fetch expos" });
+=======
+    return res.status(500).json({ error: error.message || "Failed to fetch expos" });
+>>>>>>> dup-event
   }
 };
 
@@ -82,6 +201,7 @@ export const getExpoById = async (req, res) => {
       return res.status(404).json({ error: "Expo not found" });
     }
 
+<<<<<<< HEAD
     res.status(200).json({ success: true, expo });
   } catch (error) {
     res.status(500).json({ error: error.message || "Failed to fetch expo" });
@@ -89,6 +209,16 @@ export const getExpoById = async (req, res) => {
 };
 
 // UPDATE Expo
+=======
+    return res.status(200).json({ success: true, expo });
+  } catch (error) {
+    console.error("getExpoById error:", error);
+    return res.status(500).json({ error: error.message || "Failed to fetch expo" });
+  }
+};
+
+// UPDATE Expo (Preserves createdBy, updates only allowed fields, validates dates & status)
+>>>>>>> dup-event
 export const updateExpo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -96,6 +226,7 @@ export const updateExpo = async (req, res) => {
       return res.status(400).json({ error: "Invalid expo ID" });
     }
 
+<<<<<<< HEAD
     const expo = await Expo.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
@@ -106,12 +237,117 @@ export const updateExpo = async (req, res) => {
     }
 
     res.status(200).json({
+=======
+    const existingExpo = await Expo.findById(id);
+    if (!existingExpo) {
+      return res.status(404).json({ error: "Expo not found" });
+    }
+
+    const allowedFields = ["title", "description", "theme", "date", "location", "status", "banner"];
+    const updates = {};
+
+    if (req.body.title !== undefined) {
+      if (!req.body.title || !req.body.title.trim()) {
+        return res.status(400).json({ error: "Title cannot be empty" });
+      }
+      updates.title = req.body.title.trim();
+    }
+
+    if (req.body.description !== undefined) {
+      if (!req.body.description || !req.body.description.trim()) {
+        return res.status(400).json({ error: "Description cannot be empty" });
+      }
+      updates.description = req.body.description.trim();
+    }
+
+    if (req.body.location !== undefined) {
+      if (!req.body.location || !req.body.location.trim()) {
+        return res.status(400).json({ error: "Location cannot be empty" });
+      }
+      updates.location = req.body.location.trim();
+    }
+
+    if (req.body.theme !== undefined) {
+      updates.theme = req.body.theme ? req.body.theme.trim() : "";
+    }
+
+    if (req.body.banner !== undefined) {
+      updates.banner = req.body.banner || "";
+    }
+
+    if (req.body.date !== undefined) {
+      const parsedDate = new Date(req.body.date);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ error: "Invalid date format" });
+      }
+      updates.date = parsedDate;
+    }
+
+    if (req.body.status !== undefined) {
+      if (!VALID_STATUSES.includes(req.body.status)) {
+        return res.status(400).json({
+          error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+        });
+      }
+      updates.status = req.body.status;
+    }
+
+    // Notice createdBy is intentionally NOT in updates to preserve original creator
+    const expo = await Expo.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).populate("createdBy", "name email");
+
+    return res.status(200).json({
+>>>>>>> dup-event
       success: true,
       msg: "Expo updated successfully",
       expo,
     });
   } catch (error) {
+<<<<<<< HEAD
     res.status(500).json({ error: error.message || "Failed to update expo" });
+=======
+    console.error("updateExpo error:", error);
+    return res.status(500).json({ error: error.message || "Failed to update expo" });
+  }
+};
+
+// DEDICATED STATUS CHANGE
+export const updateExpoStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid expo ID" });
+    }
+
+    const { status } = req.body;
+    if (!status || !VALID_STATUSES.includes(status)) {
+      return res.status(400).json({
+        error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+      });
+    }
+
+    const expo = await Expo.findByIdAndUpdate(
+      id,
+      { $set: { status } },
+      { new: true, runValidators: true }
+    ).populate("createdBy", "name email");
+
+    if (!expo) {
+      return res.status(404).json({ error: "Expo not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      msg: "Expo status updated successfully",
+      expo,
+    });
+  } catch (error) {
+    console.error("updateExpoStatus error:", error);
+    return res.status(500).json({ error: error.message || "Failed to update expo status" });
+>>>>>>> dup-event
   }
 };
 
@@ -128,11 +364,20 @@ export const deleteExpo = async (req, res) => {
       return res.status(404).json({ error: "Expo not found" });
     }
 
+<<<<<<< HEAD
     res.status(200).json({
+=======
+    return res.status(200).json({
+>>>>>>> dup-event
       success: true,
       msg: "Expo deleted successfully",
     });
   } catch (error) {
+<<<<<<< HEAD
     res.status(500).json({ error: error.message || "Failed to delete expo" });
+=======
+    console.error("deleteExpo error:", error);
+    return res.status(500).json({ error: error.message || "Failed to delete expo" });
+>>>>>>> dup-event
   }
 };
