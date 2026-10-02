@@ -14,6 +14,7 @@ import eventRoute from "./src/routes/eventRoute.js";
 import messageRoute from "./src/routes/messageRoute.js";
 import exhibitorRoute from "./src/routes/exhibitorRoute.js";
 import analyticsRoute from "./src/routes/analyticsRoute.js";
+import router from "./src/routes/exhibitorProfileRoute.js";
 
 const app = express();
 
@@ -58,10 +59,12 @@ app.use("/api/website-settings", websiteSettingsRoute);
 app.use("/api/users", userRoute);
 app.use("/api/attendees", attendeeRoute);
 app.use("/api/upload", uploadRoute);
+app.use("/uploads", express.static("uploads"));
 app.use("/api/event", eventRoute);
 app.use("/api/message", messageRoute);
 app.use("/api/exhibitors", exhibitorRoute);
 app.use("/api/analytics", analyticsRoute);
+app.use("/api/exhibitor-profile", router);
 
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;

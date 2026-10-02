@@ -1,5 +1,5 @@
-import Footer from '@/pages/Landing-page/Footer'
-import Navbar from '@/pages/Landing-page/Navbar'
+import Footer from '@/pages/attendee/Footer'
+import Navbar from '@/pages/attendee/Navbar'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 

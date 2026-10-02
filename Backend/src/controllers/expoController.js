@@ -1,25 +1,13 @@
 import Expo from "../models/Expo.js";
 import mongoose from "mongoose";
 
-<<<<<<< HEAD
-=======
 const VALID_STATUSES = ["draft", "published", "completed", "cancelled"];
 
->>>>>>> dup-event
 // CREATE Expo
 export const createExpo = async (req, res) => {
   try {
     const { title, description, theme, date, location, status, banner } = req.body;
 
-<<<<<<< HEAD
-    if (!title || !description || !date || !location) {
-      return res.status(400).json({ error: "Title, description, date and location are required" });
-    }
-
-    // logged-in admin se createdBy lo
-    const createdBy = req.user?._id || req.user?.id || req.user?.sub;
-
-=======
     if (!title || !title.trim()) {
       return res.status(400).json({ error: "Title is required" });
     }
@@ -56,25 +44,11 @@ export const createExpo = async (req, res) => {
 
     // Extract createdBy from authenticated user
     const createdBy = req.user?._id || req.user?.id || req.user?.sub;
->>>>>>> dup-event
     if (!createdBy) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
     const expo = await Expo.create({
-<<<<<<< HEAD
-      title,
-      description,
-      theme,
-      date,
-      location,
-      status: status || "draft",
-      banner,
-      createdBy,
-    });
-
-    res.status(201).json({
-=======
       title: title.trim(),
       description: description.trim(),
       theme: theme?.trim() || "",
@@ -88,41 +62,12 @@ export const createExpo = async (req, res) => {
     await expo.populate("createdBy", "name email");
 
     return res.status(201).json({
->>>>>>> dup-event
       success: true,
       msg: "Expo created successfully",
       expo,
     });
   } catch (error) {
     console.error("createExpo error:", error);
-<<<<<<< HEAD
-    res.status(500).json({ error: error.message || "Failed to create expo" });
-  }
-};
-
-// GET All Expos
-export const getAllExpos = async (req, res) => {
-  try {
-    const { status, search } = req.query;
-    const filter = {};
-
-    if (status && status !== "all") {
-      filter.status = status;
-    }
-
-    if (search && search.trim()) {
-      const regex = new RegExp(search.trim(), "i");
-      filter.$or = [{ title: regex }, { location: regex }, { theme: regex }];
-    }
-
-    const expos = await Expo.find(filter)
-      .populate("createdBy", "name email")
-      .sort({ date: -1 });
-
-    res.status(200).json({
-      success: true,
-      total: expos.length,
-=======
     return res.status(500).json({ error: error.message || "Failed to create expo" });
   }
 };
@@ -175,16 +120,11 @@ export const getAllExpos = async (req, res) => {
       page: pageNum,
       limit: limitNum > 0 ? limitNum : total,
       totalPages: limitNum > 0 ? (Math.ceil(total / limitNum) || 1) : 1,
->>>>>>> dup-event
       expos,
     });
   } catch (error) {
     console.error("getAllExpos error:", error);
-<<<<<<< HEAD
-    res.status(500).json({ error: error.message || "Failed to fetch expos" });
-=======
     return res.status(500).json({ error: error.message || "Failed to fetch expos" });
->>>>>>> dup-event
   }
 };
 
@@ -201,15 +141,6 @@ export const getExpoById = async (req, res) => {
       return res.status(404).json({ error: "Expo not found" });
     }
 
-<<<<<<< HEAD
-    res.status(200).json({ success: true, expo });
-  } catch (error) {
-    res.status(500).json({ error: error.message || "Failed to fetch expo" });
-  }
-};
-
-// UPDATE Expo
-=======
     return res.status(200).json({ success: true, expo });
   } catch (error) {
     console.error("getExpoById error:", error);
@@ -218,7 +149,6 @@ export const getExpoById = async (req, res) => {
 };
 
 // UPDATE Expo (Preserves createdBy, updates only allowed fields, validates dates & status)
->>>>>>> dup-event
 export const updateExpo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -226,18 +156,6 @@ export const updateExpo = async (req, res) => {
       return res.status(400).json({ error: "Invalid expo ID" });
     }
 
-<<<<<<< HEAD
-    const expo = await Expo.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    }).populate("createdBy", "name email");
-
-    if (!expo) {
-      return res.status(404).json({ error: "Expo not found" });
-    }
-
-    res.status(200).json({
-=======
     const existingExpo = await Expo.findById(id);
     if (!existingExpo) {
       return res.status(404).json({ error: "Expo not found" });
@@ -300,15 +218,11 @@ export const updateExpo = async (req, res) => {
     ).populate("createdBy", "name email");
 
     return res.status(200).json({
->>>>>>> dup-event
       success: true,
       msg: "Expo updated successfully",
       expo,
     });
   } catch (error) {
-<<<<<<< HEAD
-    res.status(500).json({ error: error.message || "Failed to update expo" });
-=======
     console.error("updateExpo error:", error);
     return res.status(500).json({ error: error.message || "Failed to update expo" });
   }
@@ -347,7 +261,6 @@ export const updateExpoStatus = async (req, res) => {
   } catch (error) {
     console.error("updateExpoStatus error:", error);
     return res.status(500).json({ error: error.message || "Failed to update expo status" });
->>>>>>> dup-event
   }
 };
 
@@ -364,20 +277,12 @@ export const deleteExpo = async (req, res) => {
       return res.status(404).json({ error: "Expo not found" });
     }
 
-<<<<<<< HEAD
-    res.status(200).json({
-=======
     return res.status(200).json({
->>>>>>> dup-event
       success: true,
       msg: "Expo deleted successfully",
     });
   } catch (error) {
-<<<<<<< HEAD
-    res.status(500).json({ error: error.message || "Failed to delete expo" });
-=======
     console.error("deleteExpo error:", error);
     return res.status(500).json({ error: error.message || "Failed to delete expo" });
->>>>>>> dup-event
   }
 };
