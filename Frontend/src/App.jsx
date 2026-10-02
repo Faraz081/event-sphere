@@ -56,10 +56,10 @@ import {
   DashboardRedirect,
   RequireAuth,
   RequireRole,
-} from './components/auth/RouteGuards'
+} from './components/shared/RouteGuards'
 
 import { Toaster } from 'sonner'
-import useInitTheme from './hooks/useInitTheme'
+import useInitTheme from './lib/useInitTheme'
 import { useSelector } from "react-redux";
 
 function App() {

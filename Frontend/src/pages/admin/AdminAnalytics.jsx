@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import StatGrid from "@/components/ui/StatGrid";
-import StatCard from "@/components/StatCard";
+import StatGrid from "@/components/shared/StatGrid";
+import StatCard from "@/components/shared/StatCard";
 import { fetchAnalytics } from "@/api/analyticsService";
 import { toast } from "sonner";
 import { RotateCcw, AlertCircle } from "lucide-react";

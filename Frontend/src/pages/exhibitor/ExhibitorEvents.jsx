@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import DashboardSectionPage from "@/components/DashboardSectionPage";
+import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import { fetchMyEvents, createEvent, deleteEvent } from "@/store/slices/eventSlice";
 
 const ExhibitorEvents = () => {

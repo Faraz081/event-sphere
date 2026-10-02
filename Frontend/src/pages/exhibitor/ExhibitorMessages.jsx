@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import DashboardSectionPage from "@/components/DashboardSectionPage";
+import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import { dashboardSummaries } from "@/layouts/dashboardConfig";
 import { fetchContacts, fetchConversation, sendMessage, fetchUnreadCounts, markAsRead } from "@/store/slices/messageSlice";
 

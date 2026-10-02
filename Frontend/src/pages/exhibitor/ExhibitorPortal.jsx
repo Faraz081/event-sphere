@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare, Store, ClipboardList, User } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
-import StatGrid from "@/components/ui/StatGrid";
+import StatGrid from "@/components/shared/StatGrid";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import StatCard from "@/components/StatCard";
+import StatCard from "@/components/shared/StatCard";
 import { fetchMyBooth } from "@/store/slices/boothSlice";
 import { fetchContacts, fetchUnreadCounts } from "@/store/slices/messageSlice";
 

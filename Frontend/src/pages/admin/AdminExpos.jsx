@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import ResponsiveTable from "@/components/ui/ResponsiveTable";
+import ResponsiveTable from "@/components/shared/ResponsiveTable";
 import {
   AlertDialog,
   AlertDialogContent,

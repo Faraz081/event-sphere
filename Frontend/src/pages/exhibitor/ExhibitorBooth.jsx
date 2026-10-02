@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { X, Plus, Trash2 } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import DashboardSectionPage from "@/components/DashboardSectionPage";
+import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import { fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails } from "@/store/slices/boothSlice";
 
 const ExhibitorBooth = () => {

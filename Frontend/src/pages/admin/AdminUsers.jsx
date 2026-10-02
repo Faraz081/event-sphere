@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import ResponsiveTable from "@/components/ui/ResponsiveTable";
-import StatGrid from "@/components/ui/StatGrid";
-import StatCard from "@/components/StatCard";
+import ResponsiveTable from "@/components/shared/ResponsiveTable";
+import StatGrid from "@/components/shared/StatGrid";
+import StatCard from "@/components/shared/StatCard";
 import {
   AlertDialog,
   AlertDialogContent,

@@ -1,6 +1,6 @@
 import React from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import DashboardSectionPage from "@/components/DashboardSectionPage";
+import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import { dashboardSummaries } from "@/layouts/dashboardConfig";
 
 const ExhibitorProfile = () => (
