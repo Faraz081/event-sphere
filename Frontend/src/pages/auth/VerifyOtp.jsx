@@ -1,15 +1,57 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ShieldCheck, Sparkles } from 'lucide-react'
-import loginSignupBg from '../../assets/login-signup-bg.jpg'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+
+import loginSignupBg from "../../assets/login-signup-bg.jpg";
+import {
+  setOtp,
+  verifyResetOtp,
+} from "@/features/auth/forgotPasswordSlice";
 
 const VerifyOtp = () => {
-  const navigate = useNavigate()
+  const [otpInput, setOtpInput] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    navigate('/new-password')
-  }
+  const { email, loading } = useSelector(
+    (state) => state.forgotPassword
+  );
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Please request a new OTP.");
+      navigate("/forgot-password");
+      return;
+    }
+
+    try {
+      const otp = otpInput.trim();
+
+      await dispatch(
+        verifyResetOtp({
+          email,
+          otp,
+        })
+      ).unwrap();
+
+      dispatch(setOtp(otp));
+
+      toast.success("OTP verified successfully.");
+
+      navigate("/new-password");
+    } catch (error) {
+      toast.error(
+        error?.error ||
+        error?.msg ||
+        "Invalid or expired OTP."
+      );
+    }
+  };
 
   return (
     <main
@@ -18,14 +60,13 @@ const VerifyOtp = () => {
     >
       <div className="w-full max-w-md rounded-[2rem] border border-[#eadfca] bg-white p-8 shadow-xl sm:p-10">
 
-        {/* Logo */}
         <div className="mb-8 flex items-center justify-center font-serif text-2xl font-semibold text-[#2f2a24]">
           <Sparkles className="mr-2 h-6 w-6 text-[#c49424]" />
           Event<span className="text-[#c49424]">Sphere</span>
         </div>
 
-        {/* Heading */}
         <div className="text-center">
+
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fff4d9]">
             <ShieldCheck className="h-7 w-7 text-[#c49424]" />
           </div>
@@ -37,12 +78,13 @@ const VerifyOtp = () => {
           <p className="mt-3 text-sm leading-6 text-[#5d574f]">
             Enter the OTP sent to your email address.
           </p>
+
         </div>
 
-        {/* OTP Form */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
 
           <div>
+
             <label className="mb-2 block text-sm font-semibold text-[#2f2a24]">
               Enter OTP
             </label>
@@ -53,21 +95,27 @@ const VerifyOtp = () => {
               maxLength="6"
               placeholder="Enter 6-digit OTP"
               required
-              className="w-full rounded-xl border border-[#eadfca] bg-[#fffdf9] py-3.5 px-4 text-center tracking-[0.5em] outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+              value={otpInput}
+              onChange={(e) =>
+                setOtpInput(e.target.value.replace(/\D/g, ""))
+              }
+              className="w-full rounded-xl border border-[#eadfca] bg-[#fffdf9] py-3.5 px-4 text-center text-black placeholder:text-gray-500 tracking-[0.5em] outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
             />
+
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-full bg-[#c49424] py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg"
+            disabled={loading}
+            className="w-full rounded-full bg-[#c49424] py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Verify OTP
+            {loading ? "Verifying..." : "Verify OTP"}
           </button>
 
         </form>
 
-        {/* Back */}
         <div className="mt-7 text-center">
+
           <Link
             to="/forgot-password"
             className="inline-flex items-center gap-2 text-sm font-semibold text-[#c49424] hover:underline"
@@ -75,11 +123,12 @@ const VerifyOtp = () => {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
+
         </div>
 
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default VerifyOtp
+export default VerifyOtp;

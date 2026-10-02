@@ -35,5 +35,5 @@ export const DashboardRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  return <Navigate to={getRoleHomePath(user.role)} replace />;
+  return <Navigate to={user.role === "attendee" ? "/" : getRoleHomePath(user.role)} replace />;
 };

@@ -4,8 +4,6 @@ import {
   Store,
   ClipboardList,
   BarChart3,
-  House,
-  Search,
   User,
   Users,
   UserCheck,
@@ -23,7 +21,7 @@ export const roleLabels = {
 
 export const roleHomePaths = {
   admin: "/admin",
-  attendee: "/attendee",
+  attendee: "/",
   exhibitor: "/exhibitor",
 };
 
@@ -42,13 +40,6 @@ export const dashboardNavigation = {
       path: "/admin/website-settings",
       icon: Settings,
     },
-  ],
-
-  attendee: [
-    { label: "Home", path: "/attendee", icon: House },
-    { label: "Events", path: "/attendee/events", icon: CalendarDays },
-    { label: "Exhibitors", path: "/attendee/exhibitors", icon: Search },
-    { label: "Profile", path: "/attendee/profile", icon: User },
   ],
 
   exhibitor: [

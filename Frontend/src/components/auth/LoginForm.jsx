@@ -50,7 +50,7 @@ const LoginForm = () => {
       password: "",
     });
 
-    navigate("/dashboard");
+    navigate(user.role === "attendee" ? "/" : "/dashboard");
 
   } catch (error) {
     console.error("Login error:", error);
@@ -103,17 +103,15 @@ const LoginForm = () => {
         </div>
       </div>
 
-      {/* Remember Me */}
-      <div className="flex items-center space-x-2">
-        <Checkbox id="remember" className="rounded-md data-checked:border-gold data-checked:bg-gold" />
-
-        <Label
-          htmlFor="remember"
-          className="cursor-pointer text-sm font-normal"
-        >
-          Remember me
-        </Label>
-      </div>
+   {/* Forgot Password */}
+<div className="flex w-full justify-end">
+  <Link
+    to="/forgot-password"
+    className="text-sm font-medium text-gold hover:underline"
+  >
+    Forgot password?
+  </Link>
+</div>
 
       {/* Login Button */}
       <Button

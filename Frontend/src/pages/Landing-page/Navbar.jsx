@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Sparkles } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { LogOut, Sparkles } from 'lucide-react'
 import api from '../../api/api'
+import { logout } from '@/features/auth/authSlice'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [settings, setSettings] = useState(null)
+  const { user } = useSelector((state) => state.auth)
+  const isAttendee = user?.role === 'attendee'
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const handleLogout = () => {
+    dispatch(logout())
+    setMenuOpen(false)
+    navigate('/')
+  }
 
   useEffect(() => {
     const fetchWebsiteSettings = async () => {
@@ -138,29 +149,55 @@ const Navbar = () => {
             Book Now
           </button>
 
-          <Link
-            to="/login"
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-          >
-            Login
-          </Link>
+          {!isAttendee && (
+            <Link
+              to="/login"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            >
+              Login
+            </Link>
+          )}
 
-          <Link
-            to="/register"
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-          >
-            Sign Up
-          </Link>
+          {isAttendee && (
+            <Link
+              to="/profile"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            >
+              Profile
+            </Link>
+          )}
+
+          {isAttendee && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          )}
+
+          {!isAttendee && (
+            <Link
+              to="/register"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            >
+              Sign Up
+            </Link>
+          )}
 
         </div>
 
         {/* Dashboard */}
-        <Link
-          to="/dashboard"
-          className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 md:block"
-        >
-          Dashboard
-        </Link>
+        {!isAttendee && (
+          <Link
+            to="/dashboard"
+            className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 md:block"
+          >
+            Dashboard
+          </Link>
+        )}
 
         {/* Mobile Menu Button */}
         <button
@@ -235,31 +272,58 @@ const Navbar = () => {
             <div className="flex flex-col gap-4 pt-2">
 
               {/* Login */}
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-              >
-                Login
-              </Link>
+              {!isAttendee && (
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                >
+                  Login
+                </Link>
+              )}
+
+              {isAttendee && (
+                <Link
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                >
+                  Profile
+                </Link>
+              )}
+
+              {isAttendee && (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="inline-flex items-center justify-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              )}
 
               {/* Sign Up */}
-              <Link
-                to="/register"
-                onClick={() => setMenuOpen(false)}
-                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-              >
-                Sign Up
-              </Link>
+              {!isAttendee && (
+                <Link
+                  to="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                >
+                  Sign Up
+                </Link>
+              )}
 
               {/* Dashboard */}
-              <Link
-                to="/dashboard"
-                onClick={() => setMenuOpen(false)}
-                className="inline-block w-full rounded-full border border-[#c49424] bg-white/30 py-3 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition hover:bg-[#c49424] hover:text-white"
-              >
-                Dashboard
-              </Link>
+              {!isAttendee && (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-block w-full rounded-full border border-[#c49424] bg-white/30 py-3 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition hover:bg-[#c49424] hover:text-white"
+                >
+                  Dashboard
+                </Link>
+              )}
 
             </div>
           </div>

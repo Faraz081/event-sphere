@@ -14,6 +14,7 @@ import OngoingEvents from './pages/Landing-page/Onoing-Events'
 import BookNow from './pages/Landing-page/Book-Now'
 import BookTicket from './pages/Landing-page/Book-Ticket'
 import Feedback from './pages/Landing-page/Feedback'
+import AttendeeProfile from './pages/attendee/AttendeeProfile'
 
 
 /* =========================
@@ -32,10 +33,6 @@ import AdminExhibitors from './pages/admin/AdminExhibitors'
 /* =========================
    Existing Attendee
 ========================= */
-import AttendeeHome from './pages/attendee/AttendeeHome'
-import AttendeeEvents from './pages/attendee/AttendeeEvents'
-import AttendeeExhibitors from './pages/attendee/AttendeeExhibitors'
-import AttendeeProfile from './pages/attendee/AttendeeProfile'
 
 /* =========================
    Existing Exhibitor
@@ -47,10 +44,13 @@ import ExhibitorMessages from './pages/exhibitor/ExhibitorMessages'
 import ExhibitorProfile from './pages/exhibitor/ExhibitorProfile'
 
 /* =========================
-   Existing Auth
+   Auth Pages (pages/auth)
 ========================= */
-import LoginPage from './components/auth/LoginPage'
-import RegisterPage from './components/auth/RegisterPage'
+import LoginPage from './pages/auth/LoginPage'
+import RegisterPage from './pages/auth/RegisterPage'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import VerifyOtp from './pages/auth/VerifyOtp'
+import NewPassword from './pages/auth/NewPassword'
 
 import {
   DashboardRedirect,
@@ -60,25 +60,25 @@ import {
 
 import { Toaster } from 'sonner'
 import useInitTheme from './hooks/useInitTheme'
+import { useSelector } from "react-redux";
 
 function App() {
+  const { email, otp } = useSelector((state) => state.forgotPassword);
   useInitTheme()
 
   return (
     <>
       <Toaster
-        theme="dark"
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: "#232733",
-            border: "1px solid #2A2E38",
-            borderLeft: "4px solid #C9A227",
-            color: "#F0EDE4",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.4)",
-          },
-        }}
-      />
+  theme="system"
+  position="top-right"
+  toastOptions={{
+    classNames: {
+      toast: "bg-background text-foreground border-border",
+      title: "text-foreground",
+      description: "text-muted-foreground",
+    },
+  }}
+/>
 
       <Routes>
 
@@ -95,6 +95,9 @@ function App() {
           <Route path="contact" element={<ContactUs />} />
           <Route path="ongoing-events" element={<OngoingEvents />} />
           <Route path="book-ticket" element={<BookTicket />} />
+          <Route element={<RequireRole allowedRoles={["attendee"]} />}>
+            <Route path="profile" element={<AttendeeProfile />} />
+          </Route>
         </Route>
 
         {/* =========================
@@ -102,6 +105,11 @@ function App() {
         ========================= */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={email ? <VerifyOtp /> : <Navigate to="/forgot-password" replace />}/>
+        <Route path="/new-password" element={email && otp ? ( <NewPassword /> ) : email ? (
+        <Navigate to="/verify-otp" replace /> ) : (
+        <Navigate to="/forgot-password" replace />)}/>
 
         {/* =========================
             PROTECTED ROUTES
@@ -142,10 +150,12 @@ function App() {
               path="/admin/booths"
               element={<AdminBooths />}
             />
-             <Route
+
+            <Route
               path="/admin/exhibitors"
               element={<AdminExhibitors />}
             />
+
             <Route
               path="/admin/schedule"
               element={<AdminSchedule />}
@@ -159,33 +169,6 @@ function App() {
             <Route
               path="/admin/website-settings"
               element={<AdminWebsiteSettings />}
-            />
-
-          </Route>
-
-          {/* =========================
-              ATTENDEE
-          ========================= */}
-          <Route element={<RequireRole allowedRoles={["attendee"]} />}>
-
-            <Route
-              path="/attendee"
-              element={<AttendeeHome />}
-            />
-
-            <Route
-              path="/attendee/events"
-              element={<AttendeeEvents />}
-            />
-
-            <Route
-              path="/attendee/exhibitors"
-              element={<AttendeeExhibitors />}
-            />
-
-            <Route
-              path="/attendee/profile"
-              element={<AttendeeProfile />}
             />
 
           </Route>
