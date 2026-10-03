@@ -1,5 +1,5 @@
-import Expo from "../models/Expo.js";
 import mongoose from "mongoose";
+import Expo from "../models/Expo.js";
 
 const VALID_STATUSES = ["draft", "published", "completed", "cancelled"];
 
@@ -8,13 +8,13 @@ export const createExpo = async (req, res) => {
   try {
     const { title, description, theme, date, location, status, banner } = req.body;
 
-    if (!title || !title.trim()) {
+    if (typeof title !== "string" || !title.trim()) {
       return res.status(400).json({ error: "Title is required" });
     }
-    if (!description || !description.trim()) {
+    if (typeof description !== "string" || !description.trim()) {
       return res.status(400).json({ error: "Description is required" });
     }
-    if (!location || !location.trim()) {
+    if (typeof location !== "string" || !location.trim()) {
       return res.status(400).json({ error: "Location is required" });
     }
     if (!date) {
@@ -22,7 +22,7 @@ export const createExpo = async (req, res) => {
     }
 
     const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
+    if (Number.isNaN(parsedDate.getTime())) {
       return res.status(400).json({ error: "Invalid date format" });
     }
 
@@ -42,7 +42,6 @@ export const createExpo = async (req, res) => {
       expoStatus = status;
     }
 
-    // Extract createdBy from authenticated user
     const createdBy = req.user?._id || req.user?.id || req.user?.sub;
     if (!createdBy) {
       return res.status(401).json({ error: "User not authenticated" });
@@ -51,11 +50,11 @@ export const createExpo = async (req, res) => {
     const expo = await Expo.create({
       title: title.trim(),
       description: description.trim(),
-      theme: theme?.trim() || "",
+      theme: typeof theme === "string" ? theme.trim() : "",
       date: parsedDate,
       location: location.trim(),
       status: expoStatus,
-      banner: banner || "",
+      banner: typeof banner === "string" ? banner : "",
       createdBy,
     });
 
@@ -72,13 +71,12 @@ export const createExpo = async (req, res) => {
   }
 };
 
-// GET All Expos (with search by title, status filtering, and pagination)
+// GET all expos with optional filtering and pagination.
 export const getAllExpos = async (req, res) => {
   try {
     const { status, search, page, limit } = req.query;
     const filter = {};
 
-    // Status filter
     if (status && status !== "all") {
       if (!VALID_STATUSES.includes(status)) {
         return res.status(400).json({
@@ -88,20 +86,22 @@ export const getAllExpos = async (req, res) => {
       filter.status = status;
     }
 
-    // Search by title
     if (search && search.trim()) {
       const cleanSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      filter.title = new RegExp(cleanSearch, "i");
+      const searchRegex = new RegExp(cleanSearch, "i");
+      filter.$or = [
+        { title: searchRegex },
+        { location: searchRegex },
+        { theme: searchRegex },
+      ];
     }
 
     const total = await Expo.countDocuments(filter);
-
     const isLimitSpecified = limit !== undefined && limit !== "";
     const isPageSpecified = page !== undefined && page !== "";
-
-    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const pageNum = Math.max(1, Number.parseInt(page, 10) || 1);
     const limitNum = isLimitSpecified
-      ? (limit === "all" ? 0 : Math.max(1, parseInt(limit, 10) || 10))
+      ? (limit === "all" ? 0 : Math.max(1, Number.parseInt(limit, 10) || 10))
       : (isPageSpecified ? 10 : 0);
 
     let query = Expo.find(filter)
@@ -148,7 +148,7 @@ export const getExpoById = async (req, res) => {
   }
 };
 
-// UPDATE Expo (Preserves createdBy, updates only allowed fields, validates dates & status)
+// Update only validated expo fields, preserving createdBy.
 export const updateExpo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -156,46 +156,46 @@ export const updateExpo = async (req, res) => {
       return res.status(400).json({ error: "Invalid expo ID" });
     }
 
-    const existingExpo = await Expo.findById(id);
-    if (!existingExpo) {
-      return res.status(404).json({ error: "Expo not found" });
-    }
-
-    const allowedFields = ["title", "description", "theme", "date", "location", "status", "banner"];
     const updates = {};
 
     if (req.body.title !== undefined) {
-      if (!req.body.title || !req.body.title.trim()) {
+      if (typeof req.body.title !== "string" || !req.body.title.trim()) {
         return res.status(400).json({ error: "Title cannot be empty" });
       }
       updates.title = req.body.title.trim();
     }
 
     if (req.body.description !== undefined) {
-      if (!req.body.description || !req.body.description.trim()) {
+      if (typeof req.body.description !== "string" || !req.body.description.trim()) {
         return res.status(400).json({ error: "Description cannot be empty" });
       }
       updates.description = req.body.description.trim();
     }
 
     if (req.body.location !== undefined) {
-      if (!req.body.location || !req.body.location.trim()) {
+      if (typeof req.body.location !== "string" || !req.body.location.trim()) {
         return res.status(400).json({ error: "Location cannot be empty" });
       }
       updates.location = req.body.location.trim();
     }
 
     if (req.body.theme !== undefined) {
-      updates.theme = req.body.theme ? req.body.theme.trim() : "";
+      if (typeof req.body.theme !== "string") {
+        return res.status(400).json({ error: "Theme must be a string" });
+      }
+      updates.theme = req.body.theme.trim();
     }
 
     if (req.body.banner !== undefined) {
-      updates.banner = req.body.banner || "";
+      if (typeof req.body.banner !== "string") {
+        return res.status(400).json({ error: "Banner must be a string" });
+      }
+      updates.banner = req.body.banner;
     }
 
     if (req.body.date !== undefined) {
       const parsedDate = new Date(req.body.date);
-      if (isNaN(parsedDate.getTime())) {
+      if (Number.isNaN(parsedDate.getTime())) {
         return res.status(400).json({ error: "Invalid date format" });
       }
       updates.date = parsedDate;
@@ -210,12 +210,15 @@ export const updateExpo = async (req, res) => {
       updates.status = req.body.status;
     }
 
-    // Notice createdBy is intentionally NOT in updates to preserve original creator
     const expo = await Expo.findByIdAndUpdate(
       id,
       { $set: updates },
       { new: true, runValidators: true }
     ).populate("createdBy", "name email");
+
+    if (!expo) {
+      return res.status(404).json({ error: "Expo not found" });
+    }
 
     return res.status(200).json({
       success: true,
@@ -237,7 +240,7 @@ export const updateExpoStatus = async (req, res) => {
     }
 
     const { status } = req.body;
-    if (!status || !VALID_STATUSES.includes(status)) {
+    if (!VALID_STATUSES.includes(status)) {
       return res.status(400).json({
         error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
       });
