@@ -11,6 +11,10 @@ const attendeeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Expo",
     },
+    event: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Event",
+    },
     eventName: {
       type: String,
       trim: true,
@@ -48,6 +52,12 @@ const attendeeSchema = new mongoose.Schema(
     notes: {
       type: String,
       trim: true,
+    },
+    // exhibitor ki taraf se approve/reject ki wajah
+    decisionNote: {
+      type: String,
+      trim: true,
+      default: "",
     },
   },
   { timestamps: true }

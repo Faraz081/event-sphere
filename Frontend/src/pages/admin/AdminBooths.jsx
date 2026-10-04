@@ -18,7 +18,7 @@ import {
   deleteBooth,
   fetchExposForSelect,
 } from "@/api/boothService";
-import { fetchExhibitors } from "@/api/exhibitorService";
+import { fetchApplications } from "@/api/exhibitorService";
 import { toast } from "sonner";
 import {
   Plus,
@@ -33,12 +33,14 @@ import {
   UserMinus,
   LayoutGrid,
   List,
+  CheckCircle,
 } from "lucide-react";
 
 const statusStyles = {
   available: "bg-gold/20 text-gold border border-gold/40",
   reserved: "bg-emerald/20 text-emerald-300 border border-emerald/40",
   occupied: "bg-muted/20 text-muted border border-muted/30",
+  pending: "bg-gold/10 text-gold border border-dashed border-gold/50",
 };
 
 const statusCardStyles = {
@@ -117,7 +119,6 @@ const AdminBooths = () => {
 
   useEffect(() => {
     loadExpos();
-    loadApprovedExhibitors();
   }, []);
 
   useEffect(() => {
@@ -190,9 +191,16 @@ const AdminBooths = () => {
     }
   };
 
-  const openAssignModal = (booth) => {
+    const openAssignModal = async (booth) => {
     setAssignBooth(booth);
     setSelectedExhibitor("");
+    setApprovedExhibitors([]);
+    try {
+      const data = await fetchApplications({ status: "approved", expo: booth.expo?._id });
+      setApprovedExhibitors(data.applications ?? []);
+    } catch (err) {
+      toast.error("Failed to load approved exhibitors");
+    }
   };
 
   const closeAssignModal = () => {
@@ -228,6 +236,16 @@ const AdminBooths = () => {
       loadBooths();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to unassign booth");
+    }
+  };
+
+    const handleApproveRequest = async (booth) => {
+    try {
+      await updateBooth(booth._id, { status: "reserved" });
+      toast.success(`Booth "${booth.boothNumber}" approved`);
+      loadBooths();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to approve booth");
     }
   };
 
@@ -406,6 +424,15 @@ const AdminBooths = () => {
                     </td>
                     <td data-label="Actions" className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1">
+                          {booth.status === "pending" && (
+                          <button
+                            onClick={() => handleApproveRequest(booth)}
+                            className="p-2 rounded-lg text-muted hover:text-emerald-300 hover:bg-emerald/10 transition-colors"
+                            title="Approve Request"
+                          >
+                            <CheckCircle size={16} />
+                          </button>
+                        )}
                         {booth.status === "available" ? (
                           <button
                             onClick={() => openAssignModal(booth)}
@@ -650,11 +677,11 @@ const AdminBooths = () => {
                 >
                   <option value="">Choose exhibitor...</option>
                   {approvedExhibitors.length === 0 ? (
-                    <option disabled>No approved exhibitors found</option>
+                    <option disabled>No approved exhibitors for this expo</option>
                   ) : (
-                    approvedExhibitors.map((ex) => (
-                      <option key={ex._id} value={ex._id}>
-                        {ex.name} {ex.companyName ? `(${ex.companyName})` : ""}
+                      approvedExhibitors.map((app) => (
+                      <option key={app._id} value={app.userId?._id}>
+                        {app.companyName} {app.userId?.name ? `(${app.userId.name})` : ""}
                       </option>
                     ))
                   )}

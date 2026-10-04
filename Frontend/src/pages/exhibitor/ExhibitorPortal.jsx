@@ -46,23 +46,15 @@ const ExhibitorPortal = () => {
   return (
     <DashboardLayout role="exhibitor">
       <div className="p-4 md:p-8">
-        <h1 className="mb-2 font-display text-2xl md:text-4xl font-bold text-foreground">
-          Exhibitor Dashboard
-        </h1>
+        <h1 className="mb-2 font-display text-2xl md:text-4xl font-bold text-foreground">Exhibitor Dashboard</h1>
 
         <div className="mb-6">
-          <p className="text-muted text-sm md:text-base">
-            Manage your booth, products, profile, and communications from one place.
-          </p>
+          <p className="text-muted text-sm md:text-base">Manage your booth, products, profile, and communications from one place.</p>
         </div>
 
         <StatGrid>
           {stats.map((stat) => (
-            <StatCard
-              key={stat.label}
-              label={stat.label}
-              value={stat.value}
-            />
+            <StatCard key={stat.label} label={stat.label} value={stat.value} />
           ))}
         </StatGrid>
 
@@ -86,7 +78,6 @@ const ExhibitorPortal = () => {
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-
           <div className="rounded-3xl border border-border bg-surface p-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h2>
             {unreadContacts.length === 0 && (
@@ -116,7 +107,6 @@ const ExhibitorPortal = () => {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </DashboardLayout>

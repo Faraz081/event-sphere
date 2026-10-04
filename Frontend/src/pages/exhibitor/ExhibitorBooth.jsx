@@ -5,6 +5,7 @@ import { X, Plus, Trash2 } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import { fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails } from "@/store/slices/boothSlice";
+import { Link } from "react-router-dom";
 
 const ExhibitorBooth = () => {
   const dispatch = useDispatch();
@@ -23,12 +24,12 @@ const ExhibitorBooth = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if(selectedExpo) dispatch(fetchAvailableBooths(selectedExpo));
+    if (selectedExpo) dispatch(fetchAvailableBooths(selectedExpo));
   }, [selectedExpo, dispatch]);
 
   const handleReserve = async (boothId) => {
     const result = await dispatch(reserveBooth(boothId));
-    if(reserveBooth.fulfilled.match(result)){
+    if (reserveBooth.fulfilled.match(result)) {
       toast.success("Booth requested, waiting for admin approval");
     } else {
       toast.error(result.payload?.error || "Could not request booth");
@@ -37,9 +38,9 @@ const ExhibitorBooth = () => {
 
   const handleRelease = async (boothId) => {
     const result = await dispatch(releaseBooth(boothId));
-    if(releaseBooth.fulfilled.match(result)){
+    if (releaseBooth.fulfilled.match(result)) {
       toast.success("Booth released successfully");
-      if(selectedExpo) dispatch(fetchAvailableBooths(selectedExpo));
+      if (selectedExpo) dispatch(fetchAvailableBooths(selectedExpo));
     } else {
       toast.error(result.payload?.error || "Could not release booth");
     }
@@ -52,7 +53,7 @@ const ExhibitorBooth = () => {
   };
 
   const addProduct = () => {
-    if(!productInput.trim()) return;
+    if (!productInput.trim()) return;
     setProducts([...products, productInput.trim()]);
     setProductInput("");
   };
@@ -60,8 +61,8 @@ const ExhibitorBooth = () => {
   const removeProduct = (index) => setProducts(products.filter((_, i) => i !== index));
 
   const addStaff = () => {
-    if(!staffName.trim() || !staffRole.trim()) return;
-    setStaff([...staff, {name: staffName.trim(), role: staffRole.trim()}]);
+    if (!staffName.trim() || !staffRole.trim()) return;
+    setStaff([...staff, { name: staffName.trim(), role: staffRole.trim() }]);
     setStaffName("");
     setStaffRole("");
   };
@@ -69,8 +70,8 @@ const ExhibitorBooth = () => {
   const removeStaff = (index) => setStaff(staff.filter((_, i) => i !== index));
 
   const handleSaveDetails = async () => {
-    const result = await dispatch(updateBoothDetails({boothId: myBooth._id, products, staff}));
-    if(updateBoothDetails.fulfilled.match(result)){
+    const result = await dispatch(updateBoothDetails({ boothId: myBooth._id, products, staff }));
+    if (updateBoothDetails.fulfilled.match(result)) {
       toast.success("Booth details updated");
       setModalOpen(false);
     } else {
@@ -82,10 +83,7 @@ const ExhibitorBooth = () => {
 
   return (
     <DashboardLayout role="exhibitor">
-      <DashboardSectionPage
-        title="My Booth"
-        description="Reserve a booth space and manage your presence on the expo floor."
-      >
+      <DashboardSectionPage title="My Booth" description="Reserve a booth space and manage your presence on the expo floor.">
         {myBooth && (
           <div className={`relative rounded-3xl border ${isPending ? "border-border" : "border-gold/40"} bg-surface p-6 md:p-8 overflow-hidden mb-6`}>
             <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-background rounded-full border border-border" />
@@ -140,6 +138,13 @@ const ExhibitorBooth = () => {
           <h2 className="text-lg font-semibold text-foreground">
             {myBooth ? "Browse other expos" : "Select an expo to reserve a booth"}
           </h2>
+
+          {!loading && expos.length === 0 && (
+            <p className="text-sm text-muted">
+              You can reserve a booth only after your expo application is approved.{" "}
+              <Link to="/exhibitor/registration" className="text-gold hover:underline">Go to Registration</Link>
+            </p>
+          )}
 
           <select value={selectedExpo} onChange={(e) => setSelectedExpo(e.target.value)} className="w-full rounded-lg border border-border bg-background p-2 text-foreground">
             <option value="">Select an expo</option>

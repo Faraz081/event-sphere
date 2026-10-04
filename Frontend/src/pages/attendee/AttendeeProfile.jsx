@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Building2, CalendarDays, Mail, Phone, UserRound } from "lucide-react";
+import { toast } from "sonner";
+import { Building2, CalendarDays, Mail, Phone, UserRound, Ticket, MapPin, Store } from "lucide-react";
+import { fetchMyRegistrations } from "@/api/attendeePortalService";
 
 const ProfileDetail = ({ icon: Icon, label, value }) => (
   <div className="flex items-start gap-4 rounded-2xl border border-[#eadfc9] bg-white/70 p-4">
@@ -18,8 +20,17 @@ const ProfileDetail = ({ icon: Icon, label, value }) => (
   </div>
 );
 
+const bookingBadge = {
+  pending: { label: "Waiting for exhibitor approval", className: "bg-yellow-100 text-yellow-800" },
+  confirmed: { label: "Confirmed", className: "bg-green-100 text-green-800" },
+  cancelled: { label: "Not approved", className: "bg-red-100 text-red-700" },
+};
+
 const AttendeeProfile = () => {
   const user = useSelector((state) => state.auth.user);
+  const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+
   const initials = user.name
     .trim()
     .split(/\s+/)
@@ -27,6 +38,20 @@ const AttendeeProfile = () => {
     .slice(0, 2)
     .join("")
     .toUpperCase();
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchMyRegistrations();
+        setBookings(data.registrations ?? []);
+      } catch (err) {
+        toast.error(err.response?.data?.error || "Could not load your bookings");
+      } finally {
+        setLoadingBookings(false);
+      }
+    };
+    load();
+  }, []);
 
   return (
     <main className="min-h-[70vh] bg-[#f8f5ef] px-5 pb-20 pt-32 sm:px-8 lg:px-10">
@@ -39,7 +64,7 @@ const AttendeeProfile = () => {
             Attendee Profile
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[#5d574f]">
-            Your account details in one place.
+            Your account details and ticket bookings in one place.
           </p>
         </div>
 
@@ -85,6 +110,85 @@ const AttendeeProfile = () => {
               label="Member since"
               value={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : null}
             />
+          </div>
+        </section>
+
+        {/* ================= MY BOOKINGS ================= */}
+        <section className="mt-10">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c49424]/10 text-[#a8790d]">
+              <Ticket size={18} />
+            </span>
+            <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">My Bookings</h2>
+          </div>
+
+          {loadingBookings && <p className="text-sm text-[#5d574f]">Loading your bookings...</p>}
+
+          {!loadingBookings && bookings.length === 0 && (
+            <div className="rounded-2xl border border-[#eadfc9] bg-white p-6 text-center">
+              <p className="text-[#5d574f]">You have not booked any tickets yet.</p>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {bookings.map((b) => {
+              const badge = bookingBadge[b.bookingStatus] ?? bookingBadge.pending;
+              const title = b.event?.title ?? b.eventName ?? b.expo?.title ?? "Event";
+              const date = b.event?.date ?? b.expo?.date;
+              const expoTitle = b.event?.expo?.title ?? b.expo?.title;
+
+              return (
+                <div key={b._id} className="rounded-2xl border border-[#eadfc9] bg-white p-5 shadow-sm">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="font-serif text-xl font-bold text-[#2f2a24]">{title}</h3>
+                      {expoTitle && <p className="mt-1 text-sm text-[#5d574f]">{expoTitle}</p>}
+                    </div>
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}>
+                      {badge.label}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#5d574f]">
+                    {date && (
+                      <span className="flex items-center gap-2">
+                        <CalendarDays size={14} className="text-[#c49424]" />
+                        {new Date(date).toLocaleString()}
+                      </span>
+                    )}
+                    {b.event?.expo?.location && (
+                      <span className="flex items-center gap-2">
+                        <MapPin size={14} className="text-[#c49424]" />
+                        {b.event.expo.location}
+                      </span>
+                    )}
+                    {b.event?.booth?.boothNumber && (
+                      <span className="flex items-center gap-2">
+                        <Store size={14} className="text-[#c49424]" />
+                        Booth {b.event.booth.boothNumber}
+                      </span>
+                    )}
+                  </div>
+
+                  {b.bookingStatus === "confirmed" && b.passCode && (
+                    <div className="mt-4 rounded-xl border border-dashed border-[#c49424] bg-[#fffdf9] p-4 text-center">
+                      <p className="text-xs uppercase tracking-widest text-[#8a8379]">Your pass code</p>
+                      <p className="mt-1 font-mono text-2xl font-bold tracking-widest text-[#c49424]">{b.passCode}</p>
+                    </div>
+                  )}
+
+                  {b.bookingStatus === "pending" && (
+                    <p className="mt-4 text-sm text-[#8a8379]">
+                      The exhibitor is reviewing your request. Your pass code will appear here once it is approved.
+                    </p>
+                  )}
+
+                  {b.bookingStatus === "cancelled" && b.decisionNote && (
+                    <p className="mt-4 text-sm text-red-700">Reason: {b.decisionNote}</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import api from "@/api/api";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
+import { toast } from "sonner";
 
-const BASE = "http://localhost:3200";
-const API = `${BASE}/api/exhibitor`;
-
-const inputClass =
-  "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-sm text-foreground outline-none focus:border-[#d4a62a]";
+const inputClass = "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-sm text-foreground outline-none focus:border-[#d4a62a]";
 const labelClass = "mb-1 block text-sm text-muted";
 
 const statusStyles = {
@@ -29,17 +27,14 @@ const ExhibitorProfile = () => {
   const [form, setForm] = useState({ description: "", email: "", phone: "", address: "" });
   const [logo, setLogo] = useState(null);
 
-  const headers = { "x-user-id": user?._id };
-
   const fillForm = (app) =>
     setForm({
-      description: app.description || "",
-      email: app.email || "",
-      phone: app.phone || "",
-      address: app.address || "",
+      description: app.description ?? "",
+      email: app.email ?? "",
+      phone: app.phone ?? "",
+      address: app.address ?? "",
     });
 
-  // Page khulte hi profile load karo
   useEffect(() => {
     if (!user?._id) {
       setLoading(false);
@@ -48,25 +43,25 @@ const ExhibitorProfile = () => {
 
     const loadProfile = async () => {
       try {
-        const res = await fetch(`${API}/profile`, { headers });
-        const data = await res.json();
-        if (res.ok) {
-          setApplication(data.application);
-          fillForm(data.application);
+        const res = await api.get("/api/exhibitor-profile/profile");
+        setApplication(res.data.application);
+        fillForm(res.data.application);
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          toast.error(err.response?.data?.error || "Could not load profile");
         }
-      } catch {
-        setError("Could not connect to server");
       } finally {
         setLoading(false);
       }
     };
+
     loadProfile();
   }, [user?._id]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleCancel = () => {
-    fillForm(application); // badli hui values wapas purani kar do
+    fillForm(application);
     setLogo(null);
     setError("");
     setEditing(false);
@@ -74,35 +69,31 @@ const ExhibitorProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setSaving(true);
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => formData.append(key, value));
+
     if (logo) formData.append("logo", logo);
 
     try {
-      const res = await fetch(`${API}/profile`, { method: "PUT", headers, body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Something went wrong");
-      setApplication(data.application);
+      const res = await api.put("/api/exhibitor-profile/profile", formData);
+      setApplication(res.data.application);
       setLogo(null);
       setEditing(false);
-      setSuccess("Profile updated successfully");
+      toast.success("Profile updated successfully");
     } catch (err) {
-      setError(err.message);
+      toast.error(err.response?.data?.error || "Something went wrong");
     } finally {
       setSaving(false);
     }
   };
 
-  // Logo aur company ka naam (view aur edit dono mein dikhta hai)
   const header = application && (
     <div className="mb-6 flex items-center gap-4">
       {application.logo ? (
         <img
-          src={`${BASE}${application.logo}`}
+          src={application.logo}
           alt="Company logo"
           className="h-20 w-20 rounded-2xl border border-border object-cover"
         />
@@ -111,11 +102,10 @@ const ExhibitorProfile = () => {
           No logo
         </div>
       )}
+
       <div>
         <p className="text-lg font-semibold text-foreground">{application.companyName}</p>
-        <span
-          className={`mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-bold capitalize text-black ${statusStyles[application.status]}`}
-        >
+        <span className={`mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-bold capitalize text-black ${statusStyles[application.status]}`}>
           {application.status}
         </span>
       </div>
@@ -133,7 +123,6 @@ const ExhibitorProfile = () => {
         ) : !user?._id ? (
           <p className="text-sm text-red-500">Please login again.</p>
         ) : !application ? (
-          /* Abhi apply nahi kiya */
           <div className="rounded-3xl border border-border bg-surface p-6">
             <h2 className="text-lg font-semibold text-foreground">Company profile</h2>
             <p className="mt-2 text-sm text-muted">
@@ -147,7 +136,6 @@ const ExhibitorProfile = () => {
             </Link>
           </div>
         ) : !editing ? (
-          /* VIEW: sirf details dikhao */
           <div className="rounded-3xl border border-border bg-surface p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">Company profile</h2>
@@ -164,8 +152,6 @@ const ExhibitorProfile = () => {
 
             {header}
 
-            {success && <p className="mb-3 text-sm text-green-500">{success}</p>}
-
             <div className="space-y-2 text-sm text-muted">
               <p><b className="text-foreground">Products/Services:</b> {application.productsServices}</p>
               <p><b className="text-foreground">Description:</b> {application.description || "-"}</p>
@@ -175,33 +161,57 @@ const ExhibitorProfile = () => {
             </div>
           </div>
         ) : (
-          /* EDIT: form dikhao */
           <form onSubmit={handleSubmit} className="rounded-3xl border border-border bg-surface p-6">
             <h2 className="mb-4 text-lg font-semibold text-foreground">Edit profile</h2>
 
             {header}
 
             <label className={labelClass}>Description</label>
-            <textarea className={`${inputClass} mb-4 min-h-[90px]`} name="description" value={form.description} onChange={handleChange} />
+            <textarea
+              className={`${inputClass} mb-4 min-h-[90px]`}
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+            />
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className={labelClass}>Email</label>
-                <input className={inputClass} type="email" name="email" value={form.email} onChange={handleChange} />
+                <input
+                  className={inputClass}
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                />
               </div>
+
               <div>
                 <label className={labelClass}>Phone</label>
-                <input className={inputClass} name="phone" value={form.phone} onChange={handleChange} />
+                <input
+                  className={inputClass}
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
             <label className={`${labelClass} mt-4`}>Address</label>
-            <input className={`${inputClass} mb-4`} name="address" value={form.address} onChange={handleChange} />
+            <input
+              className={`${inputClass} mb-4`}
+              name="address"
+              value={form.address}
+              onChange={handleChange}
+            />
 
             <label className={labelClass}>Change logo</label>
-            <input className={`${inputClass} mb-4`} type="file" accept="image/*" onChange={(e) => setLogo(e.target.files[0])} />
-
-            {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
+            <input
+              className={`${inputClass} mb-4`}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setLogo(e.target.files[0])}
+            />
 
             <div className="flex gap-3">
               <button
@@ -211,6 +221,7 @@ const ExhibitorProfile = () => {
               >
                 {saving ? "Saving..." : "Save changes"}
               </button>
+
               <button
                 type="button"
                 onClick={handleCancel}

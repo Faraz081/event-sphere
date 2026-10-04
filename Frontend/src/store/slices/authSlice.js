@@ -60,13 +60,11 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // LOGIN PENDING
+      // LOGIN 
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-
-      // LOGIN FULFILLED
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.loading = false;
@@ -83,25 +81,20 @@ const authSlice = createSlice({
         localStorage.removeItem("eventsphere_token");
       })
 
-      // LOGIN REJECTED
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // REGISTER PENDING
+      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-
-      // REGISTER FULFILLED
       .addCase(registerUser.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
       })
-
-      // REGISTER REJECTED
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

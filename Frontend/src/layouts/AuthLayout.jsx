@@ -6,11 +6,10 @@ import heroImage from "@/assets/hero.jpg";
 const AuthLayout = ({ title, subtitle, children }) => {
   return (
     <div className="auth-theme min-h-screen lg:grid lg:grid-cols-[0.95fr_1.05fr]">
-      <aside
-        className="relative hidden min-h-screen overflow-hidden bg-[#29251f] bg-cover bg-center lg:block"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-[#211a12]/90 via-[#211a12]/35 to-[#211a12]/10" />
+      <aside className="relative hidden min-h-screen overflow-hidden bg-[#29251f] bg-cover bg-center lg:block"
+        style={{ backgroundImage: `url(${heroImage})` }}>
+          
+        <div className="absolute inset-0 bg-linear-to-t from-[#211a12]/90 via-[#211a12]/35 to-[#211a12]/10" />
         <div className="relative flex min-h-screen flex-col justify-between p-12 xl:p-16">
           <Link to="/home" className="inline-flex w-fit items-center gap-3 text-white">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/15 text-[#f2c14e] backdrop-blur">
@@ -35,6 +34,7 @@ const AuthLayout = ({ title, subtitle, children }) => {
               Your next great event starts here
             </div>
           </div>
+
           <p className="text-xs tracking-wide text-white/60">EVENTSPHERE · EVENT MANAGEMENT</p>
         </div>
       </aside>
@@ -45,10 +45,7 @@ const AuthLayout = ({ title, subtitle, children }) => {
             <Sparkles size={19} className="text-gold" />
             EventSphere
           </Link>
-          <Link
-            to="/home"
-            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted transition hover:bg-white hover:text-foreground"
-          >
+          <Link to="/home" className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted transition hover:bg-white hover:text-foreground">
             <ArrowLeft size={16} />
             <span>Back to website</span>
           </Link>

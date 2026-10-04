@@ -1,16 +1,4 @@
-import {
-  LayoutDashboard,
-  CalendarDays,
-  Store,
-  ClipboardList,
-  BarChart3,
-  User,
-  Users,
-  UserCheck,
-  MessageSquare,
-  Settings,
-  Building2,
-} from "lucide-react";
+import { LayoutDashboard, CalendarDays, Store, ClipboardList, BarChart3, User, Users, UserCheck, MessageSquare, Settings, Building2, Inbox } from "lucide-react";
 
 export const roleLabels = {
   admin: "Admin",
@@ -34,50 +22,21 @@ export const dashboardNavigation = {
     { label: "Expos", path: "/admin/expos", icon: CalendarDays },
     { label: "Booths", path: "/admin/booths", icon: Store },
     { label: "Schedule", path: "/admin/schedule", icon: ClipboardList },
+    { label: "Messages", path: "/admin/messages", icon: MessageSquare },
+    { label: "Feedback", path: "/admin/feedback", icon: Inbox },
     { label: "Analytics", path: "/admin/analytics", icon: BarChart3 },
-    {
-      label: "Website Settings",
-      path: "/admin/website-settings",
-      icon: Settings,
-    },
+    { label: "Website Settings", path: "/admin/website-settings", icon: Settings },
   ],
-
   exhibitor: [
     { label: "Dashboard", path: "/exhibitor", icon: LayoutDashboard },
-    {
-      label: "Registration",
-      path: "/exhibitor/registration",
-      icon: ClipboardList,
-    },
+    { label: "Registration", path: "/exhibitor/registration", icon: ClipboardList },
     { label: "My Booth", path: "/exhibitor/booth", icon: Store },
-    {
-      label: "Messages",
-      path: "/exhibitor/messages",
-      icon: MessageSquare,
-    },
+    { label: "Events & Tickets", path: "/exhibitor/events", icon: CalendarDays },
+    { label: "Messages", path: "/exhibitor/messages", icon: MessageSquare },
     { label: "Profile", path: "/exhibitor/profile", icon: User },
   ],
 };
 
-export const dashboardNotifications = {
-  admin: [
-    "3 exhibitor approvals need review.",
-    "Schedule changes are pending publication.",
-    "Booth occupancy reached 89%.",
-  ],
-
-  attendee: [
-    "2 bookmarked sessions start today.",
-    "New exhibitors matched your interests.",
-    "Your event pass is ready to view.",
-  ],
-
-  exhibitor: [
-    "1 new lead requested a meeting.",
-    "Booth setup reminder is due tomorrow.",
-    "Your latest product update was approved.",
-  ],
-};
 
 export const dashboardSummaries = {
   admin: [
@@ -86,14 +45,6 @@ export const dashboardSummaries = {
     { label: "Registered Attendees", value: "4,215" },
     { label: "Booths Reserved", value: "89%" },
   ],
-
-  attendee: [
-    { label: "Events", value: "8" },
-    { label: "Sessions", value: "12" },
-    { label: "Bookmarked", value: "4" },
-    { label: "Exhibitors", value: "56" },
-  ],
-
   exhibitor: [
     { label: "My Booth", value: "B-12" },
     { label: "Products", value: "18" },
@@ -102,5 +53,4 @@ export const dashboardSummaries = {
   ],
 };
 
-export const getRoleHomePath = (role) =>
-  roleHomePaths[role] ?? "/login";
+export const getRoleHomePath = (role) => roleHomePaths[role] ?? "/login";

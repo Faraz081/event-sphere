@@ -1,13 +1,13 @@
 import api from "@/api/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// FETCH EXPOS
 export const fetchExpos = createAsyncThunk(
   "booth/fetchExpos",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await api.get("/api/expo");
-      return data.data;
+      const { data } = await api.get("/api/exhibitor-profile/applications");
+      const expos = data.applications.filter((a) => a.status === "approved" && a.expo).map((a) => a.expo);
+      return { expos };
     } catch (error) {
       return rejectWithValue(error.response?.data || { msg: "Unable to connect to the server" });
     }

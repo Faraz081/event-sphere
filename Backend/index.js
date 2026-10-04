@@ -15,6 +15,10 @@ import messageRoute from "./src/routes/messageRoute.js";
 import exhibitorRoute from "./src/routes/exhibitorRoute.js";
 import analyticsRoute from "./src/routes/analyticsRoute.js";
 import router from "./src/routes/exhibitorProfileRoute.js";
+import boothExhibitorRoute from "./src/routes/boothExhibitorRoute.js";
+import publicRoute from "./src/routes/publicRoute.js";
+import attendeeSelfRoute from "./src/routes/attendeeSelfRoute.js";
+import feedbackRoute from "./src/routes/feedbackRoute.js";
 
 const app = express();
 
@@ -53,6 +57,7 @@ app.use(async (req, res, next) => {
 
 app.use("/api", authRouter);
 app.use("/api/expo", expoRoute);
+app.use("/api/booth", boothExhibitorRoute);
 app.use("/api/booth", boothRoute);
 app.use("/api/schedule", scheduleRoute);
 app.use("/api/website-settings", websiteSettingsRoute);
@@ -65,6 +70,9 @@ app.use("/api/message", messageRoute);
 app.use("/api/exhibitors", exhibitorRoute);
 app.use("/api/analytics", analyticsRoute);
 app.use("/api/exhibitor-profile", router);
+app.use("/api/public", publicRoute);
+app.use("/api/attendee-portal", attendeeSelfRoute);
+app.use("/api/feedback", feedbackRoute);
 
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;
