@@ -51,6 +51,8 @@ function App() {
           },
         }} />
 
+       
+
       <Routes>
         {/* PUBLIC WEBSITE */}
         <Route path="/" element={<WebsiteLayout />}>
@@ -66,6 +68,8 @@ function App() {
           <Route element={<RequireRole allowedRoles={["attendee"]} />}>
           <Route path="profile" element={<AttendeeProfile />} />
           <Route path="expos/:id" element={<ExpoDetail />} />
+
+         
           </Route>
         </Route>
 
