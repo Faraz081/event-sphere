@@ -33,8 +33,9 @@ const Home = () => {
   const mainBannerImage =
     websiteSettings?.hero?.image || heroImage
 
+  const savedHeroTitle = websiteSettings?.hero?.title?.trim() || ''
   const mainBannerTitle =
-    websiteSettings?.hero?.title || ''
+    /^welcome\s+to\s+eventsphere$/i.test(savedHeroTitle) ? '' : savedHeroTitle
 
   const mainBannerDescription =
     websiteSettings?.hero?.description || ''

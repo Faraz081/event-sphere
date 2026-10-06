@@ -17,7 +17,7 @@ const ProfileDetail = ({ icon: Icon, label, value }) => (
 );
 
 const bookingBadge = {
-  pending: { label: "Waiting for exhibitor approval", className: "bg-yellow-100 text-yellow-800", bar: "bg-yellow-400", icon: Clock3 },
+ pending: { label: "Waiting for approval", className: "bg-yellow-100 text-yellow-800", bar: "bg-yellow-400", icon: Clock3 },
   confirmed: { label: "Confirmed", className: "bg-green-100 text-green-800", bar: "bg-green-500", icon: CheckCircle2 },
   cancelled: { label: "Not approved", className: "bg-red-100 text-red-700", bar: "bg-red-400", icon: XCircle },
 };
@@ -137,6 +137,8 @@ const AttendeeProfile = () => {
                 const title = b.event?.title ?? b.eventName ?? b.expo?.title ?? "Event";
                 const date = b.event?.date ?? b.expo?.date;
                 const expoTitle = b.event?.expo?.title ?? b.expo?.title;
+                const isExpoTicket = !b.event && !!b.expo;
+                const location = b.event?.expo?.location ?? b.expo?.location;
 
                 return (
                   <div key={b._id} className="relative flex flex-col overflow-hidden rounded-3xl border border-[#eadfc9] bg-white shadow-sm transition hover:shadow-md sm:flex-row">
@@ -161,12 +163,12 @@ const AttendeeProfile = () => {
                             {new Date(date).toLocaleString()}
                           </span>
                         )}
-                        {b.event?.expo?.location && (
-                          <span className="flex items-center gap-2 rounded-full bg-[#f8f5ef] px-3 py-1.5">
-                            <MapPin size={14} className="text-[#c49424]" />
-                            {b.event.expo.location}
-                          </span>
-                        )}
+                        {location && (
+  <span className="flex items-center gap-2 rounded-full bg-[#f8f5ef] px-3 py-1.5">
+    <MapPin size={14} className="text-[#c49424]" />
+    {location}
+  </span>
+)}
                         {b.event?.booth?.boothNumber && (
                           <span className="flex items-center gap-2 rounded-full bg-[#f8f5ef] px-3 py-1.5">
                             <Store size={14} className="text-[#c49424]" />
@@ -176,22 +178,28 @@ const AttendeeProfile = () => {
                       </div>
 
                       {b.bookingStatus === "pending" && (
-                        <p className="mt-4 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-                          The exhibitor is reviewing your request. Your pass code will appear here once it is approved.
-                        </p>
-                      )}
+  <p className="mt-4 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+    {isExpoTicket
+      ? "The organizer is reviewing your request. Your entry pass will appear here once it is approved."
+      : "The exhibitor is reviewing your request. Your pass code will appear here once it is approved."}
+  </p>
+)}
 
                       {b.bookingStatus === "cancelled" && b.decisionNote && (
                         <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">Reason: {b.decisionNote}</p>
                       )}
                     </div>
 
-                    {b.bookingStatus === "confirmed" && b.passCode && (
-                      <div className="relative flex shrink-0 flex-col items-center justify-center border-t-2 border-dashed border-[#e3d3ad] bg-gradient-to-b from-[#fffaf0] to-[#fdf3d9] px-8 py-6 text-center sm:w-52 sm:border-l-2 sm:border-t-0">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8a8379]">Your pass code</p>
-                        <p className="mt-2 break-all font-mono text-2xl font-bold tracking-widest text-[#a8790d]">{b.passCode}</p>
-                      </div>
-                    )}
+                    {b.bookingStatus === "confirmed" && (b.entryPassId || b.passCode) && (
+  <div className="relative flex shrink-0 flex-col items-center justify-center border-t-2 border-dashed border-[#e3d3ad] bg-gradient-to-b from-[#fffaf0] to-[#fdf3d9] px-8 py-6 text-center sm:w-56 sm:border-l-2 sm:border-t-0">
+    <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8a8379]">
+      {b.entryPassId ? "Entry pass ID" : "Your pass code"}
+    </p>
+    <p className="mt-2 break-all font-mono text-xl font-bold tracking-widest text-[#a8790d]">
+      {b.entryPassId ?? b.passCode}
+    </p>
+  </div>
+)}
                   </div>
                 );
               })}

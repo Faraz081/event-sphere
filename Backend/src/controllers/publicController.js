@@ -16,7 +16,25 @@ const findPublishedExpo = async (id) => {
 export const getPublicExpos = async (req, res) => {
   try {
     const expos = await Expo.find({ status: "published" }).select(PUBLIC_EXPO_FIELDS).sort({ date: 1 });
-    return res.status(200).json({ expos });
+    const applications = await ExhibitorApplication.find({
+      expo: { $in: expos.map((expo) => expo._id) },
+      status: "approved",
+    }).select("expo companyName");
+
+    const companiesByExpo = new Map();
+    applications.forEach(({ expo, companyName }) => {
+      const expoId = String(expo);
+      const companies = companiesByExpo.get(expoId) || [];
+      companies.push(companyName);
+      companiesByExpo.set(expoId, companies);
+    });
+
+    const exposWithExhibitors = expos.map((expo) => ({
+      ...expo.toObject(),
+      exhibitors: companiesByExpo.get(String(expo._id)) || [],
+    }));
+
+    return res.status(200).json({ expos: exposWithExhibitors });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

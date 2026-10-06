@@ -172,10 +172,13 @@ const AdminExhibitors = () => {
               <th className="px-6 py-3 text-sm text-muted font-medium text-right">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-muted">Loading applications...</td>
+                <td colSpan={6} className="px-6 py-12 text-center text-muted">
+                  Loading applications...
+                </td>
               </tr>
             ) : applications.length === 0 ? (
               <tr>
@@ -191,19 +194,33 @@ const AdminExhibitors = () => {
                     <div className="text-foreground font-medium">{a.companyName}</div>
                     <div className="text-muted text-sm">{a.userId?.name}</div>
                   </td>
-                  <td data-label="Expo" className="px-6 py-4 text-muted">{expoTitle(a)}</td>
+
+                  <td data-label="Expo" className="px-6 py-4 text-muted">
+                    {expoTitle(a)}
+                  </td>
+
                   <td data-label="Contact" className="px-6 py-4 text-muted text-sm">
-                    <div className="flex items-center gap-1.5"><Mail size={14} /> {a.email || a.userId?.email}</div>
+                    <div className="flex items-center gap-1.5">
+                      <Mail size={14} /> {a.email || a.userId?.email}
+                    </div>
+
                     {(a.phone || a.userId?.phone) && (
-                      <div className="flex items-center gap-1.5 mt-1"><Phone size={14} /> {a.phone || a.userId?.phone}</div>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Phone size={14} /> {a.phone || a.userId?.phone}
+                      </div>
                     )}
                   </td>
-                  <td data-label="Applied On" className="px-6 py-4 text-muted">{formatDate(a.createdAt)}</td>
+
+                  <td data-label="Applied On" className="px-6 py-4 text-muted">
+                    {formatDate(a.createdAt)}
+                  </td>
+
                   <td data-label="Status" className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${statusStyles[a.status] ?? statusStyles.pending}`}>
                       {a.status}
                     </span>
                   </td>
+
                   <td data-label="Actions" className="px-6 py-4">
                     <div className="flex items-center justify-end">
                       <button
@@ -223,71 +240,143 @@ const AdminExhibitors = () => {
 
         {/* Review Dialog */}
         <AlertDialog open={!!selected} onOpenChange={(open) => !open && closeReview()}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>{selected?.companyName}</AlertDialogTitle>
-              <AlertDialogDescription>Application for {expoTitle(selected)}</AlertDialogDescription>
+          <AlertDialogContent className="w-[calc(100%-2rem)] max-w-2xl border border-[#eadfc9] bg-[#f8f5ef] text-[#2f2a24] shadow-2xl shadow-black/20 p-0 overflow-hidden">
+            <AlertDialogHeader className="border-b border-[#eadfc9] bg-[#fffdf9] px-6 py-5">
+              <AlertDialogTitle className="text-lg font-semibold text-[#2f2a24]">
+                {selected?.companyName}
+              </AlertDialogTitle>
+
+              <AlertDialogDescription className="text-sm text-[#5d574f]">
+                Application for {expoTitle(selected)}
+              </AlertDialogDescription>
             </AlertDialogHeader>
 
             {selected && (
-              <div className="max-h-[50vh] space-y-2 overflow-y-auto text-sm text-muted">
+              <div className="max-h-[55vh] space-y-3 overflow-y-auto bg-[#f8f5ef] px-6 py-5 text-sm text-[#5d574f]">
                 {selected.logo && (
-                  <img src={`${FILE_BASE}${selected.logo}`} alt="logo" className="mb-2 h-16 w-16 rounded-lg border border-border object-cover" />
+                  <img
+                    src={`${FILE_BASE}${selected.logo}`}
+                    alt="logo"
+                    className="mb-3 h-16 w-16 rounded-lg border border-[#eadfc9] bg-[#fffdf9] object-cover"
+                  />
                 )}
-                <p><b className="text-foreground">Exhibitor:</b> {selected.userId?.name}</p>
-                <p><b className="text-foreground">Products/Services:</b> {selected.productsServices}</p>
-                {selected.description && <p><b className="text-foreground">Description:</b> {selected.description}</p>}
-                {selected.email && <p><b className="text-foreground">Email:</b> {selected.email}</p>}
-                {selected.phone && <p><b className="text-foreground">Phone:</b> {selected.phone}</p>}
-                {selected.address && <p><b className="text-foreground">Address:</b> {selected.address}</p>}
-                {selected.adminNote && <p><b className="text-foreground">Previous note:</b> {selected.adminNote}</p>}
+
+                <p>
+                  <b className="text-[#2f2a24]">Exhibitor:</b> {selected.userId?.name}
+                </p>
+
+                <p>
+                  <b className="text-[#2f2a24]">Products/Services:</b> {selected.productsServices}
+                </p>
+
+                {selected.description && (
+                  <p>
+                    <b className="text-[#2f2a24]">Description:</b> {selected.description}
+                  </p>
+                )}
+
+                {selected.email && (
+                  <p>
+                    <b className="text-[#2f2a24]">Email:</b> {selected.email}
+                  </p>
+                )}
+
+                {selected.phone && (
+                  <p>
+                    <b className="text-[#2f2a24]">Phone:</b> {selected.phone}
+                  </p>
+                )}
+
+                {selected.address && (
+                  <p>
+                    <b className="text-[#2f2a24]">Address:</b> {selected.address}
+                  </p>
+                )}
+
+                {selected.adminNote && (
+                  <p>
+                    <b className="text-[#2f2a24]">Previous note:</b> {selected.adminNote}
+                  </p>
+                )}
+
                 <div>
-                  <b className="text-foreground">Documents:</b>
+                  <b className="text-[#2f2a24]">Documents:</b>
+
                   {selected.documents?.length ? (
-                    <div className="mt-1 flex flex-wrap gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2">
                       {selected.documents.map((d, i) => (
-                        <a key={d} href={`${FILE_BASE}${d}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-border px-2 py-1 text-xs text-gold hover:underline">
-                          <FileText size={12} /> Document {i + 1}
+                        <a
+                          key={d}
+                          href={`${FILE_BASE}${d}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-[#eadfc9] bg-[#fffdf9] px-2.5 py-1.5 text-xs text-[#9a7412] hover:border-[#c49424] hover:bg-[#f8f5ef]"
+                        >
+                          <FileText size={12} />
+                          Document {i + 1}
                         </a>
                       ))}
                     </div>
                   ) : (
-                    <span> none</span>
+                    <span className="ml-1">none</span>
                   )}
                 </div>
               </div>
             )}
 
             {rejecting && (
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Reason for rejection (exhibitor will see this)"
-                rows={3}
-                className="w-full rounded-xl border border-border bg-background p-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-              />
+              <div className="bg-[#f8f5ef] px-6 pb-5">
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Reason for rejection (exhibitor will see this)"
+                  rows={3}
+                  className="w-full rounded-xl border border-[#eadfc9] bg-[#fffdf9] p-3 text-sm text-[#2f2a24] placeholder:text-[#5d574f] focus:outline-none focus:ring-2 focus:ring-[#c49424]/40"
+                />
+              </div>
             )}
 
-            <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border border-border text-muted hover:text-foreground">Close</AlertDialogCancel>
+            <AlertDialogFooter className="border-t border-[#eadfc9] bg-[#fffdf9] px-6 py-4">
+              <AlertDialogCancel className="border-[#eadfc9] bg-transparent text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]">
+                Close
+              </AlertDialogCancel>
 
               {!rejecting ? (
                 <>
                   {selected?.status !== "rejected" && (
-                    <button onClick={() => setRejecting(true)} className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-300 hover:bg-red-500/25">
+                    <button
+                      onClick={() => setRejecting(true)}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-500/25"
+                    >
                       <XCircle size={14} /> Reject
                     </button>
                   )}
+
                   {selected?.status !== "approved" && (
-                    <button onClick={handleApprove} disabled={actionLoading} className="inline-flex items-center gap-1.5 rounded-lg bg-gold px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-60">
-                      <CheckCircle size={14} /> {actionLoading ? "Processing..." : "Approve"}
+                    <button
+                      onClick={handleApprove}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#c49424] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+                    >
+                      <CheckCircle size={14} />
+                      {actionLoading ? "Processing..." : "Approve"}
                     </button>
                   )}
                 </>
               ) : (
                 <>
-                  <button onClick={() => setRejecting(false)} className="rounded-lg border border-border px-4 py-2 text-sm text-muted hover:text-foreground">Back</button>
-                  <button onClick={handleReject} disabled={actionLoading} className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60">
+                  <button
+                    onClick={() => setRejecting(false)}
+                    className="rounded-lg border border-[#eadfc9] bg-transparent px-4 py-2 text-sm text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]"
+                  >
+                    Back
+                  </button>
+
+                  <button
+                    onClick={handleReject}
+                    disabled={actionLoading}
+                    className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+                  >
                     {actionLoading ? "Processing..." : "Confirm reject"}
                   </button>
                 </>

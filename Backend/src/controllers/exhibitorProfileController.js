@@ -88,16 +88,18 @@ const getMyApplications = async (req, res) => {
   }
 };
 
-// latest application (ExhibitorProfile page ke liye same shape)
+// all expo-specific registrations for the shared exhibitor profile
 const getProfile = async (req, res) => {
   try {
-    const application = await ExhibitorApplication.findOne({ userId: req.user._id }).sort({ createdAt: -1 });
+    const applications = await ExhibitorApplication.find({ userId: req.user._id })
+      .populate("expo", "title date location")
+      .sort({ createdAt: -1 });
 
-    if (!application) {
+    if (!applications.length) {
       return res.status(404).json({ error: "No application found" });
     }
 
-    return res.status(200).json({ application });
+    return res.status(200).json({ applications, application: applications[0] });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -105,8 +107,8 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { description, email, phone, address } = req.body;
-    const update = { description, email, phone, address };
+    const { email, phone, address } = req.body;
+    const update = { email, phone, address };
 
     if (req.file) {
       const uploadResult = await uploadLogoToCloudinary(req.file);
@@ -114,18 +116,16 @@ const updateProfile = async (req, res) => {
     }
 
     Object.keys(update).forEach((k) => update[k] === undefined && delete update[k]);
+    await ExhibitorApplication.updateMany({ userId: req.user._id }, { $set: update });
+    const applications = await ExhibitorApplication.find({ userId: req.user._id })
+      .populate("expo", "title date location")
+      .sort({ createdAt: -1 });
 
-    const application = await ExhibitorApplication.findOneAndUpdate(
-      { userId: req.user._id },
-      update,
-      { new: true, sort: { createdAt: -1 } }
-    );
-
-    if (!application) {
+    if (!applications.length) {
       return res.status(404).json({ error: "No application found" });
     }
 
-    return res.status(200).json({ msg: "Profile updated successfully", application });
+    return res.status(200).json({ msg: "Profile updated successfully", applications, application: applications[0] });
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({ error: error.message });

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Attendee from "../models/Attendee.js";
 import Event from "../models/Event.js";
 import User from "../models/User.js";
+import Expo from "../models/Expo.js";
 
 // protect middleware jis naam se bhi id rakhe, wahi utha lo
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
@@ -57,7 +58,7 @@ export const bookEvent = async (req, res) => {
       ticketType: "Standard Pass",
       registrationStatus: "registered",
       bookingStatus: "pending",
-      passStatus: "issued",
+      passStatus: "pending",
       registrationEventKey: `event:${eventDoc._id}`,
       uniqueKeysEnforced: true,
     });
@@ -66,6 +67,49 @@ export const bookEvent = async (req, res) => {
     return res.status(201).json({ msg: "Ticket request sent", attendee });
   } catch (error) {
     if (error.code === 11000) return res.status(409).json({ error: "You have already requested a ticket for this event" });
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// POST /book-expo  { expo }
+export const bookExpoTicket = async (req, res) => {
+  try {
+    const userId = getMyId(req);
+    const { expo } = req.body;
+
+    if (!mongoose.isValidObjectId(userId)) return res.status(401).json({ error: "Please login again" });
+    if (!expo || !mongoose.isValidObjectId(expo)) return res.status(400).json({ error: "Please select an expo" });
+
+    const user = await User.findById(userId).select("role status");
+    if (!user || user.role !== "attendee") {
+      return res.status(403).json({ error: "Only attendee accounts can book tickets" });
+    }
+    if (user.status !== "active") return res.status(403).json({ error: "This account is not active" });
+
+    const expoDoc = await Expo.findById(expo).select("title status");
+    if (!expoDoc || expoDoc.status !== "published") {
+      return res.status(404).json({ error: "Expo not found" });
+    }
+
+    if (await Attendee.exists({ user: userId, expo })) {
+      return res.status(409).json({ error: "You have already requested a ticket for this expo" });
+    }
+
+    const attendee = await Attendee.create({
+      user: userId,
+      expo: expoDoc._id,
+      eventName: expoDoc.title,
+      ticketType: "Expo Entry Pass",
+      registrationStatus: "registered",
+      bookingStatus: "pending",
+      passStatus: "pending",
+      uniqueKeysEnforced: true,
+    });
+    await attendee.populate("expo", "title date location");
+
+    return res.status(201).json({ msg: "Ticket request sent to admin", attendee });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: "You have already requested a ticket for this expo" });
     res.status(500).json({ error: error.message });
   }
 };

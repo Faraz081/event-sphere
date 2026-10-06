@@ -80,7 +80,8 @@ const initialState = {
   booths: [],
   error: null,
   loading: false,
-  myBooth: null
+  myBooth: null,
+  myBooths: [],
 };
 
 const boothSlice = createSlice({
@@ -129,7 +130,8 @@ const boothSlice = createSlice({
       })
       .addCase(reserveBooth.fulfilled, (state, action) => {
         state.booths = state.booths.filter((b) => b._id !== action.payload.booth._id);
-        state.myBooth = action.payload.booth;
+        state.myBooths.push(action.payload.booth);
+        state.myBooth = state.myBooths[0] ?? null;
         state.loading = false;
         state.error = null;
       })
@@ -140,15 +142,18 @@ const boothSlice = createSlice({
 
         // FETCH MY BOOTH
       .addCase(fetchMyBooth.fulfilled, (state, action) => {
-        state.myBooth = action.payload.booth;
+        state.myBooths = action.payload.booths ?? [action.payload.booth].filter(Boolean);
+        state.myBooth = state.myBooths[0] ?? null;
       })
       .addCase(fetchMyBooth.rejected, (state) => {
         state.myBooth = null;
+        state.myBooths = [];
       })
 
         // RELEASE BOOTH
-      .addCase(releaseBooth.fulfilled, (state) => {
-        state.myBooth = null;
+      .addCase(releaseBooth.fulfilled, (state, action) => {
+        state.myBooths = state.myBooths.filter((booth) => booth._id !== action.payload.booth._id);
+        state.myBooth = state.myBooths[0] ?? null;
         state.loading = false;
         state.error = null;
       })
@@ -158,7 +163,8 @@ const boothSlice = createSlice({
       })
 
       .addCase(updateBoothDetails.fulfilled, (state, action) => {
-        state.myBooth = action.payload.booth;
+        state.myBooths = state.myBooths.map((booth) => booth._id === action.payload.booth._id ? action.payload.booth : booth);
+        state.myBooth = state.myBooths[0] ?? null;
       })
       .addCase(updateBoothDetails.rejected, (state, action) => {
         state.error = action.payload;

@@ -136,8 +136,6 @@
   color: var(--color-foreground);
 }
 
-/* Tailwind's opacity utilities can bake in the original theme color. Keep
-   those dashboard-only surfaces tied to the dashboard palette as well. */
 .dashboard-theme .bg-background\/50 {
   background-color: color-mix(in srgb, var(--color-background) 50%, transparent);
 }

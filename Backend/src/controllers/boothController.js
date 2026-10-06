@@ -16,12 +16,17 @@ export const createBooth = async (req, res) => {
       return res.status(409).json({ error: "Booth number already exists in this expo" });
     }
 
+    const nextStatus = status || (exhibitor ? "reserved" : "available");
+    if (exhibitor && ["pending", "reserved", "occupied"].includes(nextStatus) && await Booth.exists({ exhibitor, expo, status: { $in: ["pending", "reserved", "occupied"] } })) {
+      return res.status(409).json({ error: "This exhibitor already has an active booth for this expo" });
+    }
+
     const booth = await Booth.create({
       expo,
       boothNumber: boothNumber.trim(),
       size,
       price: price || 0,
-      status: status || "available",
+      status: nextStatus,
       exhibitor: exhibitor || null,
       location,
     });
@@ -37,6 +42,7 @@ export const createBooth = async (req, res) => {
     });
   } catch (error) {
     console.error("createBooth error:", error);
+    if (error.code === 11000) return res.status(409).json({ error: "This exhibitor already has an active booth for this expo" });
     res.status(500).json({ error: error.message || "Failed to create booth" });
   }
 };
@@ -129,6 +135,15 @@ export const updateBooth = async (req, res) => {
       return res.status(404).json({ error: "Booth not found" });
     }
 
+    const nextExpo = expo ?? booth.expo;
+    const nextExhibitor = exhibitor !== undefined ? (exhibitor || null) : booth.exhibitor;
+    let nextStatus = status ?? booth.status;
+    if (exhibitor !== undefined && exhibitor && nextStatus === "available") nextStatus = "reserved";
+    if (exhibitor !== undefined && !exhibitor && ["reserved", "occupied"].includes(nextStatus)) nextStatus = "available";
+    if (nextExhibitor && ["pending", "reserved", "occupied"].includes(nextStatus) && await Booth.exists({ exhibitor: nextExhibitor, expo: nextExpo, status: { $in: ["pending", "reserved", "occupied"] }, _id: { $ne: id } })) {
+      return res.status(409).json({ error: "This exhibitor already has an active booth for this expo" });
+    }
+
     // If booth number is changing, check duplicate
     if (boothNumber && boothNumber.trim() !== booth.boothNumber) {
       const existing = await Booth.findOne({
@@ -173,6 +188,7 @@ export const updateBooth = async (req, res) => {
     });
   } catch (error) {
     console.error("updateBooth error:", error);
+    if (error.code === 11000) return res.status(409).json({ error: "This exhibitor already has an active booth for this expo" });
     res.status(500).json({ error: error.message || "Failed to update booth" });
   }
 };

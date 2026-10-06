@@ -104,6 +104,7 @@ const ExhibitorRegistration = () => {
                   <div className="mt-4 space-y-2 text-sm text-muted">
                     <p><b className="text-foreground">Company:</b> {a.companyName}</p>
                     <p><b className="text-foreground">Products/Services:</b> {a.productsServices}</p>
+                    <p><b className="text-foreground">Description:</b> {a.description || "-"}</p>
                     <p><b className="text-foreground">Documents uploaded:</b> {a.documents?.length ?? 0}</p>
                     {a.status === "rejected" && a.adminNote && (
                       <p className="text-red-400"><b>Reason:</b> {a.adminNote}</p>

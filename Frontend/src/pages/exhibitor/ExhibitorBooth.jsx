@@ -9,9 +9,10 @@ import { Link } from "react-router-dom";
 
 const ExhibitorBooth = () => {
   const dispatch = useDispatch();
-  const { expos, booths, myBooth, loading } = useSelector((state) => state.booth);
+  const { expos, booths, myBooths = [], loading } = useSelector((state) => state.booth);
   const [selectedExpo, setSelectedExpo] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedBooth, setSelectedBooth] = useState(null);
   const [products, setProducts] = useState([]);
   const [staff, setStaff] = useState([]);
   const [productInput, setProductInput] = useState("");
@@ -46,9 +47,10 @@ const ExhibitorBooth = () => {
     }
   };
 
-  const openModal = () => {
-    setProducts(myBooth?.products ?? []);
-    setStaff(myBooth?.staff ?? []);
+  const openModal = (booth) => {
+    setSelectedBooth(booth);
+    setProducts(booth.products ?? []);
+    setStaff(booth.staff ?? []);
     setModalOpen(true);
   };
 
@@ -70,7 +72,7 @@ const ExhibitorBooth = () => {
   const removeStaff = (index) => setStaff(staff.filter((_, i) => i !== index));
 
   const handleSaveDetails = async () => {
-    const result = await dispatch(updateBoothDetails({ boothId: myBooth._id, products, staff }));
+    const result = await dispatch(updateBoothDetails({ boothId: selectedBooth._id, products, staff }));
     if (updateBoothDetails.fulfilled.match(result)) {
       toast.success("Booth details updated");
       setModalOpen(false);
@@ -79,13 +81,13 @@ const ExhibitorBooth = () => {
     }
   };
 
-  const isPending = myBooth?.status === "pending";
-
   return (
     <DashboardLayout role="exhibitor">
       <DashboardSectionPage title="My Booth" description="Reserve a booth space and manage your presence on the expo floor.">
-        {myBooth && (
-          <div className={`relative rounded-3xl border ${isPending ? "border-border" : "border-gold/40"} bg-surface p-6 md:p-8 overflow-hidden mb-6`}>
+        {myBooths.map((myBooth) => {
+          const isPending = myBooth.status === "pending";
+          return (
+          <div key={myBooth._id} className={`relative rounded-3xl border ${isPending ? "border-border" : "border-gold/40"} bg-surface p-6 md:p-8 overflow-hidden mb-6`}>
             <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-background rounded-full border border-border" />
             <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-background rounded-full border border-border" />
             <p className={`text-xs uppercase tracking-widest font-medium mb-2 ${isPending ? "text-muted" : "text-gold"}`}>
@@ -93,6 +95,7 @@ const ExhibitorBooth = () => {
             </p>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div>
+                <p className="mb-1 text-sm font-medium text-gold">{myBooth.expo?.title}</p>
                 <p className="font-display text-3xl md:text-4xl font-bold text-foreground">Booth {myBooth.boothNumber}</p>
                 <p className="mt-1 text-sm text-muted">{myBooth.location}</p>
               </div>
@@ -125,18 +128,19 @@ const ExhibitorBooth = () => {
 
             <div className="mt-4 flex gap-3">
               {!isPending && (
-                <button onClick={openModal} className="rounded-lg border border-gold/40 px-6 py-2 text-sm font-medium text-gold hover:bg-gold/10">Manage Details</button>
+                <button onClick={() => openModal(myBooth)} className="rounded-lg border border-gold/40 px-6 py-2 text-sm font-medium text-gold hover:bg-gold/10">Manage Details</button>
               )}
               <button onClick={() => handleRelease(myBooth._id)} className="rounded-lg border border-border px-6 py-2 text-sm font-medium text-muted hover:text-foreground hover:border-gold/40">
                 {isPending ? "Cancel Request" : "Release Booth"}
               </button>
             </div>
           </div>
-        )}
+          );
+        })}
 
         <div className="rounded-3xl border border-border bg-surface p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">
-            {myBooth ? "Browse other expos" : "Select an expo to reserve a booth"}
+            {myBooths.length ? "Browse other expos" : "Select an expo to reserve a booth"}
           </h2>
 
           {!loading && expos.length === 0 && (

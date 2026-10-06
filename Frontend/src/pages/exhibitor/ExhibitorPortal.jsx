@@ -12,7 +12,7 @@ import { fetchContacts, fetchUnreadCounts } from "@/store/slices/messageSlice";
 const ExhibitorPortal = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { myBooth } = useSelector((state) => state.booth);
+  const { myBooths = [] } = useSelector((state) => state.booth);
   const { contacts, unread } = useSelector((state) => state.message);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const ExhibitorPortal = () => {
   const chartData = unreadContacts.map((u) => ({ name: u.contact.name, unread: u.count }));
 
   const stats = [
-    { label: "My Booth", value: myBooth ? myBooth.boothNumber : "Not reserved" },
+    { label: "My Booths", value: myBooths.length ? myBooths.length : "Not reserved" },
     { label: "Products", value: "18" },
     { label: "Meetings", value: "9" },
     { label: "Messages", value: totalUnread },

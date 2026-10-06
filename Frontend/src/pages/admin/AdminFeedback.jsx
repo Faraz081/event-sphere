@@ -56,6 +56,10 @@ const FeedbackCard = ({ item, onSaved }) => {
 
       <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-foreground">{item.message}</p>
 
+      <p className="mt-2 text-sm text-muted">
+        Expo: <span className="text-foreground">{item.expo?.title ?? "Not specified"}</span>
+      </p>
+
       <p className="mt-3 text-xs text-muted">
         From <span className="text-foreground">{item.user?.name ?? "Deleted user"}</span>
         {item.user?.role ? ` (${item.user.role})` : ""}

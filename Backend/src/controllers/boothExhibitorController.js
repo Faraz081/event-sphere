@@ -24,8 +24,8 @@ export const getAvailableBooths = async (req, res) => {
 // GET /mine
 export const getMyBooth = async (req, res) => {
   try {
-    const booth = await Booth.findOne({ exhibitor: req.user._id, status: { $in: ACTIVE } }).populate("expo", "title date location");
-    return res.status(200).json({ booth });
+    const booths = await Booth.find({ exhibitor: req.user._id, status: { $in: ACTIVE } }).populate("expo", "title date location");
+    return res.status(200).json({ booths, booth: booths[0] ?? null });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -44,8 +44,8 @@ export const reserveBooth = async (req, res) => {
     if (!(await isApprovedFor(req.user._id, booth.expo))) {
       return res.status(403).json({ error: "Your application for this expo is not approved yet" });
     }
-    if (await Booth.exists({ exhibitor: req.user._id, status: { $in: ACTIVE } })) {
-      return res.status(409).json({ error: "You already have a booth. Release it first" });
+    if (await Booth.exists({ exhibitor: req.user._id, expo: booth.expo, status: { $in: ACTIVE } })) {
+      return res.status(409).json({ error: "You already have an active booth for this expo. Release it first" });
     }
 
     const updated = await Booth.findOneAndUpdate(
@@ -57,6 +57,7 @@ export const reserveBooth = async (req, res) => {
 
     return res.status(200).json({ msg: "Booth requested", booth: updated });
   } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: "You already have an active booth for this expo. Release it first" });
     res.status(500).json({ error: error.message });
   }
 };

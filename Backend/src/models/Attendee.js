@@ -33,11 +33,11 @@ const attendeeSchema = new mongoose.Schema(
       required: true,
     },
     passStatus: {
-      type: String,
-      enum: ["issued", "claimed", "scanned", "revoked"],
-      default: "issued",
-      required: true,
-    },
+  type: String,
+  enum: ["pending", "issued", "claimed", "scanned", "revoked"],
+  default: "issued",
+  required: true,
+},
     ticketType: {
       type: String,
       default: "Standard Pass",
@@ -59,6 +59,8 @@ const attendeeSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    entryPassId: { type: String },
+reviewedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -74,6 +76,10 @@ attendeeSchema.index(
 attendeeSchema.index(
   { passCode: 1 },
   { unique: true, partialFilterExpression: { uniqueKeysEnforced: true, passCode: { $type: "string", $gt: "" } } }
+);
+attendeeSchema.index(
+  { entryPassId: 1 },
+  { unique: true, partialFilterExpression: { entryPassId: { $type: "string" } } }
 );
 
 export default mongoose.model("Attendee", attendeeSchema);

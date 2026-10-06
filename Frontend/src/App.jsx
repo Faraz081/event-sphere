@@ -37,6 +37,7 @@ import AdminMessages from "./pages/admin/AdminMessages";
 import ExhibitorEvents from "./pages/exhibitor/ExhibitorEvents";
 import ExpoDetail from "./pages/attendee/ExpoDetail";
 import AdminFeedback from "./pages/admin/AdminFeedback";
+import AdminTickets from "./pages/admin/AdminTickets";
 
 function App() {
   const { email, otp } = useSelector((state) => state.forgotPassword);
@@ -68,8 +69,6 @@ function App() {
           <Route element={<RequireRole allowedRoles={["attendee"]} />}>
           <Route path="profile" element={<AttendeeProfile />} />
           <Route path="expos/:id" element={<ExpoDetail />} />
-
-         
           </Route>
         </Route>
 
@@ -96,6 +95,7 @@ function App() {
             <Route path="/admin/website-settings" element={<AdminWebsiteSettings />} />
             <Route path="/admin/messages" element={<AdminMessages />} />
             <Route path="/admin/feedback" element={<AdminFeedback />}/>
+            <Route path="/admin/tickets" element={<AdminTickets />} />
           </Route>
 
           {/* EXHIBITOR */}

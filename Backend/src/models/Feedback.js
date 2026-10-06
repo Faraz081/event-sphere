@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const feedbackSchema = new mongoose.Schema({
     user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
+    expo: {type: mongoose.Schema.Types.ObjectId, ref: "Expo"},
     type: {type: String, enum: ["suggestion", "issue", "other"], default: "suggestion"},
     subject: {type: String, trim: true, default: ""},
     message: {type: String, required: [true, "Message is required"], trim: true},

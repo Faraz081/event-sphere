@@ -18,18 +18,18 @@ const statusStyles = {
 const ExhibitorProfile = () => {
   const { user } = useSelector((state) => state.auth);
 
-  const [application, setApplication] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const application = applications[0] ?? null;
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [form, setForm] = useState({ description: "", email: "", phone: "", address: "" });
+  const [form, setForm] = useState({ email: "", phone: "", address: "" });
   const [logo, setLogo] = useState(null);
 
   const fillForm = (app) =>
     setForm({
-      description: app.description ?? "",
       email: app.email ?? "",
       phone: app.phone ?? "",
       address: app.address ?? "",
@@ -44,8 +44,9 @@ const ExhibitorProfile = () => {
     const loadProfile = async () => {
       try {
         const res = await api.get("/api/exhibitor-profile/profile");
-        setApplication(res.data.application);
-        fillForm(res.data.application);
+        const profileApplications = res.data.applications ?? [res.data.application].filter(Boolean);
+        setApplications(profileApplications);
+        fillForm(profileApplications[0]);
       } catch (err) {
         if (err.response?.status !== 404) {
           toast.error(err.response?.data?.error || "Could not load profile");
@@ -78,7 +79,9 @@ const ExhibitorProfile = () => {
 
     try {
       const res = await api.put("/api/exhibitor-profile/profile", formData);
-      setApplication(res.data.application);
+      const profileApplications = res.data.applications ?? [res.data.application].filter(Boolean);
+      setApplications(profileApplications);
+      fillForm(profileApplications[0]);
       setLogo(null);
       setEditing(false);
       toast.success("Profile updated successfully");
@@ -152,12 +155,19 @@ const ExhibitorProfile = () => {
 
             {header}
 
-            <div className="space-y-2 text-sm text-muted">
-              <p><b className="text-foreground">Products/Services:</b> {application.productsServices}</p>
-              <p><b className="text-foreground">Description:</b> {application.description || "-"}</p>
+            <div className="mb-6 space-y-2 text-sm text-muted">
               <p><b className="text-foreground">Email:</b> {application.email || "-"}</p>
               <p><b className="text-foreground">Phone:</b> {application.phone || "-"}</p>
               <p><b className="text-foreground">Address:</b> {application.address || "-"}</p>
+            </div>
+            <div className="space-y-4">
+              {applications.map((item) => (
+                <div key={item._id} className="rounded-2xl border border-border bg-background p-4">
+                  <h3 className="font-semibold text-foreground">{item.expo?.title ?? "Expo registration"}</h3>
+                  <p className="mt-2 text-sm text-muted"><b className="text-foreground">Products/Services:</b> {item.productsServices}</p>
+                  <p className="mt-1 text-sm text-muted"><b className="text-foreground">Description:</b> {item.description || "-"}</p>
+                </div>
+              ))}
             </div>
           </div>
         ) : (
@@ -165,14 +175,6 @@ const ExhibitorProfile = () => {
             <h2 className="mb-4 text-lg font-semibold text-foreground">Edit profile</h2>
 
             {header}
-
-            <label className={labelClass}>Description</label>
-            <textarea
-              className={`${inputClass} mb-4 min-h-[90px]`}
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-            />
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>

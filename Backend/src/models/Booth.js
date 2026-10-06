@@ -11,6 +11,10 @@ const boothSchema = new mongoose.Schema({
     products: {type: [String], default: []},
     staff: {type: [{name: {type: String, trim: true}, role: {type: String, trim: true}, _id: false}], default: []}
 },{ timestamps: true })
+boothSchema.index(
+    { exhibitor: 1, expo: 1 },
+    { unique: true, partialFilterExpression: { status: { $in: ["pending", "reserved", "occupied"] }, exhibitor: { $type: "objectId" } } }
+);
 // booth khali ho (admin unassign ya release) to purane products/staff next exhibitor ko na milein
 boothSchema.pre("save", function () {
     if (this.isModified("exhibitor") && !this.exhibitor) {

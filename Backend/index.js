@@ -19,6 +19,7 @@ import boothExhibitorRoute from "./src/routes/boothExhibitorRoute.js";
 import publicRoute from "./src/routes/publicRoute.js";
 import attendeeSelfRoute from "./src/routes/attendeeSelfRoute.js";
 import feedbackRoute from "./src/routes/feedbackRoute.js";
+import adminTicketRoute from "./src/routes/adminTicketRoute.js";
 
 const app = express();
 
@@ -73,6 +74,7 @@ app.use("/api/exhibitor-profile", router);
 app.use("/api/public", publicRoute);
 app.use("/api/attendee-portal", attendeeSelfRoute);
 app.use("/api/feedback", feedbackRoute);
+app.use("/api/admin/tickets", adminTicketRoute);
 
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;

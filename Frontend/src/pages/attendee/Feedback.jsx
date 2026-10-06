@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { toast } from 'sonner'
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 
 import { submitFeedback } from '@/api/feedbackService'
+import { fetchPublicExpos } from '@/api/publicService'
 
 const TYPES = [
   { value: 'suggestion', label: 'Suggestion', icon: Lightbulb },
@@ -31,11 +32,19 @@ const Feedback = () => {
   const { user } = useSelector((state) => state.auth)
 
   const [type, setType] = useState('suggestion')
+  const [expos, setExpos] = useState([])
+  const [expo, setExpo] = useState('')
   const [subject, setSubject] = useState('')
   const [rating, setRating] = useState('')
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [sent, setSent] = useState(false)
+
+  useEffect(() => {
+    fetchPublicExpos()
+      .then((data) => setExpos(data.expos ?? []))
+      .catch(() => toast.error('Could not load expos'))
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -49,6 +58,7 @@ const Feedback = () => {
     try {
       await submitFeedback({
         type,
+        expo: expo || undefined,
         subject,
         message,
         rating: rating || undefined,
@@ -64,6 +74,7 @@ const Feedback = () => {
 
   const handleReset = () => {
     setType('suggestion')
+    setExpo('')
     setSubject('')
     setRating('')
     setMessage('')
@@ -195,6 +206,21 @@ const Feedback = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Expo */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
+                  Select an Expo <span className="font-normal text-[#8a8379]">(optional)</span>
+                </label>
+                <select
+                  value={expo}
+                  onChange={(e) => setExpo(e.target.value)}
+                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                >
+                  <option value="">Platform feedback / no specific expo</option>
+                  {expos.map((item) => <option key={item._id} value={item._id}>{item.title}</option>)}
+                </select>
               </div>
 
               {/* Subject */}

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Feedback from "../models/Feedback.js";
+import Expo from "../models/Expo.js";
 
 const TYPES = ["suggestion", "issue", "other"];
 const STATUSES = ["new", "reviewed", "resolved"];
@@ -13,13 +14,21 @@ export const createFeedback = async (req, res) => {
     const userId = getMyId(req);
     if (!mongoose.isValidObjectId(userId)) return res.status(401).json({ error: "Please login again" });
 
-    const { type = "suggestion", subject, message, rating } = req.body;
+    const { type = "suggestion", subject, message, rating, expo } = req.body;
 
     if (!TYPES.includes(type)) return res.status(400).json({ error: "Invalid feedback type" });
     if (!message?.trim() || message.trim().length < 10) {
       return res.status(400).json({ error: "Please write at least 10 characters" });
     }
     if (message.trim().length > 2000) return res.status(400).json({ error: "Message is too long (max 2000 characters)" });
+
+    let expoId;
+    if (expo) {
+      if (!mongoose.isValidObjectId(expo)) return res.status(400).json({ error: "Invalid expo" });
+      const existingExpo = await Expo.exists({ _id: expo, status: "published" });
+      if (!existingExpo) return res.status(400).json({ error: "Please select an available expo" });
+      expoId = expo;
+    }
 
     let parsedRating;
     if (rating !== undefined && rating !== null && rating !== "") {
@@ -31,6 +40,7 @@ export const createFeedback = async (req, res) => {
 
     const feedback = await Feedback.create({
       user: userId,
+      expo: expoId,
       type,
       subject: subject?.trim().slice(0, 120) ?? "",
       message: message.trim(),
@@ -56,7 +66,7 @@ export const getAllFeedback = async (req, res) => {
     }
 
     const [feedback, newCount] = await Promise.all([
-      Feedback.find(filter).populate("user", "name email role").sort({ createdAt: -1 }),
+      Feedback.find(filter).populate("user", "name email role").populate("expo", "title").sort({ createdAt: -1 }),
       Feedback.countDocuments({ status: "new" }),
     ]);
 
@@ -79,7 +89,7 @@ export const updateFeedback = async (req, res) => {
     }
     if (req.body.adminNote !== undefined) updates.adminNote = String(req.body.adminNote).trim().slice(0, 1000);
 
-    const feedback = await Feedback.findByIdAndUpdate(id, { $set: updates }, { new: true }).populate("user", "name email role");
+    const feedback = await Feedback.findByIdAndUpdate(id, { $set: updates }, { new: true }).populate("user", "name email role").populate("expo", "title");
     if (!feedback) return res.status(404).json({ error: "Feedback not found" });
 
     return res.status(200).json({ msg: "Feedback updated", feedback });

@@ -8,6 +8,8 @@ import {
   Sparkles,
   ArrowUpRight,
   Radio,
+  Search,
+  X,
 } from 'lucide-react'
 
 import { fetchPublicExpos } from '@/api/publicService'
@@ -41,6 +43,16 @@ const getBadge = (iso) => {
 const OngoingEvents = () => {
   const [expos, setExpos] = useState([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+
+  const normalizedSearch = search.trim().toLocaleLowerCase()
+  const filteredExpos = normalizedSearch
+    ? expos.filter((expo) =>
+        (expo.exhibitors || []).some((companyName) =>
+          companyName.toLocaleLowerCase().includes(normalizedSearch)
+        )
+      )
+    : expos
 
   useEffect(() => {
     const load = async () => {
@@ -108,6 +120,39 @@ const OngoingEvents = () => {
 
         </div>
 
+        <form
+          className="mb-8 flex w-full max-w-xl items-center gap-3 rounded-full border border-[#eadfc9] bg-white p-2 shadow-sm"
+          onSubmit={(event) => event.preventDefault()}
+          role="search"
+        >
+          <Search className="ml-3 h-5 w-5 shrink-0 text-[#c49424]" aria-hidden="true" />
+          <input
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by exhibitor or company"
+            aria-label="Search ongoing expos by exhibitor or company"
+            className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch('')}
+              aria-label="Clear exhibitor search"
+              className="rounded-full p-2 text-[#8a8379] transition hover:bg-[#fff4d9] hover:text-[#9a721c]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
+          >
+            <Search className="h-4 w-4" aria-hidden="true" />
+            Search
+          </button>
+        </form>
+
         {loading && (
           <p className="py-16 text-center text-[#5d574f]">Loading events...</p>
         )}
@@ -118,9 +163,15 @@ const OngoingEvents = () => {
           </p>
         )}
 
+        {!loading && expos.length > 0 && filteredExpos.length === 0 && (
+          <p className="py-16 text-center text-[#5d574f]">
+            No ongoing expos found for this exhibitor.
+          </p>
+        )}
+
         <div className="grid gap-7 md:grid-cols-2">
 
-          {expos.map((expo) => {
+          {filteredExpos.map((expo) => {
             const badge = getBadge(expo.date)
             const time = formatTime(expo.date)
 
