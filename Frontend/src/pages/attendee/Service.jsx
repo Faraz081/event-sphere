@@ -6,7 +6,7 @@ import servicesImage from '../../assets/service-gallery/service.jpg'
 import eventPlanningImage from '../../assets/service-gallery/event-planning.jpg'
 import exhibitorManagementImage from '../../assets/service-gallery/exhibitor-management.jpg'
 import birthday from '../../assets/service-gallery/birthday.jpg'
-import mehndi from  '../../assets/service-gallery/mehndi.jpg'
+import mehndi from "../../assets/service-gallery/Mehndi.jpg";
 import engaged from '../../assets/service-gallery/engaged.jpg'
 import graduationevent from '../../assets/service-gallery/graduation-event.jpg'
 
