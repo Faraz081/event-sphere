@@ -25,6 +25,7 @@ export const dashboardNavigation = {
     { label: "Messages", path: "/admin/messages", icon: MessageSquare },
     { label: "Feedback", path: "/admin/feedback", icon: Inbox },
     { label: "Expo Tickets", path: "/admin/tickets", icon: Ticket },
+    { label: "Events", path: "/admin/events", icon: CalendarDays },
     { label: "Analytics", path: "/admin/analytics", icon: BarChart3 },
     { label: "Website Settings", path: "/admin/website-settings", icon: Settings },
   ],

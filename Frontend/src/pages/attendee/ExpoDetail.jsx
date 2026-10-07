@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useNavigate } from "react-router-dom";
 import {
   CalendarDays,
   MapPin,
@@ -58,6 +59,7 @@ const ExpoDetail = () => {
   const [tab, setTab] = useState('Schedule')
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
@@ -222,60 +224,67 @@ const ExpoDetail = () => {
           )}
 
           {/* ---------- EXHIBITORS ---------- */}
-          {tab === 'Exhibitors' && (
-            <div>
-              <div className="relative mb-6 max-w-md">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search by company, product or keyword"
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                />
-              </div>
+{tab === 'Exhibitors' && (
+  <div>
+    <div className="relative mb-6 max-w-md">
+      <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by company, product or keyword"
+        className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+      />
+    </div>
 
-              {exhibitors.length === 0 && (
-                <p className="text-[#5d574f]">
-                  {search.trim() ? 'No exhibitors match your search.' : 'No approved exhibitors yet for this expo.'}
+    {exhibitors.length === 0 && (
+      <p className="text-[#5d574f]">
+        {search.trim() ? 'No exhibitors match your search.' : 'No approved exhibitors yet for this expo.'}
+      </p>
+    )}
+
+    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {exhibitors.map((ex) => (
+        <div key={ex._id} className="rounded-2xl border border-[#eadfc9] bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            {ex.logo ? (
+              <img src={fileUrl(ex.logo)} alt={ex.companyName} className="h-14 w-14 rounded-xl border border-[#eadfc9] object-cover" />
+            ) : (
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#fff4d9] text-[#c49424]">
+                <Building2 className="h-6 w-6" />
+              </div>
+            )}
+            <div className="min-w-0">
+              <h3 className="truncate font-serif text-lg font-bold text-[#2f2a24]">{ex.companyName}</h3>
+              {ex.booth && (
+                <p className="flex items-center gap-1.5 text-sm text-[#8d681b]">
+                  <Store className="h-4 w-4" />
+                  Booth {ex.booth.boothNumber}
                 </p>
               )}
-
-              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                {exhibitors.map((ex) => (
-                  <div key={ex._id} className="rounded-2xl border border-[#eadfc9] bg-white p-6 shadow-sm">
-                    <div className="flex items-center gap-4">
-                      {ex.logo ? (
-                        <img src={fileUrl(ex.logo)} alt={ex.companyName} className="h-14 w-14 rounded-xl border border-[#eadfc9] object-cover" />
-                      ) : (
-                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#fff4d9] text-[#c49424]">
-                          <Building2 className="h-6 w-6" />
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <h3 className="truncate font-serif text-lg font-bold text-[#2f2a24]">{ex.companyName}</h3>
-                        {ex.booth && (
-                          <p className="flex items-center gap-1.5 text-sm text-[#8d681b]">
-                            <Store className="h-4 w-4" />
-                            Booth {ex.booth.boothNumber}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <p className="mt-4 text-sm font-medium text-[#4d473f]">{ex.productsServices}</p>
-                    {ex.description && <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#5d574f]">{ex.description}</p>}
-                    {ex.booth?.location && (
-                      <p className="mt-3 flex items-center gap-1.5 text-xs text-[#8a8379]">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {ex.booth.location}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
             </div>
+          </div>
+
+          <p className="mt-4 text-sm font-medium text-[#4d473f]">{ex.productsServices}</p>
+          {ex.description && <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#5d574f]">{ex.description}</p>}
+          {ex.booth?.location && (
+            <p className="mt-3 flex items-center gap-1.5 text-xs text-[#8a8379]">
+              <MapPin className="h-3.5 w-3.5" />
+              {ex.booth.location}
+            </p>
           )}
+
+          <button
+            onClick={() => navigate(`/attendee/messages?user=${ex.userId}`)}
+            className="mt-4 rounded-lg bg-gold text-background px-4 py-2 text-sm font-medium"
+          >
+            Message Exhibitor
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
           {/* ---------- EVENTS ---------- */}
           {tab === 'Events' && (

@@ -4,15 +4,19 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LogOut, Sparkles } from 'lucide-react'
 import api from '../../api/api'
 import { logout } from '@/store/slices/authSlice'
+import { fetchUnreadCounts } from '@/store/slices/messageSlice'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [settings, setSettings] = useState(null)
   const { user } = useSelector((state) => state.auth)
+  const { unread } = useSelector((state) => state.message)
   const isAttendee = user?.role === 'attendee'
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const unreadCount = unread.reduce((total, item) => total + item.count, 0)
 
   const handleLogout = () => {
     dispatch(logout())
@@ -32,6 +36,18 @@ const Navbar = () => {
 
     fetchWebsiteSettings()
   }, [])
+
+  useEffect(() => {
+    if (!isAttendee) return
+
+    dispatch(fetchUnreadCounts())
+
+    const interval = setInterval(() => {
+      dispatch(fetchUnreadCounts())
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [dispatch, isAttendee])
 
   const websiteName = settings?.websiteName || 'EventSphere'
   const logo = settings?.logo || ''
@@ -148,6 +164,20 @@ const Navbar = () => {
           >
             Book Now
           </button>
+
+          {isAttendee && (
+            <Link
+              to="/attendee/messages"
+              className="relative text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            >
+              Messages
+              {unreadCount > 0 && (
+                <span className="absolute -right-3 -top-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#c49424] px-1 text-[10px] font-bold text-white">
+                  {unreadCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {!isAttendee && (
             <Link
@@ -270,6 +300,21 @@ const Navbar = () => {
             </button>
 
             <div className="flex flex-col gap-4 pt-2">
+
+              {isAttendee && (
+                <Link
+                  to="/attendee/messages"
+                  onClick={() => setMenuOpen(false)}
+                  className="relative text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                >
+                  Messages
+                  {unreadCount > 0 && (
+                    <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#c49424] px-1 text-[10px] font-bold text-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Link>
+              )}
 
               {/* Login */}
               {!isAttendee && (

@@ -4,13 +4,14 @@ import { toast } from "sonner";
 import { Plus, Trash2, Check, X } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
-import { fetchMyEvents, createEvent, deleteEvent, fetchBookingRequests, approveBooking, rejectBooking } from "@/store/slices/eventSlice";
+import { fetchMyEvents, createEvent, deleteEvent, fetchBookingRequests, approveBooking, rejectBooking, uploadEventImage } from "@/store/slices/eventSlice";
 
 const statusStyles = {
   pending: "bg-gold/20 text-gold border border-gold/40",
   confirmed: "bg-emerald/20 text-emerald-300 border border-emerald/40",
   cancelled: "bg-red-500/20 text-red-300 border border-red-500/30",
 };
+
 const statusLabels = { pending: "Pending", confirmed: "Approved", cancelled: "Rejected" };
 const statusOrder = { pending: 0, confirmed: 1, cancelled: 2 };
 
@@ -21,6 +22,10 @@ const ExhibitorEvents = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
+  const [eventType, setEventType] = useState("");
+  const [boothCapacity, setBoothCapacity] = useState("");
+  const [images, setImages] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectNote, setRejectNote] = useState("");
 
@@ -30,20 +35,52 @@ const ExhibitorEvents = () => {
   }, [dispatch]);
 
   const handleCreate = async () => {
-    if(!title.trim() || !description.trim() || !date){
+    if(!title.trim() || !description.trim() || !date || !eventType.trim() || !boothCapacity){
       toast.error("Please fill in all fields");
       return;
     }
-    const result = await dispatch(createEvent({title, description, date}));
-    if(createEvent.fulfilled.match(result)){
-      toast.success("Event created successfully");
-      setTitle("");
-      setDescription("");
-      setDate("");
-      setFormOpen(false);
-      dispatch(fetchMyEvents());
-    } else {
-      toast.error(result.payload?.error || "Could not create event");
+
+    if(Number(boothCapacity) < 1 || !Number.isInteger(Number(boothCapacity))){
+      toast.error("Booth capacity must be a whole number of at least 1");
+      return;
+    }
+
+    try {
+      setUploadingImages(true);
+
+      const imageUrls = [];
+
+      for(const file of images){
+        const result = await dispatch(uploadEventImage(file)).unwrap();
+        imageUrls.push(result.image.url);
+      }
+
+      const result = await dispatch(createEvent({
+        title,
+        description,
+        date,
+        eventType,
+        boothCapacity: Number(boothCapacity),
+        images: imageUrls,
+      }));
+
+      if(createEvent.fulfilled.match(result)){
+        toast.success("Event submitted for admin approval");
+        setTitle("");
+        setDescription("");
+        setDate("");
+        setEventType("");
+        setBoothCapacity("");
+        setImages([]);
+        setFormOpen(false);
+        dispatch(fetchMyEvents());
+      } else {
+        toast.error(result.payload?.error || result.payload?.msg || "Could not create event");
+      }
+    } catch (error) {
+      toast.error(error?.error || error?.msg || "Could not upload event images");
+    } finally {
+      setUploadingImages(false);
     }
   };
 
@@ -71,6 +108,7 @@ const ExhibitorEvents = () => {
       toast.error("Please add a reason for rejection");
       return;
     }
+
     const result = await dispatch(rejectBooking({id, note: rejectNote.trim()}));
     if(rejectBooking.fulfilled.match(result)){
       toast.success("Ticket rejected");
@@ -81,6 +119,11 @@ const ExhibitorEvents = () => {
     }
   };
 
+  const handleImages = (e) => {
+    const files = Array.from(e.target.files || []);
+    setImages(files);
+  };
+
   const sortedRequests = [...requests].sort((a, b) => statusOrder[a.bookingStatus] - statusOrder[b.bookingStatus]);
   const pendingCount = requests.filter((r) => r.bookingStatus === "pending").length;
 
@@ -88,7 +131,7 @@ const ExhibitorEvents = () => {
     <DashboardLayout role="exhibitor">
       <DashboardSectionPage
         title="Events & Tickets"
-        description="Create showcase events for your booth and approve ticket requests from attendees."
+        description="Create events and approve ticket requests from attendees."
       >
         <div className="mb-6">
           <button onClick={() => setFormOpen(!formOpen)} className="flex items-center gap-2 rounded-lg bg-gold text-background px-4 py-2 text-sm font-medium">
@@ -98,31 +141,131 @@ const ExhibitorEvents = () => {
 
         {formOpen && (
           <div className="mb-6 rounded-2xl border border-border bg-surface p-6 space-y-4">
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Event title" className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground" />
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Event description" rows={3} className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground" />
-            <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground" />
-            <button onClick={handleCreate} className="w-full rounded-lg bg-gold text-background py-2 text-sm font-medium">Create Event</button>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Event title"
+              className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground"
+            />
+
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Event description"
+              rows={3}
+              className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground"
+            />
+
+            <select
+              value={eventType}
+              onChange={(e) => setEventType(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground"
+            >
+              <option value="">Select event type</option>
+              <option value="Wedding">Wedding</option>
+              <option value="Birthday">Birthday</option>
+              <option value="Corporate">Corporate</option>
+              <option value="Exhibition">Exhibition</option>
+              <option value="Festival">Festival</option>
+              <option value="Conference">Conference</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <input
+              type="datetime-local"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground"
+            />
+
+            <input
+              type="number"
+              min="1"
+              step="1"
+              value={boothCapacity}
+              onChange={(e) => setBoothCapacity(e.target.value)}
+              placeholder="Maximum number of stalls / booths"
+              className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground"
+            />
+
+            <div>
+              <label className="mb-2 block text-sm text-muted">Event images</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImages}
+                className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground"
+              />
+              {images.length > 0 && (
+                <p className="mt-2 text-xs text-muted">{images.length} image(s) selected</p>
+              )}
+            </div>
+
+            <button
+              onClick={handleCreate}
+              disabled={uploadingImages}
+              className="w-full rounded-lg bg-gold text-background py-2 text-sm font-medium disabled:opacity-50"
+            >
+              {uploadingImages ? "Uploading images..." : "Submit Event"}
+            </button>
           </div>
         )}
 
         {loading && <p className="text-sm text-muted">Loading...</p>}
 
         {!loading && events.length === 0 && (
-          <p className="text-sm text-muted">You haven't created any events yet. You need an approved booth to create one.</p>
+          <p className="text-sm text-muted">You haven't created any events yet.</p>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {events.map((event) => (
             <div key={event._id} className="rounded-2xl border border-border bg-surface p-4 space-y-2">
               <div className="flex items-start justify-between">
-                <p className="font-semibold text-foreground">{event.title}</p>
-                <button onClick={() => handleDelete(event._id)}><Trash2 size={14} className="text-muted hover:text-red-400" /></button>
+                <div>
+                  <p className="font-semibold text-foreground">{event.title}</p>
+                  {event.status && (
+                    <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${event.status === "pending" ? "bg-gold/20 text-gold border border-gold/40" : event.status === "approved" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" : "bg-red-500/20 text-red-300 border border-red-500/30"}`}>
+                      {event.status === "pending" ? "Pending Approval" : event.status === "approved" ? "Approved" : "Rejected"}
+                    </span>
+                  )}
+                </div>
+
+                <button onClick={() => handleDelete(event._id)}>
+                  <Trash2 size={14} className="text-muted hover:text-red-400" />
+                </button>
               </div>
+
               <p className="text-sm text-muted">{event.description}</p>
-              <p className="text-xs font-mono text-gold">{new Date(event.date).toLocaleString()}</p>
-              {(event.expo?.title || event.booth?.boothNumber) && (
-                <p className="text-xs text-muted">
-                  {event.expo?.title}{event.booth?.boothNumber ? ` · Booth ${event.booth.boothNumber}` : ""}
+
+              <p className="text-xs text-gold">
+                Type: <span className="text-foreground">{event.eventType}</span>
+              </p>
+
+              <p className="text-xs text-gold">
+                Stall capacity: <span className="text-foreground">{event.boothCapacity}</span>
+              </p>
+
+              <p className="text-xs font-mono text-gold">
+                {new Date(event.date).toLocaleString()}
+              </p>
+
+              {event.images?.length > 0 && (
+                <div className="flex gap-2 pt-2">
+                  {event.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={event.title}
+                      className="h-16 w-16 rounded-lg object-cover border border-border"
+                    />
+                  ))}
+                </div>
+              )}
+
+              {event.status === "rejected" && event.rejectionReason && (
+                <p className="text-xs text-red-300">
+                  Rejection reason: {event.rejectionReason}
                 </p>
               )}
             </div>
@@ -154,13 +297,16 @@ const ExhibitorEvents = () => {
                     </p>
                     <p className="text-xs text-muted">Requested {new Date(r.createdAt).toLocaleDateString()}</p>
                   </div>
+
                   <span className={`rounded-full px-3 py-1 text-xs font-medium ${statusStyles[r.bookingStatus]}`}>
                     {statusLabels[r.bookingStatus] ?? r.bookingStatus}
                   </span>
                 </div>
 
                 {r.bookingStatus === "confirmed" && r.passCode && (
-                  <p className="mt-3 text-sm text-muted">Pass code: <span className="font-mono text-gold">{r.passCode}</span></p>
+                  <p className="mt-3 text-sm text-muted">
+                    Pass code: <span className="font-mono text-gold">{r.passCode}</span>
+                  </p>
                 )}
 
                 {r.bookingStatus === "cancelled" && r.decisionNote && (
@@ -172,6 +318,7 @@ const ExhibitorEvents = () => {
                     <button onClick={() => handleApprove(r._id)} className="flex items-center gap-1.5 rounded-lg bg-gold text-background px-4 py-2 text-sm font-medium">
                       <Check size={14} /> Approve
                     </button>
+
                     <button onClick={() => { setRejectingId(r._id); setRejectNote(""); }} className="flex items-center gap-1.5 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-300 hover:bg-red-500/10">
                       <X size={14} /> Reject
                     </button>
@@ -180,10 +327,22 @@ const ExhibitorEvents = () => {
 
                 {r.bookingStatus === "pending" && rejectingId === r._id && (
                   <div className="mt-4 space-y-2">
-                    <textarea value={rejectNote} onChange={(e) => setRejectNote(e.target.value)} rows={2} placeholder="Reason for rejection (the attendee will see this)" className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground" />
+                    <textarea
+                      value={rejectNote}
+                      onChange={(e) => setRejectNote(e.target.value)}
+                      rows={2}
+                      placeholder="Reason for rejection (the attendee will see this)"
+                      className="w-full rounded-lg border border-border bg-background p-2 text-sm text-foreground"
+                    />
+
                     <div className="flex gap-2">
-                      <button onClick={() => handleReject(r._id)} className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white">Confirm reject</button>
-                      <button onClick={() => setRejectingId(null)} className="rounded-lg border border-border px-4 py-2 text-sm text-muted hover:text-foreground">Cancel</button>
+                      <button onClick={() => handleReject(r._id)} className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white">
+                        Confirm reject
+                      </button>
+
+                      <button onClick={() => setRejectingId(null)} className="rounded-lg border border-border px-4 py-2 text-sm text-muted hover:text-foreground">
+                        Cancel
+                      </button>
                     </div>
                   </div>
                 )}

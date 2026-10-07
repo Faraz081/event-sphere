@@ -7,7 +7,6 @@ const getPublicIdFromCloudinaryUrl = (url) => {
 
   try {
     const uploadMarker = "/upload/";
-
     const uploadIndex = url.indexOf(uploadMarker);
 
     if (uploadIndex === -1) {
@@ -15,7 +14,6 @@ const getPublicIdFromCloudinaryUrl = (url) => {
     }
 
     let path = url.substring(uploadIndex + uploadMarker.length);
-
     const parts = path.split("/");
 
     if (parts[0] && /^v\d+$/.test(parts[0])) {
@@ -45,16 +43,31 @@ const uploadImage = async (req, res) => {
       });
     }
 
+    console.log("FILE:", {
+      name: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      bufferLength: req.file.buffer?.length,
+    });
+
+    if (!req.file.buffer || req.file.buffer.length === 0) {
+      return res.status(400).json({
+        msg: "Image file is empty or invalid",
+      });
+    }
+
     const uploadResult = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
-          folder: "eventsphere/website",
+          folder: "eventsphere/events",
           resource_type: "image",
         },
         (error, result) => {
           if (error) {
+            console.error(`Cloudinary error for ${req.file.originalname}:`, error);
             reject(error);
           } else {
+            console.log(`Uploaded successfully: ${req.file.originalname}`);
             resolve(result);
           }
         }

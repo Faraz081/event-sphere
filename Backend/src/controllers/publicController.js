@@ -5,23 +5,28 @@ import Booth from "../models/Booth.js";
 import ExhibitorApplication from "../models/ExhibitorApplication.js";
 
 const PUBLIC_EXPO_FIELDS = "title description theme date location status banner";
+
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const findPublishedExpo = async (id) => {
   if (!mongoose.isValidObjectId(id)) return null;
+
   return Expo.findOne({ _id: id, status: "published" }).select(PUBLIC_EXPO_FIELDS);
 };
 
 // GET /api/public/expos
+
 export const getPublicExpos = async (req, res) => {
   try {
     const expos = await Expo.find({ status: "published" }).select(PUBLIC_EXPO_FIELDS).sort({ date: 1 });
+
     const applications = await ExhibitorApplication.find({
       expo: { $in: expos.map((expo) => expo._id) },
       status: "approved",
     }).select("expo companyName");
 
     const companiesByExpo = new Map();
+
     applications.forEach(({ expo, companyName }) => {
       const expoId = String(expo);
       const companies = companiesByExpo.get(expoId) || [];
@@ -41,9 +46,11 @@ export const getPublicExpos = async (req, res) => {
 };
 
 // GET /api/public/expos/:id  (expo + schedule)
+
 export const getPublicExpo = async (req, res) => {
   try {
     const expo = await findPublishedExpo(req.params.id);
+
     if (!expo) return res.status(404).json({ error: "Expo not found" });
 
     const schedules = await Schedule.find({ expo: expo._id })
@@ -57,13 +64,16 @@ export const getPublicExpo = async (req, res) => {
 };
 
 // GET /api/public/expos/:id/exhibitors?search=
+
 export const getPublicExhibitors = async (req, res) => {
   try {
     const expo = await findPublishedExpo(req.params.id);
+
     if (!expo) return res.status(404).json({ error: "Expo not found" });
 
     const filter = { expo: expo._id, status: "approved" };
     const search = req.query.search?.trim();
+
     if (search) {
       const re = new RegExp(escapeRegex(search), "i");
       filter.$or = [{ companyName: re }, { productsServices: re }, { description: re }];
@@ -83,8 +93,10 @@ export const getPublicExhibitors = async (req, res) => {
 
     const exhibitors = applications.map((a) => {
       const b = boothByUser.get(String(a.userId));
+
       return {
         _id: a._id,
+        userId: a.userId,
         companyName: a.companyName,
         productsServices: a.productsServices,
         description: a.description,
@@ -100,9 +112,11 @@ export const getPublicExhibitors = async (req, res) => {
 };
 
 // GET /api/public/expos/:id/booths  (floor plan)
+
 export const getPublicBooths = async (req, res) => {
   try {
     const expo = await findPublishedExpo(req.params.id);
+
     if (!expo) return res.status(404).json({ error: "Expo not found" });
 
     const [booths, applications] = await Promise.all([
@@ -117,7 +131,6 @@ export const getPublicBooths = async (req, res) => {
       boothNumber: b.boothNumber,
       size: b.size,
       location: b.location,
-      // pending request ko bhi attendee ke liye "reserved" dikhao
       status: b.status === "available" ? "available" : b.status === "occupied" ? "occupied" : "reserved",
       companyName: b.exhibitor ? companyByUser.get(String(b.exhibitor)) ?? null : null,
     }));

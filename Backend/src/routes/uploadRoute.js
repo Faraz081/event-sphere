@@ -1,11 +1,6 @@
 import express from "express";
 import multer from "multer";
-
-import {
-  uploadImage,
-  deleteImage,
-} from "../controllers/uploadController.js";
-
+import { uploadImage, deleteImage } from "../controllers/uploadController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
 
@@ -28,7 +23,6 @@ const upload = multer({
 uploadRoute.post(
   "/image",
   authMiddleware,
-  adminMiddleware,
   upload.single("image"),
   uploadImage
 );

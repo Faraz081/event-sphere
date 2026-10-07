@@ -1,6 +1,23 @@
 import api from "@/api/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+export const uploadEventImage = createAsyncThunk("event/uploadEventImage", async (file, {rejectWithValue}) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const data = await api.post("/api/upload/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {msg: "Image upload failed"});
+  }
+});
+
 export const createEvent = createAsyncThunk("event/createEvent", async (eventData, {rejectWithValue}) => {
   try {
     const data = await api.post("/api/event", eventData);
@@ -23,6 +40,33 @@ export const deleteEvent = createAsyncThunk("event/deleteEvent", async (eventId,
   try {
     await api.delete(`/api/event/${eventId}`);
     return eventId;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {msg: "Unable to connect to the server"});
+  }
+});
+
+export const fetchPendingEvents = createAsyncThunk("event/fetchPendingEvents", async (_, {rejectWithValue}) => {
+  try {
+    const data = await api.get("/api/admin/events/pending");
+    return data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {msg: "Unable to connect to the server"});
+  }
+});
+
+export const approveEvent = createAsyncThunk("event/approveEvent", async (eventId, {rejectWithValue}) => {
+  try {
+    const data = await api.put(`/api/admin/events/${eventId}/approve`);
+    return data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {msg: "Unable to connect to the server"});
+  }
+});
+
+export const rejectEvent = createAsyncThunk("event/rejectEvent", async ({id, reason}, {rejectWithValue}) => {
+  try {
+    const data = await api.put(`/api/admin/events/${id}/reject`, {reason});
+    return data.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || {msg: "Unable to connect to the server"});
   }
@@ -58,6 +102,7 @@ export const rejectBooking = createAsyncThunk("event/rejectBooking", async ({id,
 
 const initialState = {
   events: [],
+  pendingEvents: [],
   requests: [],
   error: null,
   loading: false,
@@ -99,6 +144,24 @@ const eventSlice = createSlice({
         state.requests = state.requests.map((r) =>
           r.event?._id === action.payload ? {...r, bookingStatus: "cancelled", decisionNote: "This event was cancelled by the exhibitor"} : r
         );
+      })
+      .addCase(fetchPendingEvents.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPendingEvents.fulfilled, (state, action) => {
+        state.pendingEvents = action.payload.events;
+        state.loading = false;
+      })
+      .addCase(fetchPendingEvents.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(approveEvent.fulfilled, (state, action) => {
+        state.pendingEvents = state.pendingEvents.filter((event) => event._id !== action.payload.event._id);
+      })
+      .addCase(rejectEvent.fulfilled, (state, action) => {
+        state.pendingEvents = state.pendingEvents.filter((event) => event._id !== action.payload.event._id);
       })
       .addCase(fetchBookingRequests.fulfilled, (state, action) => {
         state.requests = action.payload.requests;
