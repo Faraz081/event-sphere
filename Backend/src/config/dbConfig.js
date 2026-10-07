@@ -8,9 +8,12 @@ const database = () => {
       serverSelectionTimeoutMS: 8000,
     }).then(() => {
       console.log("Database connected");
+    }).catch((err) => {
+      connectionPromise = null;
+      throw err;
     });
   }
   return connectionPromise;
 };
 
-export default database
+export default database;
