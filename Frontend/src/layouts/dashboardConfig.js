@@ -1,4 +1,4 @@
-import { LayoutDashboard, CalendarDays, Store, ClipboardList, BarChart3, User, Users, UserCheck, MessageSquare, Settings, Building2, Inbox, Ticket } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Store, ClipboardList, User, Users, UserCheck, MessageSquare, Settings, Building2, Inbox, Ticket } from "lucide-react";
 
 export const roleLabels = {
   admin: "Admin",
@@ -26,7 +26,6 @@ export const dashboardNavigation = {
     { label: "Feedback", path: "/admin/feedback", icon: Inbox },
     { label: "Expo Tickets", path: "/admin/tickets", icon: Ticket },
     { label: "Events", path: "/admin/events", icon: CalendarDays },
-    { label: "Analytics", path: "/admin/analytics", icon: BarChart3 },
     { label: "Website Settings", path: "/admin/website-settings", icon: Settings },
   ],
   exhibitor: [

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
 import {
@@ -62,11 +62,13 @@ const AdminBooths = () => {
   const [booths, setBooths] = useState([]);
   const [expos, setExpos] = useState([]);
   const [approvedExhibitors, setApprovedExhibitors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [expoFilter, setExpoFilter] = useState("all");
+  const [expoFilter, setExpoFilter] = useState("");
+  const [expoCapacity, setExpoCapacity] = useState(null);
+  const boothRequestId = useRef(0);
   const [viewMode, setViewMode] = useState("table"); // table | grid
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,22 +82,42 @@ const AdminBooths = () => {
   const [assigning, setAssigning] = useState(false);
 
   const loadBooths = useCallback(async () => {
+    const requestId = ++boothRequestId.current;
+    if (!expoFilter) {
+      setBooths([]);
+      setExpoCapacity(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
-      const params = {};
+      const params = { expo: expoFilter };
       if (search.trim()) params.search = search.trim();
       if (statusFilter !== "all") params.status = statusFilter;
-      if (expoFilter !== "all") params.expo = expoFilter;
 
       const data = await fetchBooths(params);
-      setBooths(data.booths || []);
+      if (requestId !== boothRequestId.current) return;
+      setBooths((data.booths || []).filter((booth) => {
+        const boothExpoId = booth.expo?._id || booth.expo;
+        return String(boothExpoId) === String(expoFilter);
+      }));
+      setExpoCapacity({
+        totalBooths: data.totalBooths ?? 0,
+        maxBooths: data.maxBooths ?? 10,
+        remainingSlots: data.remainingSlots ?? 0,
+      });
     } catch (err) {
+      if (requestId !== boothRequestId.current) return;
       console.error(err);
+      setBooths([]);
+      setExpoCapacity(null);
       setError(err.response?.data?.error || "Failed to load booths");
       toast.error("Failed to load booths");
     } finally {
-      setLoading(false);
+      if (requestId === boothRequestId.current) setLoading(false);
     }
   }, [search, statusFilter, expoFilter]);
 
@@ -131,9 +153,25 @@ const AdminBooths = () => {
   };
 
   const openCreateModal = () => {
-    setFormData(initialFormState);
+    if (!expoFilter) {
+      toast.error("Please select an expo first");
+      return;
+    }
+    setFormData({ ...initialFormState, expo: expoFilter });
     setEditingId(null);
     setIsModalOpen(true);
+  };
+
+  const handleExpoFilterChange = (e) => {
+    const nextExpo = e.target.value;
+    boothRequestId.current += 1;
+    setBooths([]);
+    setExpoCapacity(null);
+    setError(null);
+    setLoading(Boolean(nextExpo));
+    setAssignBooth(null);
+    setSelectedExhibitor("");
+    setExpoFilter(nextExpo);
   };
 
   const openEditModal = (booth) => {
@@ -156,13 +194,17 @@ const AdminBooths = () => {
   };
 
   const handleSave = async () => {
-    if (!formData.expo || !formData.boothNumber.trim()) {
+    if ((!editingId && !expoFilter) || !formData.expo || !formData.boothNumber.trim()) {
       toast.error("Expo and Booth Number are required");
       return;
     }
     try {
       setSaving(true);
-      const payload = { ...formData, price: Number(formData.price) || 0 };
+      const payload = {
+        ...formData,
+        expo: editingId ? formData.expo : expoFilter,
+        price: Number(formData.price) || 0,
+      };
       if (editingId) {
         await updateBooth(editingId, payload);
         toast.success("Booth updated successfully");
@@ -298,13 +340,21 @@ const AdminBooths = () => {
             </button>
             <button
               onClick={openCreateModal}
+              disabled={!expoFilter || expoCapacity?.remainingSlots === 0}
               className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity"
             >
               <Plus size={18} />
-              Add Booth
+              {expoFilter && expoCapacity?.remainingSlots === 0 ? "Booth Full" : "Add Booth"}
             </button>
           </div>
         </div>
+
+        {expoFilter && expoCapacity && (
+          <div className="mb-6 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-muted">
+            <p>{expoCapacity.totalBooths} of {expoCapacity.maxBooths} booths used</p>
+            <p className="mt-1">Remaining slots: {expoCapacity.remainingSlots}</p>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -332,10 +382,10 @@ const AdminBooths = () => {
 
           <select
             value={expoFilter}
-            onChange={(e) => setExpoFilter(e.target.value)}
+            onChange={handleExpoFilterChange}
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 min-w-[180px]"
           >
-            <option value="all">All Expos</option>
+            <option value="">Select Expo</option>
             {expos.map((expo) => (
               <option key={expo._id} value={expo._id}>
                 {expo.title}
@@ -392,7 +442,7 @@ const AdminBooths = () => {
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-muted">
                     <Building2 className="mx-auto mb-2 opacity-40" size={32} />
-                    No booths found. Create your first booth.
+                    {expoFilter ? "No booths found. Create your first booth." : "Select an expo to view its booths"}
                   </td>
                 </tr>
               ) : (
@@ -481,7 +531,7 @@ const AdminBooths = () => {
             ) : booths.length === 0 ? (
               <div className="py-16 text-center text-muted">
                 <Building2 className="mx-auto mb-2 opacity-40" size={40} />
-                <p>No booths to show. Create booths or change filters.</p>
+                <p>{expoFilter ? "No booths to show. Create booths or change filters." : "Select an expo to view its booths"}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
@@ -558,6 +608,7 @@ const AdminBooths = () => {
                     name="expo"
                     value={formData.expo}
                     onChange={handleInputChange}
+                    disabled={!editingId}
                     className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
                   >
                     <option value="">Select Expo</option>

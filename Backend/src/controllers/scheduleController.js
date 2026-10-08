@@ -40,6 +40,9 @@ export const createSchedule = async (req, res) => {
     if (isNaN(start.getTime())) {
       return res.status(400).json({ error: "Invalid start time format" });
     }
+    if (start < new Date()) {
+      return res.status(400).json({ error: "Cannot schedule in the past" });
+    }
     if (isNaN(end.getTime())) {
       return res.status(400).json({ error: "Invalid end time format" });
     }
@@ -192,6 +195,9 @@ export const updateSchedule = async (req, res) => {
       start = new Date(req.body.startTime);
       if (isNaN(start.getTime())) {
         return res.status(400).json({ error: "Invalid start time format" });
+      }
+      if (start < new Date()) {
+        return res.status(400).json({ error: "Cannot schedule in the past" });
       }
     }
 

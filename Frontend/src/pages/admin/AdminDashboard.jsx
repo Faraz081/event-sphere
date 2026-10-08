@@ -8,6 +8,27 @@ import { fetchAnalytics } from "@/api/analyticsService";
 import { RotateCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
+
+const BOOTH_COLORS = {
+  Available: "#C9A227",
+  Reserved: "#34d399",
+  Occupied: "#94a3b8",
+};
+
+const EXHIBITOR_COLORS = ["#C9A227", "#34d399", "#f87171"];
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -24,6 +45,7 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
 
   const loadDashboardStats = useCallback(async () => {
     setLoading(true);
@@ -39,6 +61,7 @@ const AdminDashboard = () => {
       const attendeeStats = attendeeRes?.stats || {};
       const overview = analyticsRes?.analytics?.overview || {};
       const exhibitors = analyticsRes?.analytics?.exhibitors || {};
+      setAnalytics(analyticsRes?.analytics || null);
 
       setStats({
         totalUsers: userStats.total ?? overview.totalUsers ?? 0,
@@ -69,6 +92,8 @@ const AdminDashboard = () => {
   }, [loadDashboardStats]);
 
   const v = (n) => (loading ? "..." : n ?? 0);
+  const overview = analytics?.overview || {};
+  const booths = analytics?.booths || {};
 
   const cards = [
     { label: "Total Expos", value: v(stats.totalExpos) },
@@ -159,13 +184,127 @@ const AdminDashboard = () => {
             <p className="text-xs text-muted mt-1">Manage expos →</p>
           </Link>
           <Link
-            to="/admin/analytics"
+            to="/admin#dashboard-analytics"
             className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
           >
-            <p className="text-sm text-muted">Full analytics</p>
+            <p className="text-sm text-muted">Analytics charts</p>
             <p className="text-2xl font-semibold text-foreground mt-1">View</p>
             <p className="text-xs text-muted mt-1">Charts & reports →</p>
           </Link>
+        </div>
+
+        <div id="dashboard-analytics" className="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-6">
+          <div className="bg-surface border border-border rounded-2xl p-5">
+            <h2 className="font-display text-foreground text-lg mb-4">Booth Status Breakdown</h2>
+            {(analytics?.boothStatusBreakdown?.length ?? 0) === 0 || overview.totalBooths === 0 ? (
+              <p className="text-muted text-sm py-10 text-center">
+                {loading ? "Loading analytics..." : "No booth data yet"}
+              </p>
+            ) : (
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={analytics.boothStatusBreakdown}>
+                  <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" />
+                  <XAxis dataKey="name" stroke="var(--color-muted)" />
+                  <YAxis stroke="var(--color-muted)" allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "var(--color-surface)",
+                      border: "1px solid var(--color-border)",
+                      color: "var(--color-foreground)",
+                    }}
+                  />
+                  <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                    {analytics.boothStatusBreakdown.map((entry) => (
+                      <Cell key={entry.name} fill={BOOTH_COLORS[entry.name] || "#C9A227"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          <div className="bg-surface border border-border rounded-2xl p-5">
+            <h2 className="font-display text-foreground text-lg mb-4">Exhibitor Status</h2>
+            {(analytics?.exhibitorStatusBreakdown?.every((entry) => entry.value === 0) ?? true) ? (
+              <p className="text-muted text-sm py-10 text-center">
+                {loading ? "Loading analytics..." : "No exhibitor data yet"}
+              </p>
+            ) : (
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie
+                    data={analytics.exhibitorStatusBreakdown.filter((entry) => entry.value > 0)}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={90}
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {analytics.exhibitorStatusBreakdown
+                      .filter((entry) => entry.value > 0)
+                      .map((entry, index) => (
+                        <Cell key={entry.name} fill={EXHIBITOR_COLORS[index % EXHIBITOR_COLORS.length]} />
+                      ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "var(--color-surface)",
+                      border: "1px solid var(--color-border)",
+                      color: "var(--color-foreground)",
+                    }}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-surface border border-border rounded-2xl p-5">
+          <h2 className="font-display text-foreground text-lg mb-4">Recent Expos</h2>
+          {!analytics?.recentExpos?.length ? (
+            <p className="text-muted text-sm">
+              {loading ? "Loading analytics..." : "No expos created yet."}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted">
+                    <th className="text-left py-2 pr-4 font-medium">Title</th>
+                    <th className="text-left py-2 pr-4 font-medium">Date</th>
+                    <th className="text-left py-2 pr-4 font-medium">Location</th>
+                    <th className="text-left py-2 font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {analytics.recentExpos.map((expo) => (
+                    <tr key={expo._id} className="border-b border-border last:border-0">
+                      <td className="py-3 pr-4 text-foreground font-medium">{expo.title}</td>
+                      <td className="py-3 pr-4 text-muted">
+                        {expo.date
+                          ? new Date(expo.date).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                          : "—"}
+                      </td>
+                      <td className="py-3 pr-4 text-muted">{expo.location || "—"}</td>
+                      <td className="py-3 text-muted capitalize">{expo.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="text-sm text-muted">
+          Occupancy: <span className="text-gold font-medium">{booths.occupancyRate ?? 0}%</span>
+          {" · "}Assigned booths: {booths.assigned ?? 0} / {overview.totalBooths ?? 0}
+          {" · "}Sessions in schedule: {overview.totalSessions ?? 0}
         </div>
       </div>
     </DashboardLayout>

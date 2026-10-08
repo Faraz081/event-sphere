@@ -1,5 +1,6 @@
 import Booth from "../models/Booth.js";
 import mongoose from "mongoose";
+import Expo from "../models/Expo.js";
 
 // CREATE Booth
 export const createBooth = async (req, res) => {
@@ -10,10 +11,24 @@ export const createBooth = async (req, res) => {
       return res.status(400).json({ error: "Expo and booth number are required" });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(expo)) {
+      return res.status(400).json({ error: "Invalid expo ID" });
+    }
+
+    const selectedExpo = await Expo.findById(expo);
+    if (!selectedExpo) {
+      return res.status(404).json({ error: "Expo not found" });
+    }
+
     // Check duplicate booth number in same expo
     const existing = await Booth.findOne({ expo, boothNumber: boothNumber.trim() });
     if (existing) {
       return res.status(409).json({ error: "Booth number already exists in this expo" });
+    }
+
+    const totalBooths = await Booth.countDocuments({ expo });
+    if (totalBooths >= (selectedExpo.maxBooths || 10)) {
+      return res.status(400).json({ error: "Booth full for this expo" });
     }
 
     const nextStatus = status || (exhibitor ? "reserved" : "available");
@@ -76,15 +91,23 @@ export const getAllBooths = async (req, res) => {
     sortOption[sortBy] = sortOrder === "asc" ? 1 : -1;
 
     const booths = await Booth.find(filter)
-      .populate("expo", "title date location status")
+      .populate("expo", "title date location status maxBooths")
       .populate("exhibitor", "name companyName email")
       .sort(sortOption);
 
     const total = await Booth.countDocuments(filter);
+    const selectedExpo = expo && expo !== "all" ? await Expo.findById(expo) : null;
+    const expoTotalBooths = selectedExpo ? await Booth.countDocuments({ expo: selectedExpo._id }) : null;
+    const maxBooths = selectedExpo ? selectedExpo.maxBooths || 10 : null;
 
     res.status(200).json({
       success: true,
       total,
+      ...(selectedExpo && {
+        totalBooths: expoTotalBooths,
+        maxBooths,
+        remainingSlots: Math.max(0, maxBooths - expoTotalBooths),
+      }),
       booths,
     });
   } catch (error) {
@@ -136,6 +159,10 @@ export const updateBooth = async (req, res) => {
     }
 
     const nextExpo = expo ?? booth.expo;
+    if (!mongoose.Types.ObjectId.isValid(nextExpo)) {
+      return res.status(400).json({ error: "Invalid expo ID" });
+    }
+    const isMovingToAnotherExpo = nextExpo.toString() !== booth.expo.toString();
     const nextExhibitor = exhibitor !== undefined ? (exhibitor || null) : booth.exhibitor;
     let nextStatus = status ?? booth.status;
     if (exhibitor !== undefined && exhibitor && nextStatus === "available") nextStatus = "reserved";
@@ -155,6 +182,17 @@ export const updateBooth = async (req, res) => {
         return res.status(409).json({ error: "Booth number already exists in this expo" });
       }
       booth.boothNumber = boothNumber.trim();
+    }
+
+    if (isMovingToAnotherExpo) {
+      const destinationExpo = await Expo.findById(nextExpo);
+      if (!destinationExpo) {
+        return res.status(404).json({ error: "Expo not found" });
+      }
+      const destinationCount = await Booth.countDocuments({ expo: nextExpo });
+      if (destinationCount >= (destinationExpo.maxBooths || 10)) {
+        return res.status(400).json({ error: "Booth full for this expo" });
+      }
     }
 
     if (size !== undefined) booth.size = size;

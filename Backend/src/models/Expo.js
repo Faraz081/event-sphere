@@ -7,6 +7,7 @@ const expoSchema = new mongoose.Schema({
     date: {type: Date, required: [true, "Date is required"]},
     location: {type: String, required: [true, "Location is required"], trim: true},
     status: {type: String, enum: ["draft", "published", "completed", "cancelled"], default: "draft"},
+    maxBooths: {type: Number, required: true, min: 1, default: 10},
     createdBy: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
     banner: {type: String}
 },{ timestamps: true })

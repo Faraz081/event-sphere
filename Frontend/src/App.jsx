@@ -17,7 +17,6 @@ import AdminAttendees from "./pages/admin/AdminAttendees";
 import AdminExpos from "./pages/admin/AdminExpos";
 import AdminBooths from "./pages/admin/AdminBooths";
 import AdminSchedule from "./pages/admin/AdminSchedule";
-import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminWebsiteSettings from "./pages/admin/AdminWebsiteSettings";
 import AdminExhibitors from "./pages/admin/AdminExhibitors";
 import ExhibitorPortal from "./pages/exhibitor/ExhibitorPortal";
@@ -94,7 +93,6 @@ function App() {
             <Route path="/admin/booths" element={<AdminBooths />} />
             <Route path="/admin/exhibitors" element={<AdminExhibitors />} />
             <Route path="/admin/schedule" element={<AdminSchedule />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/website-settings" element={<AdminWebsiteSettings />} />
             <Route path="/admin/messages" element={<AdminMessages />} />
             <Route path="/admin/feedback" element={<AdminFeedback />}/>
