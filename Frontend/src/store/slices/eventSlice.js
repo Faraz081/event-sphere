@@ -100,6 +100,15 @@ export const rejectBooking = createAsyncThunk("event/rejectBooking", async ({id,
   }
 });
 
+export const updateEvent = createAsyncThunk("event/update", async ({id, data}, {rejectWithValue}) => {
+  try {
+    const res = await api.put(`/api/event/${id}`, data);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {error: "Could not update event"});
+  }
+});
+
 const initialState = {
   events: [],
   pendingEvents: [],

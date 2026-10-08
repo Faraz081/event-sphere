@@ -59,11 +59,16 @@ const attendeeSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+eventDate: { type: Date },
+guests: { type: Number, min: 1 },
+contactPhone: { type: String, trim: true },
     entryPassId: { type: String },
 reviewedAt: { type: Date },
   },
+
   { timestamps: true }
 );
+
 
 attendeeSchema.index(
   { user: 1, expo: 1 },

@@ -57,9 +57,11 @@ const RegisterPage = () => {
     }
 
     try {
-      await dispatch(registerUser(formData)).unwrap();
+      const data = await dispatch(registerUser(formData)).unwrap();
 
-      toast.success("Registration successful!");
+      toast.success(data?.msg || "Registration successful!", {
+        duration: formData.role === "exhibitor" ? 7000 : 4000,
+      });
       setFormData(initialFormData);
       navigate("/login");
     } catch (error) {

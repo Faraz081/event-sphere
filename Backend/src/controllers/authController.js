@@ -47,8 +47,13 @@ const login = async (req, res) => {
     }
 
     if (check.status !== "active") {
+      const message =
+        check.status === "inactive"
+          ? "Your account is waiting for admin approval. You can log in once it is activated."
+          : "This account is suspended. Please contact support.";
+
       return res.status(403).json({
-        error: "This account is not active. Please contact support.",
+        error: message,
       });
     }
 
@@ -133,22 +138,26 @@ const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-          const addUser = await User.create({
+    const isExhibitor = publicRole === "exhibitor";
+
+    const addUser = await User.create({
       name,
       email,
       password: hashedPassword,
       role: publicRole,
       companyName,
       phone,
-      status: "active",
+      status: isExhibitor ? "inactive" : "active",
       exhibitorStatus: null,
     });
-    
+
     const user = addUser.toObject();
     delete user.password;
 
     return res.status(201).json({
-      msg: "registered",
+      msg: isExhibitor
+        ? "Registration successful. You can log in once the admin activates your account."
+        : "Registration successful!",
       addUser: user,
     });
   } catch (error) {

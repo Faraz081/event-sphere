@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Event from "../models/Event.js";
 import Attendee from "../models/Attendee.js";
+import User from "../models/User.js";
 
 // protect middleware jis naam se bhi id rakhe, wahi utha lo
 
@@ -14,20 +15,16 @@ const createEvent = async (req, res) => {
       return res.status(401).json({ error: "Please login again" });
     }
 
-    const { title, description, date, eventType, images, boothCapacity, banner } = req.body;
+    const user = await User.findById(exhibitor).select("status");
 
-    if (!title?.trim() || !description?.trim() || !date || !eventType?.trim() || !boothCapacity) {
-      return res.status(400).json({ error: "Title, description, date, event type and booth capacity are required" });
+    if (!user || user.status !== "active") {
+      return res.status(403).json({ error: "Your account is not active. Please contact the admin" });
     }
 
-    const parsedDate = new Date(date);
+    const { title, description, eventType, images, boothCapacity, banner, location } = req.body;
 
-    if (isNaN(parsedDate.getTime())) {
-      return res.status(400).json({ error: "Invalid date" });
-    }
-
-    if (parsedDate < new Date()) {
-      return res.status(400).json({ error: "Event date must be in the future" });
+    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !location?.trim() || !boothCapacity) {
+      return res.status(400).json({ error: "Title, description, event type, location and booth capacity are required" });
     }
 
     const parsedBoothCapacity = Number(boothCapacity);
@@ -40,7 +37,7 @@ const createEvent = async (req, res) => {
       exhibitor,
       title: title.trim(),
       description: description.trim(),
-      date: parsedDate,
+      location: location.trim(),
       eventType: eventType.trim(),
       images: Array.isArray(images) ? images : [],
       boothCapacity: parsedBoothCapacity,
@@ -64,7 +61,7 @@ const getMyEvents = async (req, res) => {
 
     const events = await Event.find({ exhibitor })
       .populate("exhibitor", "name companyName")
-      .sort({ date: 1 });
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({ msg: "Events fetched", events });
   } catch (error) {
@@ -78,7 +75,7 @@ const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find({ status: "approved" })
       .populate("exhibitor", "name companyName")
-      .sort({ date: 1 });
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({ msg: "All approved events fetched", events });
   } catch (error) {
@@ -118,4 +115,61 @@ const deleteEvent = async (req, res) => {
   }
 };
 
-export { createEvent, getMyEvents, getAllEvents, deleteEvent };
+const updateEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const exhibitor = getMyId(req);
+
+    if (!mongoose.isValidObjectId(exhibitor)) {
+      return res.status(401).json({ error: "Please login again" });
+    }
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ error: "Invalid event ID" });
+    }
+
+    const user = await User.findById(exhibitor).select("status");
+
+    if (!user || user.status !== "active") {
+      return res.status(403).json({ error: "Your account is not active. Please contact the admin" });
+    }
+
+    const event = await Event.findOne({ _id: id, exhibitor });
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found or not yours" });
+    }
+
+    const { title, description, eventType, images, boothCapacity, location } = req.body;
+
+    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !location?.trim() || !boothCapacity) {
+      return res.status(400).json({ error: "Title, description, event type, location and booth capacity are required" });
+    }
+
+    const parsedBoothCapacity = Number(boothCapacity);
+
+    if (!Number.isInteger(parsedBoothCapacity) || parsedBoothCapacity < 1) {
+      return res.status(400).json({ error: "Booth capacity must be at least 1" });
+    }
+
+    event.title = title.trim();
+    event.description = description.trim();
+    event.location = location.trim();
+    event.eventType = eventType.trim();
+    event.boothCapacity = parsedBoothCapacity;
+    if (Array.isArray(images)) event.images = images;
+
+    // edit ke baad dobara admin approval chahiye
+    event.status = "pending";
+    event.rejectionReason = undefined;
+    event.reviewedAt = undefined;
+
+    await event.save();
+
+    return res.status(200).json({ msg: "Event updated and sent for admin approval", event });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export { createEvent, getMyEvents, getAllEvents, deleteEvent, updateEvent };
