@@ -62,6 +62,7 @@ const initialFormState = {
   theme: "",
   status: "draft",
   banner: "",
+  maxBooths: "10",
 };
 
 const AdminExpos = () => {
@@ -196,6 +197,7 @@ const AdminExpos = () => {
       theme: expo.theme || "",
       status: expo.status || "draft",
       banner: expo.banner || "",
+      maxBooths: String(expo.maxBooths || 10),
     });
     setEditingId(expo._id);
     setIsModalOpen(true);
@@ -224,6 +226,10 @@ const AdminExpos = () => {
       toast.error("Expo description is required");
       return;
     }
+    if (!Number.isInteger(Number(formData.maxBooths)) || Number(formData.maxBooths) < 1) {
+      toast.error("Max booths must be a positive whole number");
+      return;
+    }
 
     // Future / today date check
     const selectedDate = new Date(formData.date);
@@ -238,10 +244,10 @@ const AdminExpos = () => {
     try {
       setSaving(true);
       if (editingId) {
-        await updateExpo(editingId, formData);
+        await updateExpo(editingId, { ...formData, maxBooths: Number(formData.maxBooths) });
         toast.success("Expo updated successfully");
       } else {
-        await createExpo(formData);
+        await createExpo({ ...formData, maxBooths: Number(formData.maxBooths) });
         toast.success("Expo created successfully");
       }
       closeModal();
@@ -449,6 +455,7 @@ const AdminExpos = () => {
                         {expo.theme && (
                           <div className="text-xs text-muted mt-0.5">Theme: {expo.theme}</div>
                         )}
+                        <div className="text-xs text-muted mt-0.5">Booths: {expo.totalBooths ?? 0} / {expo.maxBooths ?? 10}</div>
                       </div>
                     </div>
                   </td>
@@ -688,6 +695,20 @@ const AdminExpos = () => {
                     onChange={handleInputChange}
                     placeholder="e.g. Artificial Intelligence & Robotics"
                     className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-muted mb-1.5">Max Booths *</label>
+                  <input
+                    name="maxBooths"
+                    type="number"
+                    min="1"
+                    step="1"
+                    required
+                    value={formData.maxBooths}
+                    onChange={handleInputChange}
+                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
                   />
                 </div>
               </div>

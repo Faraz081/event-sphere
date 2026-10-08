@@ -107,6 +107,7 @@ const initialFormState = {
 };
 
 const AdminSchedule = () => {
+  const minStartTime = toDatetimeLocal(new Date(Math.ceil(Date.now() / 60000) * 60000));
   const [schedules, setSchedules] = useState([]);
   const [expos, setExpos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -569,6 +570,7 @@ const AdminSchedule = () => {
                     <input
                       name="startTime"
                       type="datetime-local"
+                      min={minStartTime}
                       value={formData.startTime}
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"

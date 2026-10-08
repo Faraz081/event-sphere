@@ -1,12 +1,18 @@
 import mongoose from "mongoose";
 import Expo from "../models/Expo.js";
+import Booth from "../models/Booth.js";
 
 const VALID_STATUSES = ["draft", "published", "completed", "cancelled"];
 
 // CREATE Expo
 export const createExpo = async (req, res) => {
   try {
-    const { title, description, theme, date, location, status, banner } = req.body;
+    const { title, description, theme, date, location, status, banner, maxBooths = 10 } = req.body;
+
+    const parsedMaxBooths = Number(maxBooths);
+    if (!Number.isInteger(parsedMaxBooths) || parsedMaxBooths < 1) {
+      return res.status(400).json({ error: "Max booths must be a positive whole number" });
+    }
 
     if (typeof title !== "string" || !title.trim()) {
       return res.status(400).json({ error: "Title is required" });
@@ -54,6 +60,7 @@ export const createExpo = async (req, res) => {
       date: parsedDate,
       location: location.trim(),
       status: expoStatus,
+      maxBooths: parsedMaxBooths,
       banner: typeof banner === "string" ? banner : "",
       createdBy,
     });
@@ -113,6 +120,21 @@ export const getAllExpos = async (req, res) => {
     }
 
     const expos = await query;
+    const boothCounts = await Booth.aggregate([
+      { $match: { expo: { $in: expos.map((expo) => expo._id) } } },
+      { $group: { _id: "$expo", totalBooths: { $sum: 1 } } },
+    ]);
+    const boothCountByExpo = new Map(boothCounts.map(({ _id, totalBooths }) => [_id.toString(), totalBooths]));
+    const exposWithCapacity = expos.map((expo) => {
+      const totalBooths = boothCountByExpo.get(expo._id.toString()) || 0;
+      const maxBooths = expo.maxBooths || 10;
+      return {
+        ...expo.toObject(),
+        maxBooths,
+        totalBooths,
+        remainingSlots: Math.max(0, maxBooths - totalBooths),
+      };
+    });
 
     return res.status(200).json({
       success: true,
@@ -120,7 +142,7 @@ export const getAllExpos = async (req, res) => {
       page: pageNum,
       limit: limitNum > 0 ? limitNum : total,
       totalPages: limitNum > 0 ? (Math.ceil(total / limitNum) || 1) : 1,
-      expos,
+      expos: exposWithCapacity,
     });
   } catch (error) {
     console.error("getAllExpos error:", error);
@@ -157,6 +179,14 @@ export const updateExpo = async (req, res) => {
     }
 
     const updates = {};
+
+    if (req.body.maxBooths !== undefined) {
+      const maxBooths = Number(req.body.maxBooths);
+      if (!Number.isInteger(maxBooths) || maxBooths < 1) {
+        return res.status(400).json({ error: "Max booths must be a positive whole number" });
+      }
+      updates.maxBooths = maxBooths;
+    }
 
     if (req.body.title !== undefined) {
       if (typeof req.body.title !== "string" || !req.body.title.trim()) {
