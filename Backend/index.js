@@ -1,6 +1,7 @@
 import express from "express";
 import "dotenv/config";
 import cors from "cors";
+import { networkInterfaces } from "node:os";
 import database from "./src/config/dbConfig.js";
 import authRouter from "./src/routes/authRoute.js";
 import expoRoute from "./src/routes/expoRoute.js";
@@ -21,16 +22,68 @@ import attendeeSelfRoute from "./src/routes/attendeeSelfRoute.js";
 import feedbackRoute from "./src/routes/feedbackRoute.js";
 import adminTicketRoute from "./src/routes/adminTicketRoute.js";
 import adminEventRoute from "./src/routes/adminEventRoute.js";
+import ensureAdminExists from "./src/controllers/authController.js";
 
 const app = express();
 
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  "http://localhost:5173",
-];
+const allowedOrigins = new Set(
+  [
+    process.env.CLIENT_URL,
+    ...[5173, 5174, 5175, 4173].flatMap((port) => [
+      `http://localhost:${port}`,
+      `http://127.0.0.1:${port}`,
+    ]),
+  ]
+    .filter(Boolean)
+    .map((origin) => origin.replace(/\/+$/, ""))
+);
+
+const frontendPorts = [5173, 5174, 5175, 4173];
+for (const interfaces of Object.values(networkInterfaces())) {
+  for (const address of interfaces || []) {
+    if (address.family !== "IPv4" || address.internal) continue;
+    for (const port of frontendPorts) {
+      allowedOrigins.add(`http://${address.address}:${port}`);
+    }
+  }
+}
+
+const isPrivateIpv4 = (hostname) => {
+  const octets = hostname.split(".").map(Number);
+  if (
+    octets.length !== 4 ||
+    octets.some((octet) => !Number.isInteger(octet) || octet < 0 || octet > 255)
+  ) {
+    return false;
+  }
+
+  const [first, second] = octets;
+  return (
+    first === 10 ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+};
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    let isLocalFrontend = false;
+    try {
+      const parsedOrigin = new URL(origin);
+      isLocalFrontend =
+        parsedOrigin.protocol === "http:" &&
+        frontendPorts.includes(Number(parsedOrigin.port)) &&
+        isPrivateIpv4(parsedOrigin.hostname);
+    } catch {
+      isLocalFrontend = false;
+    }
+    callback(null, isLocalFrontend);
+  },
   credentials: true,
 }));
 
@@ -81,10 +134,11 @@ app.use("/api/admin/events", adminEventRoute);
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3200;
 
-  database()
-  app.listen(port, () => {
+  database().then(async () => {
+    await ensureAdminExists();
+    app.listen(port, () => {
       console.log(`http://localhost:${port}`);
     });
+  });
 }
-
 export default app;

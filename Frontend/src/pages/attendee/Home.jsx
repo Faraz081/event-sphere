@@ -147,13 +147,6 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-
                   {mainBannerButtonText || 'Book Now'}
                 </Link>
 
-                <Link
-                  to="/Dashboard"
-                  className="rounded-full border border-[#c49424] px-7 py-3.5 text-sm font-semibold text-[#8d681b] transition hover:bg-white"
-                >
-                  Go to Dashboard
-                </Link>
-
               </div>
 
             </div>

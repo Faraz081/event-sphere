@@ -217,4 +217,25 @@ const register = async (req, res) => {
   }
 };
 
+export const ensureAdminExists = async () => {
+  try {
+    const existing = await User.findOne({ email: "admin@gmail.com" });
+    if (existing) return;
+
+    const hashed = await bcrypt.hash("admin123", 10);
+    await User.create({
+      name: "Admin",
+      email: "admin@gmail.com",
+      password: hashed,
+      role: "admin",
+      status: "active",
+      phone: "03000000000",
+    });
+    console.log("Default admin account created");
+  } catch (err) {
+    console.error("Failed to seed admin:", err.message);
+  }
+};
+
 export { login, register };
+export default ensureAdminExists;

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
-import StatGrid from "@/components/shared/StatGrid";
 import StatCard from "@/components/shared/StatCard";
 import {
   AlertDialog,
@@ -37,7 +36,6 @@ import {
   Calendar,
   AlertCircle,
 } from "lucide-react";
-
 // Role & Status Badge Styling adhering to Tailwind v4 theme
 const roleBadgeStyles = {
   admin: "bg-gold/20 text-gold border border-gold/40",
@@ -45,13 +43,11 @@ const roleBadgeStyles = {
   attendee: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   exhibitor: "bg-emerald/20 text-emerald-300 border border-emerald/40",
 };
-
 const statusBadgeStyles = {
   active: "bg-emerald/20 text-emerald-300 border border-emerald/40",
   inactive: "bg-muted/20 text-muted border border-muted/30",
   suspended: "bg-red-500/20 text-red-300 border border-red-500/30",
 };
-
 const formatDate = (isoDate) => {
   if (!isoDate) return "—";
   return new Date(isoDate).toLocaleDateString("en-US", {
@@ -60,7 +56,6 @@ const formatDate = (isoDate) => {
     year: "numeric",
   });
 };
-
 const initialFormState = {
   name: "",
   email: "",
@@ -70,11 +65,9 @@ const initialFormState = {
   status: "active",
   password: "",
 };
-
 const AdminUsers = () => {
   const { user: authUser, currentUser } = useSelector((state) => state.auth);
   const currentLoggedInAdmin = authUser || currentUser;
-
   // State
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState({
@@ -91,7 +84,6 @@ const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-
   // Modals state
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -100,7 +92,6 @@ const AdminUsers = () => {
   const [userToView, setUserToView] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   // Load stats
   const loadStats = useCallback(async () => {
     try {
@@ -113,7 +104,6 @@ const AdminUsers = () => {
       toast.error(err.response?.data?.error || "Failed to load user statistics.");
     }
   }, []);
-
   // Load users with search and filters
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -122,7 +112,6 @@ const AdminUsers = () => {
       if (searchTerm.trim()) params.search = searchTerm.trim();
       if (selectedRole !== "all") params.role = selectedRole;
       if (selectedStatus !== "all") params.status = selectedStatus;
-
       const res = await fetchUsers(params);
       if (res.success && Array.isArray(res.users)) {
         setUsers(res.users);
@@ -134,12 +123,10 @@ const AdminUsers = () => {
       setLoading(false);
     }
   }, [searchTerm, selectedRole, selectedStatus]);
-
   // Initial load
   useEffect(() => {
     loadStats();
   }, [loadStats]);
-
   // Debounced search / filter reload
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -147,21 +134,18 @@ const AdminUsers = () => {
     }, 250);
     return () => clearTimeout(handler);
   }, [loadUsers]);
-
   // Reset filters
   const handleResetFilters = () => {
     setSearchTerm("");
     setSelectedRole("all");
     setSelectedStatus("all");
   };
-
   // Open modal for Create
   const handleOpenCreateModal = () => {
     setEditingUserId(null);
     setFormData(initialFormState);
     setIsFormModalOpen(true);
   };
-
   // Open modal for Edit
   const handleOpenEditModal = (user) => {
     setEditingUserId(user._id);
@@ -176,38 +160,31 @@ const AdminUsers = () => {
     });
     setIsFormModalOpen(true);
   };
-
   // Open View Modal
   const handleOpenViewModal = (user) => {
     setUserToView(user);
     setIsViewModalOpen(true);
   };
-
   // Form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   // Submit Add / Edit Form
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.name.trim() || !formData.email.trim()) {
       toast.error("Name and Email are required.");
       return;
     }
-
     if (!editingUserId && !formData.password) {
       toast.error("Password is required when creating a new user.");
       return;
     }
-
     if (formData.password && formData.password.length < 6) {
       toast.error("Password must be at least 6 characters.");
       return;
     }
-
     setIsSubmitting(true);
     try {
       if (editingUserId) {
@@ -223,7 +200,6 @@ const AdminUsers = () => {
         if (formData.password.trim()) {
           payload.password = formData.password.trim();
         }
-
         const res = await updateUser(editingUserId, payload);
         toast.success(res.msg || "User updated successfully.");
       } else {
@@ -237,11 +213,9 @@ const AdminUsers = () => {
           status: formData.status,
           password: formData.password,
         };
-
         const res = await createUser(payload);
         toast.success(res.msg || "User created successfully.");
       }
-
       setIsFormModalOpen(false);
       setEditingUserId(null);
       setFormData(initialFormState);
@@ -254,17 +228,14 @@ const AdminUsers = () => {
       setIsSubmitting(false);
     }
   };
-
   // Confirm delete
   const handleDeleteConfirm = async () => {
     if (!userToDelete) return;
-
     if (currentLoggedInAdmin?._id && userToDelete._id === currentLoggedInAdmin._id) {
       toast.error("You cannot delete your own currently logged-in account.");
       setUserToDelete(null);
       return;
     }
-
     try {
       const res = await deleteUser(userToDelete._id);
       toast.success(res.msg || "User deleted successfully.");
@@ -277,7 +248,6 @@ const AdminUsers = () => {
       setUserToDelete(null);
     }
   };
-
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
@@ -300,15 +270,12 @@ const AdminUsers = () => {
             <span>Add User</span>
           </button>
         </div>
-
-        {/* Statistics Cards using existing StatGrid & StatCard */}
-        <StatGrid>
+        {/* Statistics Cards: three equal-width cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
           <StatCard label="Total Users" value={stats.total} />
           <StatCard label="Total Attendees" value={stats.attendees} />
-          <StatCard label="Total Organizers" value={stats.organizers} />
           <StatCard label="Total Exhibitors" value={stats.exhibitors} />
-        </StatGrid>
-
+        </div>
         {/* Search & Filter Controls */}
         <div className="bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
@@ -335,7 +302,6 @@ const AdminUsers = () => {
                 </button>
               )}
             </div>
-
             {/* Role Filter */}
             <div className="lg:col-span-3">
               <select
@@ -344,13 +310,11 @@ const AdminUsers = () => {
                 className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
               >
                 <option value="all">All Roles</option>
-                <option value="admin">Admin</option>
                 <option value="organizer">Organizer</option>
                 <option value="attendee">Attendee</option>
                 <option value="exhibitor">Exhibitor</option>
               </select>
             </div>
-
             {/* Status Filter */}
             <div className="lg:col-span-2">
               <select
@@ -364,7 +328,6 @@ const AdminUsers = () => {
                 <option value="suspended">Suspended</option>
               </select>
             </div>
-
             {/* Reset Button */}
             <div className="lg:col-span-1 flex justify-end">
               <button
@@ -377,7 +340,6 @@ const AdminUsers = () => {
               </button>
             </div>
           </div>
-
           {/* Quick Active Filter Badges */}
           {(searchTerm || selectedRole !== "all" || selectedStatus !== "all") && (
             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50 text-xs text-muted">
@@ -416,7 +378,6 @@ const AdminUsers = () => {
             </div>
           )}
         </div>
-
         {/* Users Table */}
         <ResponsiveTable minWidth="860px">
           <thead className="border-b border-border bg-surface/50">
@@ -493,7 +454,6 @@ const AdminUsers = () => {
                       </div>
                     </div>
                   </td>
-
                   {/* Email */}
                   <td
                     data-label="Email"
@@ -501,7 +461,6 @@ const AdminUsers = () => {
                   >
                     {item.email}
                   </td>
-
                   {/* Phone */}
                   <td
                     data-label="Phone"
@@ -509,7 +468,6 @@ const AdminUsers = () => {
                   >
                     {item.phone || "—"}
                   </td>
-
                   {/* Role */}
                   <td data-label="Role" className="px-6 py-4">
                     <span
@@ -520,7 +478,6 @@ const AdminUsers = () => {
                       {item.role}
                     </span>
                   </td>
-
                   {/* Status */}
                   <td data-label="Status" className="px-6 py-4">
                     <span
@@ -531,7 +488,6 @@ const AdminUsers = () => {
                       {item.status || "active"}
                     </span>
                   </td>
-
                   {/* Registered Date */}
                   <td
                     data-label="Registered"
@@ -539,7 +495,6 @@ const AdminUsers = () => {
                   >
                     {formatDate(item.createdAt)}
                   </td>
-
                   {/* Actions */}
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
@@ -574,7 +529,6 @@ const AdminUsers = () => {
             )}
           </tbody>
         </ResponsiveTable>
-
         {/* View User Modal */}
         {isViewModalOpen && userToView && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">
@@ -599,7 +553,6 @@ const AdminUsers = () => {
                   <X size={16} />
                 </button>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div className="bg-background border border-border rounded-xl p-3">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
@@ -608,7 +561,6 @@ const AdminUsers = () => {
                   </p>
                   <p className="font-mono text-foreground break-all">{userToView.email}</p>
                 </div>
-
                 <div className="bg-background border border-border rounded-xl p-3">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
                     <Phone size={13} className="text-gold" />
@@ -616,7 +568,6 @@ const AdminUsers = () => {
                   </p>
                   <p className="font-mono text-foreground">{userToView.phone || "Not provided"}</p>
                 </div>
-
                 <div className="bg-background border border-border rounded-xl p-3">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
                     <Shield size={13} className="text-gold" />
@@ -630,7 +581,6 @@ const AdminUsers = () => {
                     {userToView.role}
                   </span>
                 </div>
-
                 <div className="bg-background border border-border rounded-xl p-3">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
                     <AlertCircle size={13} className="text-gold" />
@@ -644,7 +594,6 @@ const AdminUsers = () => {
                     {userToView.status || "active"}
                   </span>
                 </div>
-
                 <div className="bg-background border border-border rounded-xl p-3 sm:col-span-2">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
                     <Building2 size={13} className="text-gold" />
@@ -654,7 +603,6 @@ const AdminUsers = () => {
                     {userToView.companyName || "No organization associated"}
                   </p>
                 </div>
-
                 <div className="bg-background border border-border rounded-xl p-3 sm:col-span-2">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
                     <Calendar size={13} className="text-gold" />
@@ -670,7 +618,6 @@ const AdminUsers = () => {
                   </p>
                 </div>
               </div>
-
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
                 <button
                   type="button"
@@ -694,7 +641,6 @@ const AdminUsers = () => {
             </div>
           </div>
         )}
-
         {/* Add / Edit User Form Modal */}
         {isFormModalOpen && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -711,7 +657,6 @@ const AdminUsers = () => {
                   <X size={16} />
                 </button>
               </div>
-
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 {/* Full Name */}
                 <div>
@@ -728,7 +673,6 @@ const AdminUsers = () => {
                     className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
                   />
                 </div>
-
                 {/* Email Address */}
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
@@ -744,7 +688,6 @@ const AdminUsers = () => {
                     className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
                   />
                 </div>
-
                 {/* Phone & Company */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -774,7 +717,6 @@ const AdminUsers = () => {
                     />
                   </div>
                 </div>
-
                 {/* Role & Status */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -787,7 +729,6 @@ const AdminUsers = () => {
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
                     >
-                      <option value="admin">Admin</option>
                       <option value="organizer">Organizer</option>
                       <option value="attendee">Attendee</option>
                       <option value="exhibitor">Exhibitor</option>
@@ -809,7 +750,6 @@ const AdminUsers = () => {
                     </select>
                   </div>
                 </div>
-
                 {/* Password field */}
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
@@ -832,7 +772,6 @@ const AdminUsers = () => {
                     className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
                   />
                 </div>
-
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
                   <button
                     type="button"
@@ -857,7 +796,6 @@ const AdminUsers = () => {
             </div>
           </div>
         )}
-
         {/* Delete Confirmation Alert Dialog */}
         <AlertDialog
           open={!!userToDelete}
@@ -892,5 +830,4 @@ const AdminUsers = () => {
     </DashboardLayout>
   );
 };
-
 export default AdminUsers;

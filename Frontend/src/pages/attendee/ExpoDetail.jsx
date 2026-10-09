@@ -20,9 +20,10 @@ import {
   fetchPublicExhibitors,
   fetchPublicBooths,
 } from '@/api/publicService'
+import { API_BASE_URL } from '@/api/api'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3200'
+const BASE = API_BASE_URL
 
 const fileUrl = (path) => (!path ? '' : path.startsWith('http') ? path : `${BASE}${path}`)
 
@@ -66,6 +67,13 @@ const ExpoDetail = () => {
         setExpo(expoData.expo)
         setSchedules(expoData.schedules ?? [])
         setBooths(boothData.booths ?? [])
+        const now = new Date()
+     setEvents(
+  (eventData.events ?? []).filter((e) => {
+    const expoId = String(e.expo?._id || e.expo || "")
+    return expoId === String(id) && new Date(e.date) >= now
+  })
+)
       } catch (err) {
         if (err.response?.status === 404 || err.response?.status === 400) setNotFound(true)
         else toast.error(err.response?.data?.error || 'Could not load this expo')

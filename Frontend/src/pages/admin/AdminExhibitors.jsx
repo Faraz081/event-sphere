@@ -11,10 +11,25 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { fetchApplications, approveApplication, rejectApplication } from "@/api/exhibitorService";
+import { fetchExpoTickets, cancelExpoTicket } from "@/api/adminTicketService";
+import { API_BASE_URL } from "@/api/api";
 import { toast } from "sonner";
-import { Search, CheckCircle, XCircle, RotateCcw, AlertCircle, Building2, Mail, Phone, Eye, FileText } from "lucide-react";
+import {
+  Search,
+  CheckCircle,
+  XCircle,
+  RotateCcw,
+  AlertCircle,
+  Building2,
+  Mail,
+  Phone,
+  Eye,
+  FileText,
+  Ticket,
+  Ban,
+} from "lucide-react";
 
-const FILE_BASE = import.meta.env.VITE_API_URL || "http://localhost:3200";
+const FILE_BASE = API_BASE_URL;
 
 const statusStyles = {
   pending: "bg-gold/20 text-gold border border-gold/40",
@@ -24,7 +39,11 @@ const statusStyles = {
 
 const formatDate = (isoDate) => {
   if (!isoDate) return "—";
-  return new Date(isoDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return new Date(isoDate).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 };
 
 const expoTitle = (a) => a?.expo?.title ?? a?.expo?.name ?? "—";
@@ -40,6 +59,10 @@ const AdminExhibitors = () => {
   const [rejecting, setRejecting] = useState(false);
   const [note, setNote] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+
+  const [relatedTickets, setRelatedTickets] = useState([]);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
 
   const loadApplications = useCallback(async () => {
     try {
@@ -64,16 +87,38 @@ const AdminExhibitors = () => {
     loadApplications();
   }, [loadApplications]);
 
-  const openReview = (app) => {
+  const openReview = async (app) => {
     setSelected(app);
     setRejecting(false);
     setNote("");
+    setRelatedTickets([]);
+
+    const userId = app.userId?._id || app.userId;
+    const expoId = app.expo?._id || app.expo;
+
+    if (!userId && !expoId) return;
+
+    try {
+      setTicketsLoading(true);
+      const params = {};
+      if (userId) params.userId = userId;
+      if (expoId) params.expo = expoId;
+
+      const data = await fetchExpoTickets(params);
+      setRelatedTickets(data.tickets || []);
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not load related tickets");
+    } finally {
+      setTicketsLoading(false);
+    }
   };
 
   const closeReview = () => {
     setSelected(null);
     setRejecting(false);
     setNote("");
+    setRelatedTickets([]);
   };
 
   const handleApprove = async () => {
@@ -108,14 +153,41 @@ const AdminExhibitors = () => {
     }
   };
 
+  const handleCancelTicket = async (ticketId) => {
+    try {
+      setCancellingId(ticketId);
+      await cancelExpoTicket(ticketId, "Cancelled by admin from exhibitor view");
+      setRelatedTickets((prev) =>
+        prev.map((t) =>
+          t._id === ticketId
+            ? {
+                ...t,
+                bookingStatus: "cancelled",
+                registrationStatus: "cancelled",
+                passStatus: "revoked",
+              }
+            : t
+        )
+      );
+      toast.success("Ticket cancelled");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to cancel ticket");
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8">
-        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
-            <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-2">Exhibitor Applications</h1>
-            <p className="text-muted text-sm md:text-base">Review exhibitor applications for each expo.</p>
+            <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-2">
+              Exhibitor Applications
+            </h1>
+            <p className="text-muted text-sm md:text-base">
+              Review exhibitor applications for each expo.
+            </p>
           </div>
 
           <button
@@ -128,7 +200,6 @@ const AdminExhibitors = () => {
           </button>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
@@ -160,7 +231,6 @@ const AdminExhibitors = () => {
           </div>
         )}
 
-        {/* Table */}
         <ResponsiveTable>
           <thead className="border-b border-border">
             <tr>
@@ -216,7 +286,11 @@ const AdminExhibitors = () => {
                   </td>
 
                   <td data-label="Status" className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${statusStyles[a.status] ?? statusStyles.pending}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                        statusStyles[a.status] ?? statusStyles.pending
+                      }`}
+                    >
                       {a.status}
                     </span>
                   </td>
@@ -238,7 +312,6 @@ const AdminExhibitors = () => {
           </tbody>
         </ResponsiveTable>
 
-        {/* Review Dialog */}
         <AlertDialog open={!!selected} onOpenChange={(open) => !open && closeReview()}>
           <AlertDialogContent className="w-[calc(100%-2rem)] max-w-2xl border border-[#eadfc9] bg-[#f8f5ef] text-[#2f2a24] shadow-2xl shadow-black/20 p-0 overflow-hidden">
             <AlertDialogHeader className="border-b border-[#eadfc9] bg-[#fffdf9] px-6 py-5">
@@ -319,6 +392,51 @@ const AdminExhibitors = () => {
                     </div>
                   ) : (
                     <span className="ml-1">none</span>
+                  )}
+                </div>
+
+                <div className="mt-6 border-t border-[#eadfc9] pt-4">
+                  <h4 className="text-sm font-semibold text-[#2f2a24] mb-3 flex items-center gap-2">
+                    <Ticket size={16} />
+                    Related Tickets
+                  </h4>
+
+                  {ticketsLoading ? (
+                    <p className="text-sm text-[#5d574f]">Loading tickets...</p>
+                  ) : relatedTickets.length === 0 ? (
+                    <p className="text-sm text-[#5d574f]">
+                      No tickets found for this exhibitor / expo.
+                    </p>
+                  ) : (
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {relatedTickets.map((t) => (
+                        <div
+                          key={t._id}
+                          className="flex items-center justify-between gap-3 rounded-lg border border-[#eadfc9] bg-[#fffdf9] px-3 py-2 text-sm"
+                        >
+                          <div className="min-w-0">
+                            <div className="font-medium text-[#2f2a24] truncate">
+                              {t.user?.name || "—"} · {t.user?.email || ""}
+                            </div>
+                            <div className="text-[#5d574f] text-xs">
+                              {t.expo?.title || "—"} · {t.bookingStatus}
+                            </div>
+                          </div>
+
+                          {["pending", "confirmed"].includes(t.bookingStatus) && (
+                            <button
+                              type="button"
+                              onClick={() => handleCancelTicket(t._id)}
+                              disabled={cancellingId === t._id}
+                              className="shrink-0 inline-flex items-center gap-1 rounded-md bg-red-500/15 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-500/25 disabled:opacity-50"
+                            >
+                              <Ban size={12} />
+                              {cancellingId === t._id ? "..." : "Cancel"}
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
