@@ -217,9 +217,6 @@ const register = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-export { login, register };
-=======
 export const ensureAdminExists = async () => {
   try {
     const existing = await User.findOne({ email: "admin@gmail.com" });
@@ -242,4 +239,3 @@ export const ensureAdminExists = async () => {
 
 export { login, register };
 export default ensureAdminExists;
->>>>>>> 0935a6b (updated admin tickets, controllers)

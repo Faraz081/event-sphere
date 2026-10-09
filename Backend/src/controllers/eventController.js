@@ -1,12 +1,9 @@
 import mongoose from "mongoose";
 import Event from "../models/Event.js";
 import Attendee from "../models/Attendee.js";
-<<<<<<< HEAD
 import User from "../models/User.js";
-=======
 import Expo from "../models/Expo.js";
 import Booth from "../models/Booth.js";
->>>>>>> 0935a6b (updated admin tickets, controllers)
 
 const getMyId = (req) =>
   String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
@@ -19,18 +16,12 @@ const createEvent = async (req, res) => {
       return res.status(401).json({ error: "Please login again" });
     }
 
-<<<<<<< HEAD
     const user = await User.findById(exhibitor).select("status");
 
     if (!user || user.status !== "active") {
       return res.status(403).json({ error: "Your account is not active. Please contact the admin" });
     }
 
-    const { title, description, eventType, images, boothCapacity, banner, location } = req.body;
-
-    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !location?.trim() || !boothCapacity) {
-      return res.status(400).json({ error: "Title, description, event type, location and booth capacity are required" });
-=======
     const { title, description, date, eventType, images, boothCapacity, banner, expo } =
       req.body;
 
@@ -67,7 +58,6 @@ const createEvent = async (req, res) => {
     }
     if (parsedDate < new Date()) {
       return res.status(400).json({ error: "Event date must be in the future" });
->>>>>>> 0935a6b (updated admin tickets, controllers)
     }
 
     const parsedBoothCapacity = Number(boothCapacity);
@@ -91,7 +81,8 @@ const createEvent = async (req, res) => {
       exhibitor,
       title: title.trim(),
       description: description.trim(),
-      location: location.trim(),
+      location: expoDoc.location,
+      date: parsedDate,
       eventType: eventType.trim(),
       images: Array.isArray(images) ? images : [],
       boothCapacity: parsedBoothCapacity,
@@ -141,12 +132,8 @@ const getAllEvents = async (req, res) => {
 
     const events = await Event.find(filter)
       .populate("exhibitor", "name companyName")
-<<<<<<< HEAD
-      .sort({ createdAt: -1 });
-=======
       .populate("expo", "title date location status")
       .sort({ date: 1 });
->>>>>>> 0935a6b (updated admin tickets, controllers)
 
     return res.status(200).json({ msg: "All approved events fetched", events });
   } catch (error) {
@@ -238,7 +225,14 @@ const rejectEvent = async (req, res) => {
 
     const event = await Event.findOneAndUpdate(
       { _id: id, status: "pending" },
-      { $set: { status: "rejected", adminNote: note, reviewedAt: new Date() } },
+      {
+        $set: {
+          status: "rejected",
+          adminNote: note,
+          rejectionReason: note,
+          reviewedAt: new Date(),
+        },
+      },
       { new: true }
     )
       .populate("exhibitor", "name companyName email")
@@ -292,7 +286,6 @@ const deleteEvent = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -318,10 +311,19 @@ const updateEvent = async (req, res) => {
       return res.status(404).json({ error: "Event not found or not yours" });
     }
 
-    const { title, description, eventType, images, boothCapacity, location } = req.body;
+    const {
+      title,
+      description,
+      eventType,
+      images,
+      boothCapacity,
+      location,
+      date,
+      banner,
+    } = req.body;
 
-    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !location?.trim() || !boothCapacity) {
-      return res.status(400).json({ error: "Title, description, event type, location and booth capacity are required" });
+    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !boothCapacity) {
+      return res.status(400).json({ error: "Title, description, event type and booth capacity are required" });
     }
 
     const parsedBoothCapacity = Number(boothCapacity);
@@ -332,14 +334,22 @@ const updateEvent = async (req, res) => {
 
     event.title = title.trim();
     event.description = description.trim();
-    event.location = location.trim();
+    if (location !== undefined) event.location = location.trim();
     event.eventType = eventType.trim();
     event.boothCapacity = parsedBoothCapacity;
+    if (banner !== undefined) event.banner = banner;
+    if (date !== undefined) {
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime()) || parsedDate < new Date()) {
+        return res.status(400).json({ error: "Event date must be a valid future date" });
+      }
+      event.date = parsedDate;
+    }
     if (Array.isArray(images)) event.images = images;
 
-    // edit ke baad dobara admin approval chahiye
     event.status = "pending";
     event.rejectionReason = undefined;
+    event.adminNote = "";
     event.reviewedAt = undefined;
 
     await event.save();
@@ -350,8 +360,6 @@ const updateEvent = async (req, res) => {
   }
 };
 
-export { createEvent, getMyEvents, getAllEvents, deleteEvent, updateEvent };
-=======
 export {
   createEvent,
   getMyEvents,
@@ -361,5 +369,5 @@ export {
   approveEvent,
   rejectEvent,
   deleteEvent,
+  updateEvent,
 };
->>>>>>> 0935a6b (updated admin tickets, controllers)

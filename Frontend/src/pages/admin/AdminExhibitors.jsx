@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { fetchApplications, approveApplication, rejectApplication } from "@/api/exhibitorService";
 import { fetchExpoTickets, cancelExpoTicket } from "@/api/adminTicketService";
+import { API_BASE_URL } from "@/api/api";
 import { toast } from "sonner";
 import {
   Search,
@@ -28,7 +29,7 @@ import {
   Ban,
 } from "lucide-react";
 
-const FILE_BASE = import.meta.env.VITE_API_URL || "http://localhost:3200";
+const FILE_BASE = API_BASE_URL;
 
 const statusStyles = {
   pending: "bg-gold/20 text-gold border border-gold/40",

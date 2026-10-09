@@ -14,9 +14,10 @@ import {
 } from 'lucide-react'
 
 import { fetchPublicExpos, fetchPublicEvents } from '@/api/publicService'
+import { API_BASE_URL } from '@/api/api'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3200'
+const BASE = API_BASE_URL
 
 const getImage = (banner) => {
   if (!banner) return fallbackImage
