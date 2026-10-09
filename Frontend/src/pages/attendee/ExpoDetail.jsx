@@ -73,7 +73,12 @@ const ExpoDetail = () => {
         setSchedules(expoData.schedules ?? [])
         setBooths(boothData.booths ?? [])
         const now = new Date()
-        setEvents((eventData.events ?? []).filter((e) => e.expo?._id === id && new Date(e.date) >= now))
+     setEvents(
+  (eventData.events ?? []).filter((e) => {
+    const expoId = String(e.expo?._id || e.expo || "")
+    return expoId === String(id) && new Date(e.date) >= now
+  })
+)
       } catch (err) {
         if (err.response?.status === 404 || err.response?.status === 400) setNotFound(true)
         else toast.error(err.response?.data?.error || 'Could not load this expo')
