@@ -14,9 +14,12 @@ const createAuthToken = (user) => {
   );
 };
 
+const countLetters = (str) => (str.match(/\p{L}/gu) || []).length;
+
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -27,6 +30,12 @@ const login = async (req, res) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({
         msg: "Please enter a valid email",
+      });
+    }
+
+    if (String(password).length < 6) {
+      return res.status(400).json({
+        msg: "Password must be at least 6 characters",
       });
     }
 
@@ -75,31 +84,54 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      confirmPassword,
-      role,
-      companyName,
-      phone,
-    } = req.body;
+    let { name, email, password, confirmPassword, role, companyName, phone } =
+      req.body;
 
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !confirmPassword ||
-      !phone
-    ) {
+    name = String(name ?? "").trim().replace(/\s+/g, " ");
+    email = String(email ?? "").trim().toLowerCase();
+    password = String(password ?? "");
+    confirmPassword = String(confirmPassword ?? "");
+    phone = String(phone ?? "").trim();
+    companyName = String(companyName ?? "").trim().replace(/\s+/g, " ");
+
+    if (!name || !email || !password || !confirmPassword || !phone) {
       return res.status(400).json({
         msg: "All fields are required",
+      });
+    }
+
+    // Name: only letters and spaces, at least 3 letters, max 50
+    if (
+      name.length > 50 ||
+      !/^[\p{L}\s]+$/u.test(name) ||
+      countLetters(name) < 3
+    ) {
+      return res.status(400).json({
+        msg: "Name must contain only letters and spaces (at least 3 letters, no numbers or special characters)",
       });
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({
         msg: "Please enter a valid email",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        msg: "Password must be at least 6 characters",
+      });
+    }
+
+    if (/\s/.test(password)) {
+      return res.status(400).json({
+        msg: "Password must not contain spaces",
+      });
+    }
+
+    if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return res.status(400).json({
+        msg: "Password must contain at least one letter and one number",
       });
     }
 
@@ -111,7 +143,7 @@ const register = async (req, res) => {
 
     if (!/^\d{11}$/.test(phone)) {
       return res.status(400).json({
-        msg: "Phone number must contain exactly 11 digits",
+        msg: "Phone number must contain exactly 11 digits (numbers only)",
       });
     }
 
@@ -128,6 +160,26 @@ const register = async (req, res) => {
       });
     }
 
+    const isExhibitor = publicRole === "exhibitor";
+
+    // Company name: only letters and spaces, at least 3 letters, max 100
+    if (isExhibitor) {
+      if (!companyName) {
+        return res.status(400).json({
+          msg: "Company name is required for exhibitors",
+        });
+      }
+      if (
+        companyName.length > 100 ||
+        !/^[\p{L}\s]+$/u.test(companyName) ||
+        countLetters(companyName) < 3
+      ) {
+        return res.status(400).json({
+          msg: "Company name must contain only letters and spaces (at least 3 letters, no numbers or special characters)",
+        });
+      }
+    }
+
     const oldUsers = await User.findOne({ email });
 
     if (oldUsers) {
@@ -138,14 +190,12 @@ const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const isExhibitor = publicRole === "exhibitor";
-
     const addUser = await User.create({
       name,
       email,
       password: hashedPassword,
       role: publicRole,
-      companyName,
+      companyName: isExhibitor ? companyName : undefined,
       phone,
       status: isExhibitor ? "inactive" : "active",
       exhibitorStatus: null,

@@ -44,10 +44,21 @@ const verifyEmail = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
-    const { otp } = req.body;
-    if (!email || !otp) return res.status(400).json({ error: "Email and OTP are required" });
+    const otp = String(req.body.otp ?? "").trim();
+
+    if (!email || !otp) {
+      return res.status(400).json({ error: "Email and OTP are required" });
+    }
+
+    if (!/^\d{6}$/.test(otp)) {
+      return res.status(400).json({ error: "OTP must be exactly 6 digits" });
+    }
+
     const match = await Otp.findOne({ email, otp });
-    if (!match) return res.status(401).json({ error: "OTP is incorrect or expired" });
+    if (!match) {
+      return res.status(401).json({ error: "OTP is incorrect or expired" });
+    }
+
     return res.status(200).json({ msg: "OTP verified" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
