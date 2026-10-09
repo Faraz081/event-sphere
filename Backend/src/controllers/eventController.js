@@ -152,6 +152,10 @@ const updateEvent = async (req, res) => {
       return res.status(400).json({ error: "Booth capacity must be at least 1" });
     }
 
+    if (parsedBoothCapacity < (event.stalls?.length ?? 0)) {
+      return res.status(400).json({ error: `Capacity cannot be less than your current stalls (${event.stalls.length})` });
+    }
+
     event.title = title.trim();
     event.description = description.trim();
     event.location = location.trim();

@@ -321,7 +321,14 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-
 
 {(ev.companyName || ev.exhibitorName) && (
   <p className="mt-1 text-sm font-medium text-[#8d681b]">
-    by {ev.companyName ?? ev.exhibitorName}
+    by{' '}
+    {ev.exhibitor?._id ? (
+      <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
+        {ev.companyName ?? ev.exhibitorName}
+      </Link>
+    ) : (
+      ev.companyName ?? ev.exhibitorName
+    )}
   </p>
 )}
 

@@ -1,70 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-
 import servicesImage from '../../assets/service-gallery/service.jpg'
-import eventPlanningImage from '../../assets/service-gallery/event-planning.jpg'
-import exhibitorManagementImage from '../../assets/service-gallery/exhibitor-management.jpg'
-import birthday from '../../assets/service-gallery/birthday.jpg'
-import mehndi from "../../assets/service-gallery/Mehndi.jpg";
-import engaged from '../../assets/service-gallery/engaged.jpg'
-import graduationevent from '../../assets/service-gallery/graduation-event.jpg'
+import gallery1 from '../../assets/gallery-1.jpg'
+import api from '../../api/api'
 
-import {
-  ArrowUpRight,
-  CalendarDays,
-  Users,
-  Clock3,
-  UserRoundCheck,
-  BarChart3,
-  Radio,
-  MessageCircle,
-} from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 
 const Service = () => {
-  const services = [
-{
-    image: eventPlanningImage,
-    title: 'Event Planning',
-    description:
-      'Plan and organize complete events with seamless venues, dates, activities and all important details in one place.',
-  },
-  {
-    image: exhibitorManagementImage,
-    title: 'Exhibitor Events',
-    description:
-      'Manage exhibitors, booth allocations, attendee registrations and overall participation details efficiently for every successful event.',
-  },
-  {
-    image: birthday,
-    title: 'Birthday Parties',
-    description:
-      'Create joyful birthday celebrations with custom theme management, entertainment schedules and fun activities for all guests.',
-  },
-  {
-    image: mehndi,
-    title: 'Mehndi Events',
-    description:
-      'Organize vibrant Mehndi ceremonies with colorful decor arrangements, traditional music setups and memorable guest experiences.',
-  },
-  {
-    image: engaged,
-    title: 'Engagement Events',
-    description:
-      'Plan elegant engagement functions with personalized rings ceremony setups, guest handling and special moment coordination.',
-  },
-  {
-    image: graduationevent,
-    title: 'Graduation Ceremony',
-    description:
-      'Host memorable graduation ceremonies with organized student registrations, stage scheduling and smooth stage announcements.',
-  },
-  {
-    title: 'Feedback & Support',
-    description:
-      'Share your suggestions, ask questions and get helpful 24/7 support for an outstanding event experience.',
-  },
-]
+  const [events, setEvents] = useState([])
+  const [eventsLoading, setEventsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await api.get('/api/public/events')
+        const list = response.data?.events ?? response.data
+        setEvents(Array.isArray(list) ? list : [])
+      } catch (error) {
+        console.error('Failed to load events:', error)
+      } finally {
+        setEventsLoading(false)
+      }
+    }
+    fetchEvents()
+  }, [])
 
   return (
     <main className="min-h-screen bg-[#fffdf9] px-4 py-20 sm:px-6 lg:px-10">
@@ -111,11 +71,9 @@ const Service = () => {
               <img
                 src={servicesImage}
                 alt="Event management services"
-             className="h-[420px] w-full object-cover transition duration-700 group-hover:scale-105 sm:h-[450px]"
+                className="h-[420px] w-full object-cover transition duration-700 group-hover:scale-105 sm:h-[450px]"
               />
             </div>
-
-            
 
           </div>
         </section>
@@ -134,65 +92,91 @@ const Service = () => {
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl text-[#5d574f]">
-              Powerful tools designed to make planning, managing and
-              experiencing events easier.
+              From intimate celebrations to professional events, explore what
+              our exhibitors are offering and book your spot.
             </p>
-
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service, index) => {
+          {eventsLoading ? (
+            <p className="text-center text-[#5d574f]">Loading events...</p>
+          ) : events.length === 0 ? (
+            <p className="text-center text-[#5d574f]">
+              No events available right now. Please check back soon.
+            </p>
+          ) : (
+            <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+              {events.map((ev) => (
+                <div
+                  key={ev._id}
+                  className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
+                >
+                  <div className="overflow-hidden">
+                    <img
+                      src={ev.images?.[0] || gallery1}
+                      alt={ev.title ?? ev.name}
+                      className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  </div>
 
-              return (
-<div
-  key={index}
-  className={`group rounded-3xl border border-[#eadfca] bg-white p-7 text-center shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl ${
-    service.title === 'Feedback & Support'
-      ? 'md:col-start-2'
-      : ''
-  }`}
->
-                  {service.image && (
-  <div className="mb-6 overflow-hidden rounded-2xl">
-    <img
-      src={service.image}
-      alt={service.title}
-      className="h-52 w-full object-cover transition duration-500 group-hover:scale-105"
-    />
-  </div>
+                  <div className="p-7 text-center">
+                    <h3 className="font-serif text-2xl font-bold text-[#c49424]">
+                      {ev.title ?? ev.name}
+                    </h3>
+
+                   {(ev.companyName || ev.exhibitorName) && (
+  <p className="mt-1 text-sm font-medium text-[#8d681b]">
+    by{' '}
+    {ev.exhibitor?._id ? (
+      <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
+        {ev.companyName ?? ev.exhibitorName}
+      </Link>
+    ) : (
+      ev.companyName ?? ev.exhibitorName
+    )}
+  </p>
 )}
 
-                  <h3 className="mt-6 font-serif text-2xl font-bold text-neutral-900">
-                    {service.title}
-                  </h3>
+                    {ev.location && (
+                      <p className="mt-2 text-sm text-[#8a8379]">
+                        📍 {ev.location}
+                      </p>
+                    )}
 
-                  <p className="mt-3 leading-7 text-[#5d574f]">
-                    {service.description}
-                  </p>
+                    <p className="mt-3 leading-6 text-[#5d574f]">
+                      {ev.description}
+                    </p>
 
                     <Link
-    to="/book-now"
-      className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-  >
-    Book Now
-        <ArrowUpRight className="h-4 w-4" />
-  </Link>
-
-              {service.title === 'Feedback & Support' && (
-  <button
-    onClick={() => {
-      window.location.href = '/feedback'
-    }}
-    className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-  >
-    Get in Touch
-    <ArrowUpRight className="h-4 w-4" />
-  </button>
-)}
-
+                      to={`/book-now?event=${ev._id}`}
+                      className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
+                    >
+                      Book Now
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Link>
+                  </div>
                 </div>
-              )
-            })}
+              ))}
+            </div>
+          )}
+
+          {/* Feedback & Support */}
+          <div className="mx-auto mt-16 max-w-xl rounded-3xl border border-[#eadfca] bg-white p-7 text-center shadow-sm">
+            <h3 className="font-serif text-2xl font-bold text-neutral-900">
+              Feedback & Support
+            </h3>
+
+            <p className="mt-3 leading-7 text-[#5d574f]">
+              Share your suggestions, ask questions and get helpful 24/7
+              support for an outstanding event experience.
+            </p>
+
+            <Link
+              to="/feedback"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
+            >
+              Get in Touch
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
           </div>
 
         </section>

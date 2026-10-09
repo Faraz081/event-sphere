@@ -60,6 +60,7 @@ const attendeeSchema = new mongoose.Schema(
       default: "",
     },
 eventDate: { type: Date },
+stalls: [{ type: mongoose.Schema.Types.ObjectId }],
 guests: { type: Number, min: 1 },
 contactPhone: { type: String, trim: true },
     entryPassId: { type: String },

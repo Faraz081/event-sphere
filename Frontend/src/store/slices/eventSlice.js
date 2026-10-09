@@ -109,12 +109,44 @@ export const updateEvent = createAsyncThunk("event/update", async ({id, data}, {
   }
 });
 
+export const addStall = createAsyncThunk("event/addStall", async ({eventId, data}, {rejectWithValue}) => {
+  try {
+    const res = await api.post(`/api/event/${eventId}/stalls`, data);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {error: "Unable to connect to the server"});
+  }
+});
+
+export const updateStall = createAsyncThunk("event/updateStall", async ({eventId, stallId, data}, {rejectWithValue}) => {
+  try {
+    const res = await api.put(`/api/event/${eventId}/stalls/${stallId}`, data);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {error: "Unable to connect to the server"});
+  }
+});
+
+export const deleteStall = createAsyncThunk("event/deleteStall", async ({eventId, stallId}, {rejectWithValue}) => {
+  try {
+    const res = await api.delete(`/api/event/${eventId}/stalls/${stallId}`);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {error: "Unable to connect to the server"});
+  }
+});
+
 const initialState = {
   events: [],
   pendingEvents: [],
   requests: [],
   error: null,
   loading: false,
+};
+
+const replaceStalls = (state, action) => {
+  const updated = action.payload.event;
+  state.events = state.events.map((e) => (e._id === updated._id ? {...e, stalls: updated.stalls} : e));
 };
 
 const applyDecision = (state, booking) => {
@@ -183,7 +215,10 @@ const eventSlice = createSlice({
       })
       .addCase(rejectBooking.fulfilled, (state, action) => {
         applyDecision(state, action.payload.booking);
-      });
+      })
+      .addCase(addStall.fulfilled, replaceStalls)
+      .addCase(updateStall.fulfilled, replaceStalls)
+      .addCase(deleteStall.fulfilled, replaceStalls);
   },
 });
 

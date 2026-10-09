@@ -10,6 +10,11 @@ export const fetchPublicExpo = async (id) => {
   return response.data;
 };
 
+export const fetchPublicExhibitorProfile = async (id) => {
+  const response = await api.get(`/api/public/exhibitors/${id}`);
+  return response.data;
+};
+
 export const fetchPublicExhibitors = async (id, params = {}) => {
   const response = await api.get(`/api/public/expos/${id}/exhibitors`, { params });
   return response.data;

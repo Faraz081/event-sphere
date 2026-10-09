@@ -27,6 +27,9 @@ export default function BookNow() {
   const [formData, setFormData] = useState(emptyForm)
   const [submitting, setSubmitting] = useState(false)
   const [feedback, setFeedback] = useState(null)
+  const [stalls, setStalls] = useState([])
+  const [selectedStalls, setSelectedStalls] = useState([])
+  const [stallsLoading, setStallsLoading] = useState(false)
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -69,6 +72,10 @@ export default function BookNow() {
       setFeedback({ type: 'error', text: 'Please login to book an event.' })
       return
     }
+    if (stalls.length && !selectedStalls.length) {
+      setFeedback({ type: 'error', text: 'Please select at least one stall.' })
+      return
+    }
 
     try {
       setSubmitting(true)
@@ -76,6 +83,7 @@ export default function BookNow() {
         event: selectedEventId,
         eventDate: formData.eventDate,
         guests: Number(formData.guests),
+        stalls: selectedStalls,
         phone: formData.phone,
         message: formData.message,
       })
@@ -87,6 +95,32 @@ export default function BookNow() {
       setSubmitting(false)
     }
   }
+
+    useEffect(() => {
+    setSelectedStalls([])
+
+    if (!selectedEventId) {
+      setStalls([])
+      return
+    }
+
+    const loadStalls = async () => {
+      setStallsLoading(true)
+      try {
+        const params = formData.eventDate ? { date: formData.eventDate } : {}
+        const response = await api.get(`/api/public/events/${selectedEventId}/stalls`, { params })
+        setStalls(response.data?.stalls ?? [])
+      } catch (error) {
+        setStalls([])
+      } finally {
+        setStallsLoading(false)
+      }
+    }
+    loadStalls()
+  }, [selectedEventId, formData.eventDate])
+
+  const toggleStall = (stallId) =>
+    setSelectedStalls((prev) => (prev.includes(stallId) ? prev.filter((s) => s !== stallId) : [...prev, stallId]))
 
   return (
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
@@ -192,6 +226,50 @@ export default function BookNow() {
                       <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#b48620]" />{selectedEvent.location}</p>
                     )}
                   </div>
+                </div>
+              )}
+                            {selectedEventId && (
+                <div className="mt-5">
+                  <label className="mb-2 block text-sm font-medium text-[#4d473f]">Select Stalls</label>
+
+                  {!formData.eventDate ? (
+                    <p className="text-sm text-[#8a8379]">Choose a date to see which stalls are available.</p>
+                  ) : stallsLoading ? (
+                    <p className="text-sm text-[#8a8379]">Loading stalls...</p>
+                  ) : stalls.length === 0 ? (
+                    <p className="text-sm text-[#8a8379]">This event has no stalls listed.</p>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {stalls.map((s) => {
+                        const checked = selectedStalls.includes(s._id)
+                        return (
+                          <label
+                            key={s._id}
+                            className={`flex items-start gap-3 rounded-xl border p-4 text-sm transition ${
+                              s.booked
+                                ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400'
+                                : checked
+                                  ? 'cursor-pointer border-[#c49424] bg-[#fff4d9] text-[#2f2a24]'
+                                  : 'cursor-pointer border-[#e4d9c4] bg-[#fffdf9] text-[#2f2a24] hover:border-[#c49424]'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              disabled={s.booked}
+                              onChange={() => toggleStall(s._id)}
+                              className="mt-1 accent-[#c49424]"
+                            />
+                            <span>
+                              <span className="block font-semibold">{s.name || `Stall ${s.stallNumber}`}</span>
+                              <span className="block text-xs">#{s.stallNumber}{s.size ? ` · ${s.size}` : ''}</span>
+                              {s.booked && <span className="mt-1 block text-xs font-semibold">Booked for this date</span>}
+                            </span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

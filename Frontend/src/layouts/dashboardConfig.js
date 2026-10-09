@@ -32,7 +32,7 @@ export const dashboardNavigation = {
     { label: "Dashboard", path: "/exhibitor", icon: LayoutDashboard },
     { label: "Registration", path: "/exhibitor/registration", icon: ClipboardList },
     { label: "My Booth", path: "/exhibitor/booth", icon: Store },
-    { label: "Events & Tickets", path: "/exhibitor/events", icon: CalendarDays },
+    { label: "Events & Bookings", path: "/exhibitor/events", icon: CalendarDays },
     { label: "Messages", path: "/exhibitor/messages", icon: MessageSquare },
     { label: "Profile", path: "/exhibitor/profile", icon: User },
   ],

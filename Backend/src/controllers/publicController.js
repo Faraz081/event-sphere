@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import User from "../models/User.js";
 import Expo from "../models/Expo.js";
 import Schedule from "../models/Schedule.js";
 import Booth from "../models/Booth.js";
 import Event from "../models/Event.js";
+import Attendee from "../models/Attendee.js";
 import ExhibitorApplication from "../models/ExhibitorApplication.js";
 
 const PUBLIC_EXPO_FIELDS = "title description theme date location status banner";
@@ -170,6 +172,86 @@ export const getPublicEvents = async (req, res) => {
     }));
 
     return res.status(200).json({ events: result });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /api/public/exhibitors/:id  (exhibitor company details + approved events)
+
+export const getPublicExhibitorProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) return res.status(404).json({ error: "Exhibitor not found" });
+
+    const user = await User.findOne({ _id: id, role: "exhibitor", status: "active" }).select("name companyName avatar");
+
+    if (!user) return res.status(404).json({ error: "Exhibitor not found" });
+
+    const application = await ExhibitorApplication.findOne({ userId: id, status: "approved" })
+      .select("companyName productsServices description logo")
+      .sort({ updatedAt: -1 });
+
+    const events = await Event.find({ exhibitor: id, status: "approved" }).select(PUBLIC_EVENT_FIELDS).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      exhibitor: {
+        _id: user._id,
+        name: user.name,
+        companyName: application?.companyName ?? user.companyName ?? user.name,
+        description: application?.description ?? "",
+        productsServices: application?.productsServices ?? "",
+        logo: application?.logo || user.avatar || "",
+      },
+      events,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /api/public/events/:id/stalls?date=YYYY-MM-DD  (stalls + us date par booked hain ya nahi)
+
+export const getPublicEventStalls = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) return res.status(404).json({ error: "Event not found" });
+
+    const event = await Event.findOne({ _id: id, status: "approved" }).select("stalls");
+
+    if (!event) return res.status(404).json({ error: "Event not found" });
+
+    const bookedIds = new Set();
+    const { date } = req.query;
+
+    if (date) {
+      const start = new Date(`${date}T00:00:00.000Z`);
+
+      if (isNaN(start.getTime())) return res.status(400).json({ error: "Invalid date" });
+
+      const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+
+      const bookings = await Attendee.find({
+        event: id,
+        bookingStatus: "confirmed",
+        eventDate: { $gte: start, $lt: end },
+      }).select("stalls");
+
+      bookings.forEach((b) => (b.stalls ?? []).forEach((s) => bookedIds.add(String(s))));
+    }
+
+    const stalls = event.stalls.map((s) => ({
+      _id: s._id,
+      stallNumber: s.stallNumber,
+      name: s.name,
+      size: s.size,
+      description: s.description,
+      booked: bookedIds.has(String(s._id)),
+    }));
+
+    return res.status(200).json({ stalls });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -10,6 +10,11 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     try {
+      // Let the browser/Axios add the multipart boundary for FormData requests.
+      if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+        config.headers.delete("Content-Type");
+      }
+
       const isPublicAuthRequest = /^\/api\/(login|register)(\/|$)/.test(
         config.url || ""
       );
