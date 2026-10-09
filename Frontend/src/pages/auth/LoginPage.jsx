@@ -37,7 +37,7 @@ const LoginPage = () => {
       toast.success(`Welcome back, ${user.name}!`);
       setFormData({ email: "", password: "" });
 
-      navigate(user.role === "attendee" ? "/" : "/dashboard");
+      navigate(user.role === "attendee" ? "/" : "/dashboard", { replace: true });
     } catch (error) {
       console.error("Login error:", error);
       toast.error(

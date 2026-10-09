@@ -28,6 +28,21 @@ export const RequireRole = ({ allowedRoles }) => {
   return <Outlet />;
 };
 
+export const PublicOnlyRoute = () => {
+  const { user } = useSelector((state) => state.auth);
+
+  if (user) {
+    return (
+      <Navigate
+        to={user.role === "attendee" ? "/" : getRoleHomePath(user.role)}
+        replace
+      />
+    );
+  }
+
+  return <Outlet />;
+};
+
 export const DashboardRedirect = () => {
   const { user } = useSelector((state) => state.auth);
 
