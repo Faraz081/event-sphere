@@ -14,3 +14,8 @@ export const rejectExpoTicket = async (id, note) => {
   const response = await api.put(`/api/admin/tickets/${id}/reject`, { note });
   return response.data;
 };
+
+export const cancelExpoTicket = async (id, note) => {
+  const response = await api.put(`/api/admin/tickets/${id}/cancel`, { note });
+  return response.data;
+};

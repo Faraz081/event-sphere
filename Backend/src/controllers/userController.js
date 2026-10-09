@@ -5,28 +5,24 @@ import User from "../models/User.js";
 const VALID_ROLES = ["admin", "organizer", "attendee", "exhibitor"];
 const VALID_STATUSES = ["active", "inactive", "suspended"];
 
-// GET /api/users
 export const getAllUsers = async (req, res) => {
   try {
     const { search, role, status, sortBy = "createdAt", sortOrder = "desc" } = req.query;
 
-    const filter = {};
+    const filter = { role: { $ne: "admin" } };
 
-    // Role filter
-    if (role && role !== "all") {
+    if (role && role !== "all" && role !== "admin") {
       if (VALID_ROLES.includes(role)) {
         filter.role = role;
       }
     }
 
-    // Status filter
     if (status && status !== "all") {
       if (VALID_STATUSES.includes(status)) {
         filter.status = status;
       }
     }
 
-    // Search filter across name, email, and phone
     if (search && search.trim() !== "") {
       const cleanSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const searchRegex = new RegExp(cleanSearch, "i");
@@ -58,12 +54,10 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// GET /api/users/stats
 export const getUserStats = async (req, res) => {
   try {
     const [
       total,
-      admins,
       organizers,
       attendees,
       exhibitors,
@@ -71,21 +65,19 @@ export const getUserStats = async (req, res) => {
       inactive,
       suspended,
     ] = await Promise.all([
-      User.countDocuments(),
-      User.countDocuments({ role: "admin" }),
+      User.countDocuments({ role: { $ne: "admin" } }),
       User.countDocuments({ role: "organizer" }),
       User.countDocuments({ role: "attendee" }),
       User.countDocuments({ role: "exhibitor" }),
-      User.countDocuments({ status: "active" }),
-      User.countDocuments({ status: "inactive" }),
-      User.countDocuments({ status: "suspended" }),
+      User.countDocuments({ status: "active", role: { $ne: "admin" } }),
+      User.countDocuments({ status: "inactive", role: { $ne: "admin" } }),
+      User.countDocuments({ status: "suspended", role: { $ne: "admin" } }),
     ]);
 
     res.status(200).json({
       success: true,
       stats: {
         total,
-        admins,
         organizers,
         attendees,
         exhibitors,
@@ -100,7 +92,6 @@ export const getUserStats = async (req, res) => {
   }
 };
 
-// GET /api/users/:id
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -121,13 +112,16 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// POST /api/users
 export const createUser = async (req, res) => {
   try {
     const { name, email, password, role, status = "active", phone, companyName } = req.body;
 
     if (!name || !email || !password || !role) {
       return res.status(400).json({ error: "Name, email, password, and role are required." });
+    }
+
+    if (role === "admin") {
+      return res.status(403).json({ error: "Admin accounts cannot be created from this panel." });
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -177,7 +171,6 @@ export const createUser = async (req, res) => {
   }
 };
 
-// PUT /api/users/:id
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -192,7 +185,10 @@ export const updateUser = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Email collision check
+    if (user.role === "admin") {
+      return res.status(403).json({ error: "Admin account cannot be modified from this panel." });
+    }
+
     if (email && email.toLowerCase().trim() !== user.email) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return res.status(400).json({ error: "Please enter a valid email address." });
@@ -209,6 +205,9 @@ export const updateUser = async (req, res) => {
     if (companyName !== undefined) user.companyName = companyName ? companyName.trim() : "";
 
     if (role) {
+      if (role === "admin") {
+        return res.status(403).json({ error: "Cannot assign admin role." });
+      }
       if (!VALID_ROLES.includes(role)) {
         return res.status(400).json({ error: `Invalid role. Must be one of: ${VALID_ROLES.join(", ")}` });
       }
@@ -222,7 +221,6 @@ export const updateUser = async (req, res) => {
       user.status = status;
     }
 
-    // Password update if provided
     if (password && password.trim() !== "") {
       if (password.length < 6) {
         return res.status(400).json({ error: "Password must be at least 6 characters long." });
@@ -246,7 +244,6 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// DELETE /api/users/:id
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -255,21 +252,26 @@ export const deleteUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid user ID format" });
     }
 
-    // Prevent admin from deleting themselves
     if (req.user && req.user._id.toString() === id) {
       return res.status(400).json({
         error: "Action prohibited. You cannot delete your currently authenticated administrator account.",
       });
     }
 
-    const deletedUser = await User.findByIdAndDelete(id);
-    if (!deletedUser) {
+    const target = await User.findById(id);
+    if (!target) {
       return res.status(404).json({ error: "User not found" });
     }
 
+    if (target.role === "admin") {
+      return res.status(403).json({ error: "Admin account cannot be deleted." });
+    }
+
+    await User.findByIdAndDelete(id);
+
     res.status(200).json({
       success: true,
-      msg: `User "${deletedUser.name}" deleted successfully.`,
+      msg: `User "${target.name}" deleted successfully.`,
     });
   } catch (error) {
     console.error("Error deleting user:", error);

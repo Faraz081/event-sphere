@@ -344,7 +344,6 @@ const AdminUsers = () => {
                 className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
               >
                 <option value="all">All Roles</option>
-                <option value="admin">Admin</option>
                 <option value="organizer">Organizer</option>
                 <option value="attendee">Attendee</option>
                 <option value="exhibitor">Exhibitor</option>
@@ -787,7 +786,6 @@ const AdminUsers = () => {
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
                     >
-                      <option value="admin">Admin</option>
                       <option value="organizer">Organizer</option>
                       <option value="attendee">Attendee</option>
                       <option value="exhibitor">Exhibitor</option>
