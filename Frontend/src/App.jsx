@@ -29,7 +29,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyOtp from "./pages/auth/VerifyOtp";
 import NewPassword from "./pages/auth/NewPassword";
-import { DashboardRedirect, RequireAuth, RequireRole } from "./components/shared/RouteGuards";
+import { DashboardRedirect, RequireAuth, RequireRole, PublicOnlyRoute } from "./components/shared/RouteGuards";
 import { Toaster } from "sonner";
 import { useSelector } from "react-redux";
 import AdminMessages from "./pages/admin/AdminMessages";
@@ -74,12 +74,13 @@ function App() {
           </Route>
         </Route>
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-otp" element={email ? <VerifyOtp /> : <Navigate to="/forgot-password" replace />} />
-        <Route path="/new-password" element={ email && otp ? (<NewPassword />) : email ? (<Navigate to="/verify-otp" replace />) : (<Navigate to="/forgot-password" replace />)}/>
-
+        <Route element={<PublicOnlyRoute />}>
+         <Route path="/login" element={<LoginPage />} />
+         <Route path="/register" element={<RegisterPage />} />
+         <Route path="/forgot-password" element={<ForgotPassword />} />
+         <Route path="/verify-otp" element={email ? <VerifyOtp /> : <Navigate to="/forgot-password" replace />} />
+         <Route path="/new-password" element={ email && otp ? (<NewPassword />) : email ? (<Navigate to="/verify-otp" replace />) : (<Navigate to="/forgot-password" replace />)}/>
+        </Route>
         {/* PROTECTED ROUTES */}
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<DashboardRedirect />} />

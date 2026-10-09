@@ -37,6 +37,9 @@ const inputClass =
 
 const labelClass = "mb-2 block text-sm font-semibold text-[#2f2a24]";
 
+const countLetters = (str) => (str.match(/\p{L}/gu) || []).length;
+const lettersOnly = /^[\p{L}\s]+$/u;
+
 const RegisterPage = () => {
   const [formData, setFormData] = useState(initialFormData);
   const navigate = useNavigate();
@@ -45,14 +48,80 @@ const RegisterPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    // Phone: sirf digits, max 11
+    if (name === "phone") {
+      setFormData((prev) => ({
+        ...prev,
+        phone: value.replace(/\D/g, "").slice(0, 11),
+      }));
+      return;
+    }
+
+    // Name / Company: sirf letters aur spaces
+    if (name === "name" || name === "companyName") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value.replace(/[^\p{L}\s]/gu, ""),
+      }));
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    const name = formData.name.trim().replace(/\s+/g, " ");
+    const companyName = formData.companyName.trim().replace(/\s+/g, " ");
+    const email = formData.email.trim();
+    const { password, confirmPassword, phone, role } = formData;
+
+    if (!name || !email || !password || !confirmPassword || !phone) {
+      return "All fields are required";
+    }
+    if (name.length > 50 || !lettersOnly.test(name) || countLetters(name) < 3) {
+      return "Name must contain only letters and spaces (at least 3 letters)";
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return "Please enter a valid email";
+    }
+    if (!role) {
+      return "Please select your role";
+    }
+    if (role === "exhibitor") {
+      if (!companyName) return "Company name is required for exhibitors";
+      if (
+        companyName.length > 100 ||
+        !lettersOnly.test(companyName) ||
+        countLetters(companyName) < 3
+      ) {
+        return "Company name must contain only letters and spaces (at least 3 letters)";
+      }
+    }
+    if (password.length < 6) {
+      return "Password must be at least 6 characters";
+    }
+    if (/\s/.test(password)) {
+      return "Password must not contain spaces";
+    }
+    if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return "Password must contain at least one letter and one number";
+    }
+    if (password !== confirmPassword) {
+      return "Passwords do not match";
+    }
+    if (!/^\d{11}$/.test(phone)) {
+      return "Phone number must contain exactly 11 digits (numbers only)";
+    }
+    return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
+    const validationError = validateForm();
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
 
@@ -148,7 +217,7 @@ const RegisterPage = () => {
             </p>
           </div>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             <div className="grid gap-x-5 gap-y-5 md:grid-cols-2">
 
               {/* Full Name */}
@@ -164,6 +233,7 @@ const RegisterPage = () => {
                     id="fullName"
                     name="name"
                     type="text"
+                    maxLength={50}
                     placeholder="Enter your full name"
                     value={formData.name}
                     onChange={handleChange}
@@ -185,6 +255,7 @@ const RegisterPage = () => {
                     id="company"
                     name="companyName"
                     type="text"
+                    maxLength={100}
                     placeholder="ABC Technologies"
                     value={formData.companyName}
                     onChange={handleChange}
@@ -223,7 +294,7 @@ const RegisterPage = () => {
                 <Select
                   value={formData.role}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, role: value })
+                    setFormData((prev) => ({ ...prev, role: value }))
                   }
                 >
                   <SelectTrigger className="h-[50px] w-full rounded-xl border-[#eadfca] bg-[#fffdf9] text-sm text-black">
@@ -292,6 +363,8 @@ const RegisterPage = () => {
                     id="phone"
                     name="phone"
                     type="tel"
+                    inputMode="numeric"
+                    maxLength={11}
                     placeholder="03001234567"
                     value={formData.phone}
                     onChange={handleChange}
