@@ -315,14 +315,6 @@ const Footer = () => {
             </div>
 
             <Link
-              to="/dashboard"
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#c49424]/40 bg-[#c49424] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white shadow-md transition-all duration-300 hover:bg-[#a77d20]"
-            >
-              Open Dashboard
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-
-            <Link
               to="/book-now"
               className="ml-2 mt-6 inline-flex items-center gap-2 rounded-full border border-[#c49424]/40 bg-[#c49424] px-8 py-2.5 text-xs font-semibold uppercase tracking-widest text-white shadow-md transition-all duration-300 hover:bg-[#a77d20]"
             >
