@@ -15,11 +15,11 @@ const MessagesPanel = ({ attendee = false }) => {
   const contactId = searchParams.get("user");
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(fetchContacts(contactId));
     dispatch(fetchUnreadCounts());
     const interval = setInterval(() => dispatch(fetchUnreadCounts()), 5000);
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [dispatch, contactId]);
 
   useEffect(() => {
     if (!contactId || !contacts.length) return;

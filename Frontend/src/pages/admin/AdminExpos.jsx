@@ -688,12 +688,12 @@ const AdminExpos = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-muted mb-1.5">Theme</label>
+                  <label className="block text-sm text-muted mb-1.5">Category / Theme</label>
                   <input
                     name="theme"
                     value={formData.theme}
                     onChange={handleInputChange}
-                    placeholder="e.g. Artificial Intelligence & Robotics"
+                    placeholder="e.g. AI, Robotics, Food & Beverage"
                     className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
                   />
                 </div>

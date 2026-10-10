@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const stallSchema = new mongoose.Schema({
@@ -24,11 +25,6 @@ const stallSchema = new mongoose.Schema({
 });
 
 const eventSchema = new mongoose.Schema({
-  expo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Expo",
-    required: true,
-  },
   exhibitor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -47,10 +43,6 @@ const eventSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: "",
-  },
-  date: {
-    type: Date,
-    required: [true, "Date is required"],
   },
   eventType: {
     type: String,

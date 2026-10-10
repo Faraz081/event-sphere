@@ -21,6 +21,7 @@ import {
   fetchPublicBooths,
 } from '@/api/publicService'
 import { API_BASE_URL } from '@/api/api'
+import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
 
 const BASE = API_BASE_URL
@@ -57,6 +58,8 @@ const ExpoDetail = () => {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
+  useLoadBookmarks()
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -67,13 +70,6 @@ const ExpoDetail = () => {
         setExpo(expoData.expo)
         setSchedules(expoData.schedules ?? [])
         setBooths(boothData.booths ?? [])
-        const now = new Date()
-     setEvents(
-  (eventData.events ?? []).filter((e) => {
-    const expoId = String(e.expo?._id || e.expo || "")
-    return expoId === String(id) && new Date(e.date) >= now
-  })
-)
       } catch (err) {
         if (err.response?.status === 404 || err.response?.status === 400) setNotFound(true)
         else toast.error(err.response?.data?.error || 'Could not load this expo')
@@ -152,6 +148,7 @@ const ExpoDetail = () => {
                 {expo.theme}
               </span>
             )}
+            <BookmarkButton expo={expo} className="absolute right-6 top-6" />
           </div>
 
           <div className="p-7 sm:p-10">
@@ -281,8 +278,9 @@ const ExpoDetail = () => {
                     )}
 
                     <button
+                      type="button"
                       onClick={() => navigate(`/attendee/messages?user=${ex.userId}`)}
-                      className="mt-4 rounded-lg bg-gold text-background px-4 py-2 text-sm font-medium"
+                      className="mt-4 rounded-full bg-[#c49424] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
                     >
                       Message Exhibitor
                     </button>

@@ -8,6 +8,7 @@ import gallery2 from '../../assets/gallery-2.jpg'
 import gallery3 from '../../assets/gallery-3.jpg'
 import Footer from './Footer'
 import api from '../../api/api'
+import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
 
 const Home = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -15,6 +16,7 @@ const Home = () => {
   const [websiteSettings, setWebsiteSettings] = useState(null)
   const [events, setEvents] = useState([])
 const [eventsLoading, setEventsLoading] = useState(true)
+  useLoadBookmarks()
 
 useEffect(() => {
   const fetchEvents = async () => {
@@ -137,7 +139,7 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-
                   to="/ongoing-events"
                   className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
                 >
-                  Explore Events
+                  Explore Expos
                 </Link>
 
                 <Link
@@ -271,91 +273,87 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-
       </section>
 
 
-      {/* ================= SERVICES ================= */}
-<section id="services" className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10">
-  <div className="mx-auto max-w-7xl">
+          {/* ================= SERVICES ================= */}
+      <section id="services" className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10">
+        <div className="mx-auto max-w-7xl">
 
-    <div className="mb-14 text-center">
-      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">What We Do</p>
-      <h2 className="mt-3 font-serif text-4xl font-bold sm:text-5xl">
-        Our <span className="text-[#c49424]">Services</span>
-      </h2>
-      <p className="mx-auto mt-4 max-w-2xl text-[#5d574f]">
-        From intimate celebrations to professional events, explore what our exhibitors are offering and book your spot.
-      </p>
-    </div>
+          <div className="mb-14 text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">What We Do</p>
+            <h2 className="mt-3 font-serif text-4xl font-bold sm:text-5xl">
+              Our <span className="text-[#c49424]">Services</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-[#5d574f]">
+              From intimate celebrations to professional events, explore what our exhibitors are offering and book your spot.
+            </p>
+          </div>
 
-    {eventsLoading ? (
-      <p className="text-center text-[#5d574f]">Loading events...</p>
-    ) : events.length === 0 ? (
-      <p className="text-center text-[#5d574f]">No events available right now. Please check back soon.</p>
-    ) : (
-      <div className="grid gap-7 md:grid-cols-3">
-        {events.slice(0, 3).map((ev) => (
-  <div
-    key={ev._id}
-    className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
-  >
+          {eventsLoading ? (
+            <p className="text-center text-[#5d574f]">Loading events...</p>
+          ) : events.length === 0 ? (
+            <p className="text-center text-[#5d574f]">No events available right now. Please check back soon.</p>
+          ) : (
+            <div className="grid gap-7 md:grid-cols-3">
+              {events.slice(0, 3).map((ev) => (
+                <div
+                  key={ev._id}
+                  className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={ev.images?.[0] || gallery1}
+                      alt={ev.title ?? ev.name}
+                      className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                    <BookmarkButton event={ev} className="absolute right-4 top-4" />
+                  </div>
 
-    <div className="overflow-hidden">
-      <img
-        src={ev.images?.[0] || gallery1}
-        alt={ev.title ?? ev.name}
-        className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
-      />
-    </div>
+                  <div className="p-7 text-center">
+                    <h3 className="font-serif text-2xl font-bold text-[#c49424]">
+                      {ev.title ?? ev.name}
+                    </h3>
 
-    <div className="p-7 text-center">
+                    {(ev.companyName || ev.exhibitorName) && (
+                      <p className="mt-1 text-sm font-medium text-[#8d681b]">
+                        by{' '}
+                        {ev.exhibitor?._id ? (
+                          <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
+                            {ev.companyName ?? ev.exhibitorName}
+                          </Link>
+                        ) : (
+                          ev.companyName ?? ev.exhibitorName
+                        )}
+                      </p>
+                    )}
 
+                    {ev.location && (
+                      <p className="mt-2 text-sm text-[#8a8379]">📍 {ev.location}</p>
+                    )}
 
-      <h3 className="font-serif text-2xl font-bold text-[#c49424]">
-  {ev.title ?? ev.name}
-</h3>
+                    <p className="mt-3 leading-6 text-[#5d574f]">
+                      {ev.description}
+                    </p>
 
-{(ev.companyName || ev.exhibitorName) && (
-  <p className="mt-1 text-sm font-medium text-[#8d681b]">
-    by{' '}
-    {ev.exhibitor?._id ? (
-      <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
-        {ev.companyName ?? ev.exhibitorName}
-      </Link>
-    ) : (
-      ev.companyName ?? ev.exhibitorName
-    )}
-  </p>
-)}
+                    <Link
+                      to={`/book-now?event=${ev._id}`}
+                      className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
+                    >
+                      Book Now
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
-{ev.location && (
-  <p className="mt-2 text-sm text-[#8a8379]">📍 {ev.location}</p>
-)}
+          <div className="mt-10 text-center">
+            <Link to="/service" className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
+              View All Services
+            </Link>
+          </div>
 
-      <p className="mt-3 leading-6 text-[#5d574f]">
-        {ev.description}
-      </p>
-
-      <Link
-        to={`/book-now?event=${ev._id}`}
-        className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-      >
-        Book Now
-        <ArrowUpRight className="h-4 w-4" />
-      </Link>
-
-    </div>
-
-  </div>
-))}
-      </div>
-    )}
-
-    <div className="mt-10 text-center">
-      <Link to="/service" className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
-        View All Services
-      </Link>
-    </div>
-
-  </div>
-</section>
+        </div>
+      </section>
 
       {/* ================= GALLERY ================= */}
       <section

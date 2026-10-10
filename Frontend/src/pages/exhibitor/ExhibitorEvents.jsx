@@ -6,7 +6,6 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import EventStalls from "@/components/shared/EventStalls";
 import { uploadExpoBanner } from "@/api/expoService";
-import api from "@/api/api";
 import {
   fetchMyEvents,
   createEvent,
@@ -49,14 +48,11 @@ const ExhibitorEvents = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
   const [eventType, setEventType] = useState("");
   const [boothCapacity, setBoothCapacity] = useState("");
-  const [expoId, setExpoId] = useState("");
   const [banner, setBanner] = useState("");
   const [images, setImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
-  const [expos, setExpos] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectNote, setRejectNote] = useState("");
@@ -66,32 +62,6 @@ const ExhibitorEvents = () => {
   useEffect(() => {
     dispatch(fetchMyEvents());
     dispatch(fetchBookingRequests());
-
-    api.get("/api/booth/mine")
-      .then(({ data }) => {
-        const list = data.booths || (data.booth ? [data.booth] : []);
-        const map = new Map();
-
-        list.forEach((booth) => {
-          if (!booth.expo) return;
-
-          const id = String(booth.expo._id || booth.expo);
-
-          if (!map.has(id)) {
-            map.set(id, {
-              _id: id,
-              title: booth.expo.title || "Expo",
-              boothNumber: booth.boothNumber,
-            });
-          }
-        });
-
-        setExpos([...map.values()]);
-      })
-      .catch((error) => {
-        console.error("Failed to load exhibitor expos:", error);
-        toast.error(error.response?.data?.error || "Could not load your reserved expos.");
-      });
   }, [dispatch]);
 
   const resetForm = () => {
@@ -99,10 +69,8 @@ const ExhibitorEvents = () => {
     setTitle("");
     setDescription("");
     setLocation("");
-    setDate("");
     setEventType("");
     setBoothCapacity("");
-    setExpoId("");
     setBanner("");
     setImages([]);
     setExistingImages([]);
@@ -121,7 +89,7 @@ const ExhibitorEvents = () => {
 
   const uploadOne = async (file) => {
     if (!file.type.startsWith("image/")) throw new Error("Please select an image.");
-    if (file.size > 5 * 1024 * 1024) throw new Error("Image size must be under 5MB.");
+    if (file.size > 10 * 1024 * 1024) throw new Error("Image size must be under 10MB.");
 
     const result = await uploadExpoBanner(file);
 
@@ -151,10 +119,8 @@ const ExhibitorEvents = () => {
     setTitle(event.title ?? "");
     setDescription(event.description ?? "");
     setLocation(event.location ?? "");
-    setDate(event.date ? new Date(event.date).toISOString().slice(0, 16) : "");
     setEventType(event.eventType ?? "");
     setBoothCapacity(String(event.boothCapacity ?? ""));
-    setExpoId(String(event.expo?._id || event.expo || ""));
     setBanner(event.banner || "");
     setExistingImages(event.images ?? []);
     setImages([]);
@@ -163,15 +129,7 @@ const ExhibitorEvents = () => {
   };
 
   const handleSubmit = async () => {
-    if (
-      !title.trim() ||
-      !description.trim() ||
-      !date ||
-      !eventType.trim() ||
-      !location.trim() ||
-      !boothCapacity ||
-      !expoId
-    ) {
+    if (!title.trim() || !description.trim() || !eventType.trim() || !location.trim() || !boothCapacity) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -187,6 +145,10 @@ const ExhibitorEvents = () => {
       const imageUrls = [...existingImages];
 
       for (const file of images) {
+        if (file.size > 10 * 1024 * 1024) {
+          throw new Error(`"${file.name}" is larger than 10MB.`);
+        }
+
         const uploaded = await dispatch(uploadEventImage(file)).unwrap();
 
         if (!uploaded?.image?.url) {
@@ -200,10 +162,8 @@ const ExhibitorEvents = () => {
         title: title.trim(),
         description: description.trim(),
         location: location.trim(),
-        date,
         eventType: eventType.trim(),
         boothCapacity: Number(boothCapacity),
-        expo: expoId,
         banner,
         images: imageUrls,
       };
@@ -282,8 +242,8 @@ const ExhibitorEvents = () => {
   return (
     <DashboardLayout role="exhibitor">
       <DashboardSectionPage
-        title="Events & Tickets"
-        description="Create events for your booth and manage ticket requests."
+        title="Events & Bookings"
+        description="Create your events and manage booking requests from attendees."
       >
         <div className="mb-6">
           <button
@@ -307,24 +267,6 @@ const ExhibitorEvents = () => {
               </p>
             )}
 
-            <select
-              value={expoId}
-              onChange={(e) => setExpoId(e.target.value)}
-              disabled={editingId !== null}
-              className={field}
-            >
-              <option value="">Select Expo *</option>
-              {expos.map((expo) => (
-                <option key={expo._id} value={expo._id}>
-                  {expo.title}{expo.boothNumber ? ` (Booth ${expo.boothNumber})` : ""}
-                </option>
-              ))}
-            </select>
-
-            {!expos.length && (
-              <p className="text-xs text-red-300">Reserve a booth on a published expo first.</p>
-            )}
-
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -337,13 +279,6 @@ const ExhibitorEvents = () => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Event description *"
               rows={3}
-              className={field}
-            />
-
-            <input
-              type="datetime-local"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
               className={field}
             />
 
@@ -380,7 +315,7 @@ const ExhibitorEvents = () => {
               step="1"
               value={boothCapacity}
               onChange={(e) => setBoothCapacity(e.target.value)}
-              placeholder="Maximum number of stalls / booths *"
+              placeholder="Maximum number of stalls *"
               className={field}
             />
 
@@ -476,7 +411,7 @@ const ExhibitorEvents = () => {
         {loading && <p className="text-sm text-muted">Loading...</p>}
 
         {!loading && !events.length && (
-          <p className="text-sm text-muted">No events yet. You need a reserved booth to create one.</p>
+          <p className="text-sm text-muted">No events yet. Click "New Event" to create your first one.</p>
         )}
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -493,9 +428,6 @@ const ExhibitorEvents = () => {
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="font-semibold text-foreground">{event.title}</p>
-                  {event.expo?.title && (
-                    <p className="text-xs text-muted">Expo: {event.expo.title}</p>
-                  )}
                   {event.status && (
                     <span className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-xs ${badge[event.status] || badge.pending}`}>
                       {event.status === "approved" ? "Approved" : event.status === "rejected" ? "Rejected" : event.status}
@@ -514,7 +446,6 @@ const ExhibitorEvents = () => {
               </div>
 
               <p className="text-sm text-muted">{event.description}</p>
-              {event.date && <p className="text-xs text-gold">{new Date(event.date).toLocaleString()}</p>}
               <p className="text-xs text-gold">Type: <span className="text-foreground">{event.eventType}</span></p>
               <p className="text-xs text-gold">Location: <span className="text-foreground">{event.location || "Not set"}</span></p>
               <p className="text-xs text-gold">Stall capacity: <span className="text-foreground">{event.boothCapacity}</span></p>
@@ -573,6 +504,9 @@ const ExhibitorEvents = () => {
                       </p>
                     )}
                     {r.guests && <p className="text-xs text-muted">Guests: <span className="text-foreground">{r.guests}</span></p>}
+                    {!!r.stallNumbers?.length && (
+                      <p className="text-xs text-muted">Stalls: <span className="text-foreground">{r.stallNumbers.join(", ")}</span></p>
+                    )}
                     {r.contactPhone && <p className="text-xs text-muted">Contact: <span className="text-foreground">{r.contactPhone}</span></p>}
                     {r.notes && <p className="text-xs text-muted">Note: <span className="text-foreground">{r.notes}</span></p>}
                   </div>
