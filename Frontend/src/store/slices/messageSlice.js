@@ -4,9 +4,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // FETCH CONTACTS
 export const fetchContacts = createAsyncThunk(
   "message/fetchContacts",
-  async (_, { rejectWithValue }) => {
+  async (contactId, { rejectWithValue }) => {
     try {
-      const data = await api.get("/api/message/contacts");
+      const data = await api.get("/api/message/contacts", {
+        params: contactId ? { user: contactId } : {},
+      });
       return data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { msg: "Unable to connect to the server" });

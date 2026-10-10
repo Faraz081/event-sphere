@@ -78,14 +78,17 @@ export const getPublicExhibitors = async (req, res) => {
 
     const filter = { expo: expo._id, status: "approved" };
     const search = req.query.search?.trim();
+    const category = req.query.category?.trim();
+
+    if (category) filter.category = category;
 
     if (search) {
       const re = new RegExp(escapeRegex(search), "i");
-      filter.$or = [{ companyName: re }, { productsServices: re }, { description: re }];
+      filter.$or = [{ companyName: re }, { category: re }, { productsServices: re }, { description: re }];
     }
 
     const applications = await ExhibitorApplication.find(filter)
-      .select("userId companyName productsServices description logo")
+      .select("userId companyName category productsServices description logo")
       .sort({ companyName: 1 });
 
     const booths = await Booth.find({
@@ -103,6 +106,7 @@ export const getPublicExhibitors = async (req, res) => {
         _id: a._id,
         userId: a.userId,
         companyName: a.companyName,
+        category: a.category,
         productsServices: a.productsServices,
         description: a.description,
         logo: a.logo,
@@ -211,7 +215,7 @@ export const getPublicExhibitorProfile = async (req, res) => {
   }
 };
 
-// GET /api/public/events/:id/stalls?date=YYYY-MM-DD  (stalls + us date par booked hain ya nahi)
+// GET /api/public/events/:id/stalls?date=YYYY-MM-DD  (stalls + date booked hai ya nahi)
 
 export const getPublicEventStalls = async (req, res) => {
   try {
@@ -223,7 +227,7 @@ export const getPublicEventStalls = async (req, res) => {
 
     if (!event) return res.status(404).json({ error: "Event not found" });
 
-    const bookedIds = new Set();
+    let dateBooked = false;
     const { date } = req.query;
 
     if (date) {
@@ -233,13 +237,11 @@ export const getPublicEventStalls = async (req, res) => {
 
       const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
 
-      const bookings = await Attendee.find({
+      dateBooked = !!(await Attendee.exists({
         event: id,
         bookingStatus: "confirmed",
         eventDate: { $gte: start, $lt: end },
-      }).select("stalls");
-
-      bookings.forEach((b) => (b.stalls ?? []).forEach((s) => bookedIds.add(String(s))));
+      }));
     }
 
     const stalls = event.stalls.map((s) => ({
@@ -248,10 +250,9 @@ export const getPublicEventStalls = async (req, res) => {
       name: s.name,
       size: s.size,
       description: s.description,
-      booked: bookedIds.has(String(s._id)),
     }));
 
-    return res.status(200).json({ stalls });
+    return res.status(200).json({ stalls, dateBooked });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

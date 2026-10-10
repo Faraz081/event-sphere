@@ -21,6 +21,8 @@ import {
   fetchPublicBooths,
 } from '@/api/publicService'
 import { API_BASE_URL } from '@/api/api'
+import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
+import exhibitorCategories from '@/data/exhibitorCategories'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
 
 const BASE = API_BASE_URL
@@ -53,9 +55,12 @@ const ExpoDetail = () => {
   const [booths, setBooths] = useState([])
   const [exhibitors, setExhibitors] = useState([])
   const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('')
   const [tab, setTab] = useState('Schedule')
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+
+  useLoadBookmarks()
 
   useEffect(() => {
     const load = async () => {
@@ -67,13 +72,6 @@ const ExpoDetail = () => {
         setExpo(expoData.expo)
         setSchedules(expoData.schedules ?? [])
         setBooths(boothData.booths ?? [])
-        const now = new Date()
-     setEvents(
-  (eventData.events ?? []).filter((e) => {
-    const expoId = String(e.expo?._id || e.expo || "")
-    return expoId === String(id) && new Date(e.date) >= now
-  })
-)
       } catch (err) {
         if (err.response?.status === 404 || err.response?.status === 400) setNotFound(true)
         else toast.error(err.response?.data?.error || 'Could not load this expo')
@@ -89,7 +87,10 @@ const ExpoDetail = () => {
     const timer = setTimeout(async () => {
       try {
         const q = search.trim()
-        const data = await fetchPublicExhibitors(id, q ? { search: q } : {})
+        const params = {}
+        if (q) params.search = q
+        if (category) params.category = category
+        const data = await fetchPublicExhibitors(id, params)
         setExhibitors(data.exhibitors ?? [])
       } catch (err) {
         if (err.response?.status !== 404 && err.response?.status !== 400) {
@@ -98,7 +99,7 @@ const ExpoDetail = () => {
       }
     }, 300)
     return () => clearTimeout(timer)
-  }, [id, search])
+  }, [id, search, category])
 
   if (loading) {
     return (
@@ -152,6 +153,7 @@ const ExpoDetail = () => {
                 {expo.theme}
               </span>
             )}
+            <BookmarkButton expo={expo} className="absolute right-6 top-6" />
           </div>
 
           <div className="p-7 sm:p-10">
@@ -226,15 +228,28 @@ const ExpoDetail = () => {
           {/* ---------- EXHIBITORS ---------- */}
           {tab === 'Exhibitors' && (
             <div>
-              <div className="relative mb-6 max-w-md">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search by company, product or keyword"
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                />
+              <div className="mb-6 grid max-w-3xl gap-3 sm:grid-cols-2">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search company, product or keyword"
+                    className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                  />
+                </div>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  aria-label="Filter exhibitors by category"
+                  className="w-full rounded-xl border border-[#e4d9c4] bg-white px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                >
+                  <option value="">All categories</option>
+                  {exhibitorCategories.map((item) => (
+                    <option key={item} value={item}>{item}</option>
+                  ))}
+                </select>
               </div>
 
               {exhibitors.length === 0 && (
@@ -272,6 +287,7 @@ const ExpoDetail = () => {
                     </div>
 
                     <p className="mt-4 text-sm font-medium text-[#4d473f]">{ex.productsServices}</p>
+                    {ex.category && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#9a721c]">{ex.category}</p>}
                     {ex.description && <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#5d574f]">{ex.description}</p>}
                     {ex.booth?.location && (
                       <p className="mt-3 flex items-center gap-1.5 text-xs text-[#8a8379]">
@@ -281,8 +297,9 @@ const ExpoDetail = () => {
                     )}
 
                     <button
+                      type="button"
                       onClick={() => navigate(`/attendee/messages?user=${ex.userId}`)}
-                      className="mt-4 rounded-lg bg-gold text-background px-4 py-2 text-sm font-medium"
+                      className="mt-4 rounded-full bg-[#c49424] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
                     >
                       Message Exhibitor
                     </button>

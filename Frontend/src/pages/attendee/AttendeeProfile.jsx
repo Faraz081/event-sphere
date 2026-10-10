@@ -10,14 +10,15 @@ import {
   Ticket,
   MapPin,
   Store,
+  Users,
   CheckCircle2,
   Clock3,
   XCircle,
-  QrCode,
   ShieldCheck,
 } from "lucide-react";
 import { fetchMyRegistrations } from "@/api/attendeePortalService";
 import EntryPass from "@/components/shared/EntryPass";
+import SavedEvents from "@/components/shared/SavedEvents";
 
 const ProfileDetail = ({ icon: Icon, label, value }) => (
   <div className="flex items-center gap-3 rounded-xl border border-[#eadfc9]/50 bg-[#fffdf9] p-3 shadow-2xs">
@@ -25,35 +26,23 @@ const ProfileDetail = ({ icon: Icon, label, value }) => (
       <Icon size={15} />
     </span>
     <div className="min-w-0">
-      <p className="text-[9px] font-bold uppercase tracking-widest text-[#8a8379]">
-        {label}
-      </p>
-      <p className="truncate text-xs font-bold text-[#2f2a24]">
-        {value || "Not provided"}
-      </p>
+      <p className="text-[9px] font-bold uppercase tracking-widest text-[#8a8379]">{label}</p>
+      <p className="truncate text-xs font-bold text-[#2f2a24]">{value || "Not provided"}</p>
     </div>
   </div>
 );
 
+const Chip = ({ icon: Icon, children }) => (
+  <span className="flex items-center gap-1.5 rounded-lg border border-[#eadfc9]/50 bg-[#f8f5ef] px-3 py-1.5 font-medium">
+    <Icon size={13} className="text-[#c49424]" />
+    {children}
+  </span>
+);
+
 const bookingBadge = {
-  pending: {
-    label: "Pending Approval",
-    className: "bg-amber-100 text-amber-800 border-amber-300",
-    bar: "bg-amber-400",
-    icon: Clock3,
-  },
-  confirmed: {
-    label: "Confirmed Pass",
-    className: "bg-emerald-100 text-emerald-800 border-emerald-300",
-    bar: "bg-emerald-500",
-    icon: CheckCircle2,
-  },
-  cancelled: {
-    label: "Rejected",
-    className: "bg-rose-100 text-rose-800 border-rose-300",
-    bar: "bg-rose-400",
-    icon: XCircle,
-  },
+  pending: { label: "Pending Approval", className: "bg-amber-100 text-amber-800 border-amber-300", icon: Clock3 },
+  confirmed: { label: "Confirmed", className: "bg-emerald-100 text-emerald-800 border-emerald-300", icon: CheckCircle2 },
+  cancelled: { label: "Rejected", className: "bg-rose-100 text-rose-800 border-rose-300", icon: XCircle },
 };
 
 const AttendeeProfile = () => {
@@ -62,13 +51,7 @@ const AttendeeProfile = () => {
   const [loadingBookings, setLoadingBookings] = useState(true);
 
   const initials = user?.name
-    ? user.name
-        .trim()
-        .split(/\s+/)
-        .map((part) => part[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
+    ? user.name.trim().split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toUpperCase()
     : "G";
 
   useEffect(() => {
@@ -77,9 +60,7 @@ const AttendeeProfile = () => {
         const data = await fetchMyRegistrations();
         setBookings(data.registrations ?? []);
       } catch (err) {
-        toast.error(
-          err.response?.data?.error || "Could not load your bookings"
-        );
+        toast.error(err.response?.data?.error || "Could not load your bookings");
       } finally {
         setLoadingBookings(false);
       }
@@ -94,19 +75,15 @@ const AttendeeProfile = () => {
   return (
     <main className="min-h-screen bg-[#f8f5ef] px-4 pb-20 pt-28 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-6xl space-y-8">
-        
+
         {/* Profile Card Header */}
-        <div className="relative overflow-hidden rounded-3xl border border-[#eadfc9] bg-[#fffdf9] p-6 sm:p-8 shadow-sm">
-          <div className="absolute top-0 left-0 h-2 w-full bg-gradient-to-r from-[#2f2a24] via-[#c49424] to-[#2f2a24]" />
-          
+        <div className="relative overflow-hidden rounded-3xl border border-[#eadfc9] bg-[#fffdf9] p-6 shadow-sm sm:p-8">
+          <div className="absolute left-0 top-0 h-2 w-full bg-gradient-to-r from-[#2f2a24] via-[#c49424] to-[#2f2a24]" />
+
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+            <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
               {user?.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="h-20 w-20 rounded-2xl border-2 border-[#c49424] object-cover shadow-md"
-                />
+                <img src={user.avatar} alt={user.name} className="h-20 w-20 rounded-2xl border-2 border-[#c49424] object-cover shadow-md" />
               ) : (
                 <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-[#c49424] bg-[#2f2a24] font-serif text-2xl font-bold text-[#e3b94a] shadow-md">
                   {initials}
@@ -114,10 +91,8 @@ const AttendeeProfile = () => {
               )}
 
               <div>
-                <div className="flex items-center justify-center sm:justify-start gap-2">
-                  <h1 className="font-serif text-2xl font-bold text-[#2f2a24] sm:text-3xl">
-                    {user?.name}
-                  </h1>
+                <div className="flex items-center justify-center gap-2 sm:justify-start">
+                  <h1 className="font-serif text-2xl font-bold text-[#2f2a24] sm:text-3xl">{user?.name}</h1>
                   <ShieldCheck className="h-5 w-5 text-[#c49424]" />
                 </div>
                 <p className="text-xs text-[#736c62]">{user?.email}</p>
@@ -127,13 +102,13 @@ const AttendeeProfile = () => {
               </div>
             </div>
 
-            {/* Quick Stats Banner */}
+            {/* Quick Stats */}
             <div className="flex items-center justify-center gap-3 rounded-2xl border border-[#eadfc9] bg-[#f8f5ef] p-3">
-              <div className="px-4 text-center border-r border-[#eadfc9]">
+              <div className="border-r border-[#eadfc9] px-4 text-center">
                 <p className="font-serif text-xl font-bold text-[#2f2a24]">{bookings.length}</p>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[#8a8379]">Total</p>
               </div>
-              <div className="px-4 text-center border-r border-[#eadfc9]">
+              <div className="border-r border-[#eadfc9] px-4 text-center">
                 <p className="font-serif text-xl font-bold text-emerald-700">{confirmedCount}</p>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[#8a8379]">Approved</p>
               </div>
@@ -144,8 +119,7 @@ const AttendeeProfile = () => {
             </div>
           </div>
 
-          {/* User Info Details Row */}
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 border-t border-[#f0e8d8] pt-6">
+          <div className="mt-6 grid gap-3 border-t border-[#f0e8d8] pt-6 sm:grid-cols-2 lg:grid-cols-4">
             <ProfileDetail icon={UserRound} label="Full name" value={user?.name} />
             <ProfileDetail icon={Mail} label="Email" value={user?.email} />
             <ProfileDetail icon={Phone} label="Phone" value={user?.phone} />
@@ -153,150 +127,105 @@ const AttendeeProfile = () => {
           </div>
         </div>
 
-        {/* Bookings Section */}
+        {/* Bookings */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 px-1">
             <Ticket size={20} className="text-[#c49424]" />
-            <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">My Passes & Tickets</h2>
+            <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">My Bookings</h2>
           </div>
 
-          {loadingBookings && (
-            <p className="text-xs font-semibold text-[#5d574f]">
-              Loading your passes...
-            </p>
-          )}
+          {loadingBookings && <p className="text-xs font-semibold text-[#5d574f]">Loading your bookings...</p>}
 
           {!loadingBookings && bookings.length === 0 && (
             <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-[#d9c9a3] bg-white/80 p-12 text-center">
               <Ticket size={32} className="text-[#c49424]" />
-              <p className="mt-3 font-serif text-base font-semibold text-[#2f2a24]">
-                No event bookings found
-              </p>
-              <p className="text-xs text-[#736c62]">
-                Your registered passes will appear here.
-              </p>
+              <p className="mt-3 font-serif text-base font-semibold text-[#2f2a24]">No bookings found</p>
+              <p className="text-xs text-[#736c62]">Your event bookings and expo passes will appear here.</p>
             </div>
           )}
 
-          {/* PASS TICKETS GRID / LIST */}
           <div className="space-y-5">
             {bookings.map((b) => {
               const badge = bookingBadge[b.bookingStatus] ?? bookingBadge.pending;
               const BadgeIcon = badge.icon;
-              const title = b.event?.title ?? b.eventName ?? b.expo?.title ?? "Event Registration";
-              const date = b.event?.date ?? b.expo?.date;
-              const expoTitle = b.event?.expo?.title ?? b.expo?.title;
               const isExpoTicket = !b.event && !!b.expo;
-              const location = b.event?.expo?.location ?? b.expo?.location;
+              const title = b.event?.title ?? b.eventName ?? b.expo?.title ?? "Booking";
+              const location = b.event?.location ?? b.expo?.location;
 
               return (
                 <div
                   key={b._id}
-                  className="relative flex flex-col md:flex-row rounded-2xl border border-[#eadfc9] bg-[#fffdf9] shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md"
+                  className="overflow-hidden rounded-2xl border border-[#eadfc9] bg-[#fffdf9] p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6"
                 >
-                  {/* LEFT PASS BODY */}
-                  <div className="flex-1 p-5 sm:p-6">
-                    {/* Header bar */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#f0e8d8] pb-3">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#a8790d]">
-                        {isExpoTicket ? "Official Expo Pass" : "Exhibitor Ticket"}
-                      </span>
-                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-[11px] font-bold ${badge.className}`}>
-                        <BadgeIcon size={12} />
-                        {badge.label}
-                      </span>
-                    </div>
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#f0e8d8] pb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#a8790d]">
+                      {isExpoTicket ? "Official Expo Pass" : "Event Booking"}
+                    </span>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-[11px] font-bold ${badge.className}`}>
+                      <BadgeIcon size={12} />
+                      {badge.label}
+                    </span>
+                  </div>
 
-                    {/* Title & Expo */}
-                    <div className="mt-3">
-                      <h3 className="font-serif text-xl font-bold text-[#2f2a24]">
-                        {title}
-                      </h3>
-                      {expoTitle && title !== expoTitle && (
-                        <p className="text-xs text-[#736c62] mt-0.5">
-                          Expo: <span className="font-semibold text-[#2f2a24]">{expoTitle}</span>
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Event Details Badges */}
-                    <div className="mt-4 flex flex-wrap gap-2 text-xs text-[#5d574f]">
-                      {date && (
-                        <span className="flex items-center gap-1.5 rounded-lg bg-[#f8f5ef] px-3 py-1.5 font-medium border border-[#eadfc9]/50">
-                          <CalendarDays size={13} className="text-[#c49424]" />
-                          {new Date(date).toLocaleString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      )}
-
-                      {location && (
-                        <span className="flex items-center gap-1.5 rounded-lg bg-[#f8f5ef] px-3 py-1.5 font-medium border border-[#eadfc9]/50">
-                          <MapPin size={13} className="text-[#c49424]" />
-                          {location}
-                        </span>
-                      )}
-
-                      {b.event?.booth?.boothNumber && (
-                        <span className="flex items-center gap-1.5 rounded-lg bg-[#f8f5ef] px-3 py-1.5 font-medium border border-[#eadfc9]/50">
-                          <Store size={13} className="text-[#c49424]" />
-                          Booth #{b.event.booth.boothNumber}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Status Note Messages */}
-                    {b.bookingStatus === "pending" && (
-                      <p className="mt-4 rounded-xl bg-amber-50/80 p-3 text-xs font-medium text-amber-900 border border-amber-200">
-                        {isExpoTicket
-                          ? "Pass is awaiting admin approval. Once confirmed, download options will appear."
-                          : "Reviewing registration. Pass key will be visible once approved."}
+                  <div className="mt-3">
+                    <h3 className="font-serif text-xl font-bold text-[#2f2a24]">{title}</h3>
+                    {!isExpoTicket && b.contactName && (
+                      <p className="mt-0.5 text-xs text-[#736c62]">
+                        Booked for <span className="font-semibold text-[#2f2a24]">{b.contactName}</span>
                       </p>
-                    )}
-
-                    {b.bookingStatus === "cancelled" && b.decisionNote && (
-                      <p className="mt-4 rounded-xl bg-rose-50 p-3 text-xs font-medium text-rose-800 border border-rose-200">
-                        Reason: {b.decisionNote}
-                      </p>
-                    )}
-
-                    {/* Download Button Component */}
-                    {isExpoTicket && b.bookingStatus === "confirmed" && b.entryPassId && (
-                      <div className="mt-4 pt-2">
-                        <EntryPass booking={b} user={user} />
-                      </div>
                     )}
                   </div>
 
-                  {/* REAL TICKET STUB PERFORATION LINE & SIDE STUB */}
-                  {!isExpoTicket && b.bookingStatus === "confirmed" && b.passCode && (
-                    <>
-                      {/* Vertical Dashed Line Divider with Notches */}
-                      <div className="relative hidden md:flex items-center justify-center w-0 border-l-2 border-dashed border-[#d9c9a3] bg-[#f8f5ef]">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 h-5 w-5 rounded-full bg-[#f8f5ef] border border-[#eadfc9]" />
-                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-5 w-5 rounded-full bg-[#f8f5ef] border border-[#eadfc9]" />
-                      </div>
+                  <div className="mt-4 flex flex-wrap gap-2 text-xs text-[#5d574f]">
+                    {!isExpoTicket && b.eventDate && (
+                      <Chip icon={CalendarDays}>
+                        {new Date(b.eventDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}
+                      </Chip>
+                    )}
 
-                      {/* RIGHT SIDE STUB SECTION */}
-                      <div className="relative flex flex-col items-center justify-center bg-[#fdf8ee] p-6 text-center md:w-56 border-t md:border-t-0 border-dashed border-[#d9c9a3]">
-                        <QrCode className="h-6 w-6 text-[#c49424] mb-1" />
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#8a8379]">
-                          Pass Code
-                        </p>
-                        <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[#2f2a24]">
-                          {b.passCode}
-                        </p>
-                      </div>
-                    </>
+                    {isExpoTicket && b.expo?.date && (
+                      <Chip icon={CalendarDays}>
+                        {new Date(b.expo.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </Chip>
+                    )}
+
+                    {location && <Chip icon={MapPin}>{location}</Chip>}
+                    {!isExpoTicket && b.guests && <Chip icon={Users}>{b.guests} guests</Chip>}
+                    {!!b.stallNumbers?.length && <Chip icon={Store}>Stalls: {b.stallNumbers.join(", ")}</Chip>}
+                  </div>
+
+                  {b.bookingStatus === "pending" && (
+                    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-xs font-medium text-amber-900">
+                      {isExpoTicket
+                        ? "Your pass is awaiting admin approval. Once confirmed, the download option will appear."
+                        : "Your request is waiting for the organizer to approve it."}
+                    </p>
+                  )}
+
+                  {b.bookingStatus === "confirmed" && !isExpoTicket && (
+                    <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-medium text-emerald-800">
+                      The organizer has confirmed your booking for this date.
+                    </p>
+                  )}
+
+                  {b.bookingStatus === "cancelled" && b.decisionNote && (
+                    <p className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800">
+                      Reason: {b.decisionNote}
+                    </p>
+                  )}
+
+                  {isExpoTicket && b.bookingStatus === "confirmed" && b.entryPassId && (
+                    <div className="mt-4 pt-2">
+                      <EntryPass booking={b} user={user} />
+                    </div>
                   )}
                 </div>
               );
             })}
           </div>
+
+          <SavedEvents />
+          
         </div>
       </div>
     </main>

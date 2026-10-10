@@ -25,10 +25,10 @@ const uploadLogoToCloudinary = async (file) => {
 
 const applyForExpo = async (req, res) => {
   try {
-    const { expo, companyName, productsServices, description, email, phone, address } = req.body;
+    const { expo, companyName, category, productsServices, description, email, phone, address } = req.body;
 
-    if (!expo || !companyName || !productsServices) {
-      return res.status(400).json({ error: "Expo, company name and products/services are required" });
+    if (!expo || !companyName || !category || !productsServices) {
+      return res.status(400).json({ error: "Expo, company name, category and products/services are required" });
     }
 
     if (!mongoose.isValidObjectId(expo) || !(await Expo.exists({ _id: expo }))) {
@@ -55,6 +55,7 @@ const applyForExpo = async (req, res) => {
       userId: req.user._id,
       expo,
       companyName,
+      category: category.trim(),
       productsServices,
       description,
       email,

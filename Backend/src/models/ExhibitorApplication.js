@@ -5,6 +5,7 @@ const exhibitorApplicationSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     expo: { type: mongoose.Schema.Types.ObjectId, ref: "Expo", required: true },
     companyName: { type: String, required: true, trim: true },
+    category: { type: String, trim: true, default: "" },
     productsServices: { type: String, required: true },
     description: { type: String, default: "" },
     email: { type: String, default: "" },

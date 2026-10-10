@@ -5,6 +5,9 @@ import { LogOut, Sparkles } from 'lucide-react'
 import api from '../../api/api'
 import { logout } from '@/store/slices/authSlice'
 import { fetchUnreadCounts } from '@/store/slices/messageSlice'
+import { clearNotifications } from '@/store/slices/notificationSlice'
+import { clearBookmarks } from '@/store/slices/bookmarkSlice'
+import NotificationBell from '@/components/shared/NotificationBell'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -12,6 +15,8 @@ const Navbar = () => {
   const { user } = useSelector((state) => state.auth)
   const { unread } = useSelector((state) => state.message)
   const isAttendee = user?.role === 'attendee'
+  const isStaff = ['admin', 'exhibitor'].includes(user?.role)
+  const isGuest = !user
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -19,6 +24,8 @@ const Navbar = () => {
   const unreadCount = unread.reduce((total, item) => total + item.count, 0)
 
   const handleLogout = () => {
+    dispatch(clearNotifications())
+    dispatch(clearBookmarks())
     dispatch(logout())
     setMenuOpen(false)
     navigate('/')
@@ -179,15 +186,6 @@ const Navbar = () => {
             </Link>
           )}
 
-          {!isAttendee && (
-            <Link
-              to="/login"
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-            >
-              Login
-            </Link>
-          )}
-
           {isAttendee && (
             <Link
               to="/profile"
@@ -208,35 +206,48 @@ const Navbar = () => {
             </button>
           )}
 
-          {!isAttendee && (
-            <Link
-              to="/register"
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-            >
-              Sign Up
-            </Link>
+          {isGuest && (
+            <>
+              <Link
+                to="/login"
+                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              >
+                Login
+              </Link>
+
+              <Link
+                to="/register"
+                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              >
+                Sign Up
+              </Link>
+            </>
           )}
 
         </div>
 
-        {/* Dashboard */}
-        {!isAttendee && (
-          <Link
-            to="/dashboard"
-            className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 md:block"
-          >
-            Dashboard
-          </Link>
-        )}
+        {/* Right side: Dashboard (admin/exhibitor), Notifications (attendee), Mobile menu */}
+        <div className="flex items-center gap-3">
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="text-xl text-neutral-900 focus:outline-none md:hidden"
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? '×' : '☰'}
-        </button>
+          {isStaff && (
+            <Link
+              to="/dashboard"
+              className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 md:block"
+            >
+              Dashboard
+            </Link>
+          )}
+
+          {isAttendee && <NotificationBell />}
+
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="text-xl text-neutral-900 focus:outline-none md:hidden"
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? '×' : '☰'}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -316,17 +327,6 @@ const Navbar = () => {
                 </Link>
               )}
 
-              {/* Login */}
-              {!isAttendee && (
-                <Link
-                  to="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-                >
-                  Login
-                </Link>
-              )}
-
               {isAttendee && (
                 <Link
                   to="/profile"
@@ -348,19 +348,27 @@ const Navbar = () => {
                 </button>
               )}
 
-              {/* Sign Up */}
-              {!isAttendee && (
-                <Link
-                  to="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
-                >
-                  Sign Up
-                </Link>
+              {isGuest && (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                  >
+                    Login
+                  </Link>
+
+                  <Link
+                    to="/register"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                  >
+                    Sign Up
+                  </Link>
+                </>
               )}
 
-              {/* Dashboard */}
-              {!isAttendee && (
+              {isStaff && (
                 <Link
                   to="/dashboard"
                   onClick={() => setMenuOpen(false)}

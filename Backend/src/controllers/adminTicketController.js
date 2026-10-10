@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import mongoose from "mongoose";
 import Attendee from "../models/Attendee.js";
+import { notify, PROFILE_LINK } from "../utils/notify.js";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -108,6 +109,17 @@ export const approveExpoTicket = async (req, res) => {
         : res.status(404).json({ error: "Ticket not found" });
     }
 
+    const name = ticket.expo?.title ?? ticket.event?.title ?? ticket.eventName;
+
+    await notify(ticket.user._id, {
+      type: "ticket_approved",
+      title: "Ticket approved",
+      message: ticket.expo
+        ? `Your ticket for "${name}" has been approved. Your entry pass is ready.`
+        : `Your booking for "${name}" has been approved.`,
+      link: PROFILE_LINK,
+    });
+
     return res.status(200).json({ msg: "Ticket approved", ticket });
   } catch (error) {
     if (error.code === 11000) return res.status(503).json({ error: "Entry pass clash, please try again" });
@@ -142,6 +154,15 @@ export const rejectExpoTicket = async (req, res) => {
         ? res.status(409).json({ error: "This ticket has already been reviewed" })
         : res.status(404).json({ error: "Ticket not found" });
     }
+
+    const name = ticket.expo?.title ?? ticket.event?.title ?? ticket.eventName;
+
+    await notify(ticket.user._id, {
+      type: "ticket_rejected",
+      title: "Ticket rejected",
+      message: `Your ticket for "${name}" was rejected. Reason: ${note}`,
+      link: PROFILE_LINK,
+    });
 
     return res.status(200).json({ msg: "Ticket rejected", ticket });
   } catch (error) {
@@ -181,6 +202,15 @@ export const cancelExpoTicket = async (req, res) => {
         ? res.status(409).json({ error: "Ticket already cancelled or not eligible" })
         : res.status(404).json({ error: "Ticket not found" });
     }
+
+    const name = ticket.expo?.title ?? ticket.event?.title ?? ticket.eventName;
+
+    await notify(ticket.user._id, {
+      type: "ticket_rejected",
+      title: "Ticket cancelled",
+      message: `Your ticket for "${name}" was cancelled. Reason: ${note}`,
+      link: PROFILE_LINK,
+    });
 
     return res.status(200).json({ msg: "Ticket cancelled", ticket });
   } catch (error) {

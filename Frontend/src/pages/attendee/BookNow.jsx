@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { CalendarDays, UserRound, Phone, MapPin, Users, Sparkles, ClipboardList } from 'lucide-react'
+import { CalendarDays, UserRound, Phone, Mail, MapPin, Users, Sparkles, ClipboardList } from 'lucide-react'
 import api from '../../api/api'
 
 const fieldCls = 'text-[#2f2a24] placeholder:text-[#a39b8d] [color-scheme:light] border border-[#e4d9c4] bg-[#fffdf9] outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20'
@@ -13,7 +13,7 @@ const todayStr = () => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
-const emptyForm = { phone: '', eventDate: '', guests: '', message: '' }
+const emptyForm = { name: '', phone: '', eventDate: '', guests: '', message: '' }
 
 export default function BookNow() {
   // NOTE: agar tumhare authSlice mein user ka naam alag hai (state.auth.user), yahan adjust karna
@@ -30,6 +30,7 @@ export default function BookNow() {
   const [stalls, setStalls] = useState([])
   const [selectedStalls, setSelectedStalls] = useState([])
   const [stallsLoading, setStallsLoading] = useState(false)
+  const [dateBooked, setDateBooked] = useState(false)
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -46,9 +47,40 @@ export default function BookNow() {
     fetchEvents()
   }, [])
 
+  // name aur phone account se prefill hote hain, lekin user badal sakta hai
   useEffect(() => {
-    if (user?.phone) setFormData((prev) => (prev.phone ? prev : { ...prev, phone: user.phone }))
+    if (!user) return
+    setFormData((prev) => ({
+      ...prev,
+      name: prev.name || user.name || '',
+      phone: prev.phone || user.phone || '',
+    }))
   }, [user])
+
+  useEffect(() => {
+    setSelectedStalls([])
+    setDateBooked(false)
+
+    if (!selectedEventId) {
+      setStalls([])
+      return
+    }
+
+    const loadStalls = async () => {
+      setStallsLoading(true)
+      try {
+        const params = formData.eventDate ? { date: formData.eventDate } : {}
+        const response = await api.get(`/api/public/events/${selectedEventId}/stalls`, { params })
+        setStalls(response.data?.stalls ?? [])
+        setDateBooked(!!response.data?.dateBooked)
+      } catch (error) {
+        setStalls([])
+      } finally {
+        setStallsLoading(false)
+      }
+    }
+    loadStalls()
+  }, [selectedEventId, formData.eventDate])
 
   const selectedEvent = events.find((ev) => ev._id === selectedEventId)
   const organizer = selectedEvent?.companyName ?? selectedEvent?.exhibitorName
@@ -64,12 +96,19 @@ export default function BookNow() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const toggleStall = (stallId) =>
+    setSelectedStalls((prev) => (prev.includes(stallId) ? prev.filter((s) => s !== stallId) : [...prev, stallId]))
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setFeedback(null)
 
     if (!user) {
       setFeedback({ type: 'error', text: 'Please login to book an event.' })
+      return
+    }
+    if (dateBooked) {
+      setFeedback({ type: 'error', text: 'This event is already booked for that date. Please choose another date.' })
       return
     }
     if (stalls.length && !selectedStalls.length) {
@@ -84,43 +123,18 @@ export default function BookNow() {
         eventDate: formData.eventDate,
         guests: Number(formData.guests),
         stalls: selectedStalls,
+        name: formData.name,
         phone: formData.phone,
         message: formData.message,
       })
       setFeedback({ type: 'success', text: response.data?.msg || 'Booking request sent. You can track it from your profile.' })
-      setFormData({ ...emptyForm, phone: user?.phone ?? '' })
+      setFormData({ ...emptyForm, name: user?.name ?? '', phone: user?.phone ?? '' })
     } catch (error) {
       setFeedback({ type: 'error', text: error.response?.data?.error || 'Could not send your booking request' })
     } finally {
       setSubmitting(false)
     }
   }
-
-    useEffect(() => {
-    setSelectedStalls([])
-
-    if (!selectedEventId) {
-      setStalls([])
-      return
-    }
-
-    const loadStalls = async () => {
-      setStallsLoading(true)
-      try {
-        const params = formData.eventDate ? { date: formData.eventDate } : {}
-        const response = await api.get(`/api/public/events/${selectedEventId}/stalls`, { params })
-        setStalls(response.data?.stalls ?? [])
-      } catch (error) {
-        setStalls([])
-      } finally {
-        setStallsLoading(false)
-      }
-    }
-    loadStalls()
-  }, [selectedEventId, formData.eventDate])
-
-  const toggleStall = (stallId) =>
-    setSelectedStalls((prev) => (prev.includes(stallId) ? prev.filter((s) => s !== stallId) : [...prev, stallId]))
 
   return (
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
@@ -160,13 +174,6 @@ export default function BookNow() {
           {user && !isAttendee && (
             <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
               Only attendee accounts can book events.
-            </div>
-          )}
-
-          {user && isAttendee && (
-            <div className="mb-8 rounded-2xl border border-[#eadfc9] bg-[#fffdf9] p-4 text-sm text-[#5d574f]">
-              Booking as <span className="font-semibold text-[#2f2a24]">{user.name}</span>
-              {user.email ? ` (${user.email})` : ''}
             </div>
           )}
 
@@ -213,6 +220,12 @@ export default function BookNow() {
                 </div>
               </div>
 
+              {dateBooked && (
+                <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                  This event is already booked for that date. Please choose another date.
+                </p>
+              )}
+
               {selectedEvent && (
                 <div className="mt-5 flex flex-col gap-5 rounded-2xl border border-[#eadfc9] bg-[#fffdf9] p-4 sm:flex-row">
                   {selectedEvent.images?.[0] && (
@@ -228,12 +241,13 @@ export default function BookNow() {
                   </div>
                 </div>
               )}
-                            {selectedEventId && (
+
+              {selectedEventId && !dateBooked && (
                 <div className="mt-5">
                   <label className="mb-2 block text-sm font-medium text-[#4d473f]">Select Stalls</label>
 
                   {!formData.eventDate ? (
-                    <p className="text-sm text-[#8a8379]">Choose a date to see which stalls are available.</p>
+                    <p className="text-sm text-[#8a8379]">Choose a date to see the stalls.</p>
                   ) : stallsLoading ? (
                     <p className="text-sm text-[#8a8379]">Loading stalls...</p>
                   ) : stalls.length === 0 ? (
@@ -245,25 +259,19 @@ export default function BookNow() {
                         return (
                           <label
                             key={s._id}
-                            className={`flex items-start gap-3 rounded-xl border p-4 text-sm transition ${
-                              s.booked
-                                ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400'
-                                : checked
-                                  ? 'cursor-pointer border-[#c49424] bg-[#fff4d9] text-[#2f2a24]'
-                                  : 'cursor-pointer border-[#e4d9c4] bg-[#fffdf9] text-[#2f2a24] hover:border-[#c49424]'
+                            className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm text-[#2f2a24] transition ${
+                              checked ? 'border-[#c49424] bg-[#fff4d9]' : 'border-[#e4d9c4] bg-[#fffdf9] hover:border-[#c49424]'
                             }`}
                           >
                             <input
                               type="checkbox"
                               checked={checked}
-                              disabled={s.booked}
                               onChange={() => toggleStall(s._id)}
                               className="mt-1 accent-[#c49424]"
                             />
                             <span>
                               <span className="block font-semibold">{s.name || `Stall ${s.stallNumber}`}</span>
                               <span className="block text-xs">#{s.stallNumber}{s.size ? ` · ${s.size}` : ''}</span>
-                              {s.booked && <span className="mt-1 block text-xs font-semibold">Booked for this date</span>}
                             </span>
                           </label>
                         )
@@ -282,6 +290,22 @@ export default function BookNow() {
               </h3>
 
               <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-[#4d473f]">Full Name</label>
+                  <div className="relative">
+                    <UserRound className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your name" required className={inputCls} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-[#4d473f]">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
+                    <input type="email" value={user?.email ?? ''} readOnly placeholder="Login to see your email" className={`${inputCls} cursor-not-allowed bg-[#f6f1e6]`} />
+                  </div>
+                </div>
+
                 <div>
                   <label className="mb-2 block text-sm font-medium text-[#4d473f]">Phone Number</label>
                   <div className="relative">
@@ -323,7 +347,7 @@ export default function BookNow() {
               <p className="text-sm text-[#777067]">The organizer will review your request and confirm it.</p>
               <button
                 type="submit"
-                disabled={submitting || !user || !isAttendee}
+                disabled={submitting || !user || !isAttendee || dateBooked}
                 className="rounded-xl bg-[#b48620] px-8 py-3.5 font-semibold text-white shadow-md transition hover:bg-[#967019] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? 'Sending...' : 'Submit Booking'}

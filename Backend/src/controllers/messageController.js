@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
+import { notify } from "../utils/notify.js";
+import Notification from "../models/Notification.js";
 
 const CHAT_ROLES = ["admin", "exhibitor", "attendee"];
 
@@ -36,7 +38,7 @@ const sendMessage = async (req, res) => {
       return res.status(400).json({ error: "You cannot message yourself" });
     }
 
-    const users = await User.find({ _id: { $in: [sender, receiver] } }).select("role");
+    const users = await User.find({ _id: { $in: [sender, receiver] } }).select("role name companyName");
 
     if (users.length !== 2 || users.some((u) => !CHAT_ROLES.includes(u.role))) {
       return res.status(403).json({ error: "Messaging is not available between these users" });
@@ -50,6 +52,19 @@ const sendMessage = async (req, res) => {
     }
 
     const message = await Message.create({ sender, receiver, content: content.trim() });
+
+    // sirf attendee ko notification, har sender ki ek hi (naya message aaye to wahi update hoti hai)
+    if (receiverUser.role === "attendee") {
+      await notify(receiverUser._id, {
+        type: "message",
+        title: `New message from ${senderUser.companyName || senderUser.name}`,
+        message: content.trim().slice(0, 100),
+        link: `/attendee/messages?user=${sender}`,
+        dedupeKey: `message:${sender}`,
+        refresh: true,
+      });
+    }
+
     return res.status(201).json({ msg: "Message sent successfully", message });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -98,15 +113,34 @@ const getContacts = async (req, res) => {
 
     let contacts = [];
 
-    if (meUser.role === "attendee") {
+    if (meUser.role === "admin") {
       contacts = await User.find({
         _id: { $ne: me },
         role: "exhibitor",
       }).select("name role companyName");
-    } else if (meUser.role === "admin") {
+    } else if (meUser.role === "exhibitor") {
+      const messages = await Message.find({
+        $or: [{ sender: me }, { receiver: me }],
+      }).select("sender receiver");
+
+      const contactIds = new Set();
+
+      messages.forEach((message) => {
+        if (String(message.sender) !== me) {
+          contactIds.add(String(message.sender));
+        }
+
+        if (String(message.receiver) !== me) {
+          contactIds.add(String(message.receiver));
+        }
+      });
+
       contacts = await User.find({
-        _id: { $ne: me },
-        role: "exhibitor",
+        $or: [
+          { role: "exhibitor", _id: { $ne: me } },
+          { _id: { $in: [...contactIds] } },
+          { role: "admin" },
+        ],
       }).select("name role companyName");
     } else {
       const messages = await Message.find({
@@ -116,19 +150,29 @@ const getContacts = async (req, res) => {
       const contactIds = new Set();
 
       messages.forEach((message) => {
-        if (String(message.sender) !== me) contactIds.add(String(message.sender));
-        if (String(message.receiver) !== me) contactIds.add(String(message.receiver));
+        if (String(message.sender) !== me) {
+          contactIds.add(String(message.sender));
+        }
+
+        if (String(message.receiver) !== me) {
+          contactIds.add(String(message.receiver));
+        }
       });
+
+      const requestedContactId = req.query.user;
+      if (mongoose.isValidObjectId(requestedContactId)) {
+        contactIds.add(String(requestedContactId));
+      }
 
       contacts = await User.find({
         _id: { $in: [...contactIds] },
-        role: { $in: ["admin", "exhibitor", "attendee"] },
+        role: "exhibitor",
       }).select("name role companyName");
     }
 
     return res.status(200).json({ msg: "Contacts fetched", contacts });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -164,6 +208,10 @@ const markAsRead = async (req, res) => {
     }
 
     await Message.updateMany({ sender: userId, receiver: me, read: false }, { read: true });
+
+    // is sender ki message notification bhi read ho jaye
+    await Notification.updateOne({ user: me, dedupeKey: `message:${userId}` }, { isRead: true });
+
     return res.status(200).json({ msg: "Messages marked as read" });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -4,12 +4,15 @@ import { Link } from 'react-router-dom'
 import servicesImage from '../../assets/service-gallery/service.jpg'
 import gallery1 from '../../assets/gallery-1.jpg'
 import api from '../../api/api'
+import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
 
 import { ArrowUpRight } from 'lucide-react'
 
 const Service = () => {
   const [events, setEvents] = useState([])
   const [eventsLoading, setEventsLoading] = useState(true)
+
+  useLoadBookmarks()
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -110,12 +113,13 @@ const Service = () => {
                   key={ev._id}
                   className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
                 >
-                  <div className="overflow-hidden">
+                  <div className="relative overflow-hidden">
                     <img
                       src={ev.images?.[0] || gallery1}
                       alt={ev.title ?? ev.name}
                       className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
                     />
+                    <BookmarkButton event={ev} className="absolute right-4 top-4" />
                   </div>
 
                   <div className="p-7 text-center">
@@ -123,18 +127,18 @@ const Service = () => {
                       {ev.title ?? ev.name}
                     </h3>
 
-                   {(ev.companyName || ev.exhibitorName) && (
-  <p className="mt-1 text-sm font-medium text-[#8d681b]">
-    by{' '}
-    {ev.exhibitor?._id ? (
-      <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
-        {ev.companyName ?? ev.exhibitorName}
-      </Link>
-    ) : (
-      ev.companyName ?? ev.exhibitorName
-    )}
-  </p>
-)}
+                    {(ev.companyName || ev.exhibitorName) && (
+                      <p className="mt-1 text-sm font-medium text-[#8d681b]">
+                        by{' '}
+                        {ev.exhibitor?._id ? (
+                          <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
+                            {ev.companyName ?? ev.exhibitorName}
+                          </Link>
+                        ) : (
+                          ev.companyName ?? ev.exhibitorName
+                        )}
+                      </p>
+                    )}
 
                     {ev.location && (
                       <p className="mt-2 text-sm text-[#8a8379]">

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import api from "@/api/api";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
+import exhibitorCategories from "@/data/exhibitorCategories";
 
 const statusStyles = { pending: "bg-yellow-500", approved: "bg-green-500", rejected: "bg-red-500" };
 
@@ -25,6 +26,7 @@ const ExhibitorRegistration = () => {
   const [form, setForm] = useState({
     expo: "",
     companyName: user?.companyName ?? "",
+    category: "",
     productsServices: "",
     description: "",
     email: user?.email ?? "",
@@ -74,7 +76,7 @@ const ExhibitorRegistration = () => {
       setFormOpen(false);
       setLogo(null);
       setDocuments([]);
-      setForm({ ...form, expo: "", productsServices: "", description: "", address: "" });
+      setForm({ ...form, expo: "", category: "", productsServices: "", description: "", address: "" });
       await loadData();
     } catch (err) {
       toast.error(err.response?.data?.error || "Something went wrong");
@@ -103,6 +105,7 @@ const ExhibitorRegistration = () => {
                   </div>
                   <div className="mt-4 space-y-2 text-sm text-muted">
                     <p><b className="text-foreground">Company:</b> {a.companyName}</p>
+                    <p><b className="text-foreground">Category:</b> {a.category || "Not specified"}</p>
                     <p><b className="text-foreground">Products/Services:</b> {a.productsServices}</p>
                     <p><b className="text-foreground">Description:</b> {a.description || "-"}</p>
                     <p><b className="text-foreground">Documents uploaded:</b> {a.documents?.length ?? 0}</p>
@@ -138,6 +141,14 @@ const ExhibitorRegistration = () => {
 
                 <label className={labelClass}>Company name *</label>
                 <input className={`${inputClass} mb-4`} name="companyName" value={form.companyName} onChange={handleChange} required />
+
+                <label className={labelClass}>Category *</label>
+                <select className={`${inputClass} mb-4`} name="category" value={form.category} onChange={handleChange} required>
+                  <option value="">Select a category</option>
+                  {exhibitorCategories.map((category) => (
+                    <option key={category} value={category} className="bg-background">{category}</option>
+                  ))}
+                </select>
 
                 <label className={labelClass}>Products / Services *</label>
                 <input className={`${inputClass} mb-4`} name="productsServices" value={form.productsServices} onChange={handleChange} placeholder="e.g. Laptops, Printers" required />

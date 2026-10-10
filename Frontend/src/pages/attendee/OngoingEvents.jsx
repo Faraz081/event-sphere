@@ -15,6 +15,7 @@ import {
 
 import { fetchPublicExpos, fetchPublicEvents } from '@/api/publicService'
 import { API_BASE_URL } from '@/api/api'
+import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
 
 const BASE = API_BASE_URL
@@ -48,6 +49,8 @@ const OngoingEvents = () => {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
+  useLoadBookmarks()
+
   const normalizedSearch = search.trim().toLocaleLowerCase()
 
   const filteredExpos = normalizedSearch
@@ -62,7 +65,7 @@ const OngoingEvents = () => {
   const filteredEvents = normalizedSearch
     ? approvedEvents.filter((ev) => {
         const title = (ev.title || '').toLocaleLowerCase()
-        const company = (ev.exhibitor?.companyName || ev.exhibitor?.name || '').toLocaleLowerCase()
+        const company = (ev.companyName || ev.exhibitorName || '').toLocaleLowerCase()
         const type = (ev.eventType || '').toLocaleLowerCase()
         return (
           title.includes(normalizedSearch) ||
@@ -80,10 +83,7 @@ const OngoingEvents = () => {
           fetchPublicEvents(),
         ])
         setExpos(expoData.expos ?? [])
-        const now = new Date()
-        setApprovedEvents(
-          (eventData.events ?? []).filter((e) => !e.date || new Date(e.date) >= now)
-        )
+        setApprovedEvents(eventData.events ?? [])
       } catch (err) {
         toast.error(err.response?.data?.error || 'Could not load events')
       } finally {
@@ -104,17 +104,17 @@ const OngoingEvents = () => {
         </div>
 
         <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-          Live & Ongoing Events
+          Live & Ongoing Expos
         </p>
 
         <h1 className="mt-4 font-serif text-4xl font-bold text-[#2f2a24] sm:text-5xl">
           Explore Our{' '}
-          <span className="text-[#c49424]">Ongoing Events</span>
+          <span className="text-[#c49424]">Ongoing Expos</span>
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
           Discover expos and exhibitor events currently happening or coming soon.
-          Choose one and reserve your ticket today.
+          Choose one and reserve your spot today.
         </p>
       </section>
 
@@ -122,10 +122,10 @@ const OngoingEvents = () => {
         <div className="mb-10 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#b48620]">
-              Available Events
+              Available Expos
             </p>
             <h2 className="mt-2 font-serif text-3xl font-bold text-[#2f2a24]">
-              Events You Can Attend
+              Expos You Can Attend
             </h2>
           </div>
 
@@ -198,6 +198,7 @@ const OngoingEvents = () => {
                         className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/20" />
+                      <BookmarkButton expo={expo} className="absolute left-5 top-5" />
                       <span
                         className={`absolute right-5 top-5 flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold shadow-md ${badge.text}`}
                       >
@@ -293,56 +294,48 @@ const OngoingEvents = () => {
               Exhibitor Events
             </h3>
             <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredEvents.map((ev) => {
-                const badge = getBadge(ev.date)
-                return (
-                  <div
-                    key={ev._id}
-                    className="flex flex-col rounded-[1.5rem] border border-[#eadfc9] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="rounded-full bg-[#fff4d9] px-3 py-1 text-xs font-semibold text-[#9a721c]">
-                        {ev.eventType || 'Event'}
-                      </span>
-                      <span
-                        className={`flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold shadow-sm ${badge.text}`}
-                      >
-                        <span className={`h-1.5 w-1.5 rounded-full ${badge.dot}`} />
-                        {badge.label}
-                      </span>
-                    </div>
-
-                    <h3 className="mt-4 font-serif text-xl font-bold text-[#2f2a24]">
-                      {ev.title}
-                    </h3>
-
-                    <p className="mt-2 flex-1 line-clamp-3 text-sm leading-6 text-[#5d574f]">
-                      {ev.description}
-                    </p>
-
-                    <div className="mt-4 space-y-2 text-sm text-[#4d473f]">
-                      {ev.date && (
-                        <p className="flex items-center gap-2">
-                          <CalendarDays className="h-4 w-4 text-[#c49424]" />
-                          {formatDate(ev.date)}
-                        </p>
-                      )}
-                      <p className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-[#c49424]" />
-                        {ev.exhibitor?.companyName || ev.exhibitor?.name || 'Exhibitor'}
-                      </p>
-                    </div>
-
-                    <Link
-                      to={`/book-ticket?event=${ev._id}`}
-                      className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-                    >
-                      Request Ticket
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Link>
+              {filteredEvents.map((ev) => (
+                <div
+                  key={ev._id}
+                  className="flex flex-col rounded-[1.5rem] border border-[#eadfc9] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="rounded-full bg-[#fff4d9] px-3 py-1 text-xs font-semibold text-[#9a721c]">
+                      {ev.eventType || 'Event'}
+                    </span>
+                    <BookmarkButton event={ev} className="border border-[#eadfc9]" />
                   </div>
-                )
-              })}
+
+                  <h3 className="mt-4 font-serif text-xl font-bold text-[#2f2a24]">
+                    {ev.title}
+                  </h3>
+
+                  <p className="mt-2 flex-1 line-clamp-3 text-sm leading-6 text-[#5d574f]">
+                    {ev.description}
+                  </p>
+
+                  <div className="mt-4 space-y-2 text-sm text-[#4d473f]">
+                    {ev.location && (
+                      <p className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-[#c49424]" />
+                        {ev.location}
+                      </p>
+                    )}
+                    <p className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-[#c49424]" />
+                      {ev.companyName || ev.exhibitorName || 'Exhibitor'}
+                    </p>
+                  </div>
+
+                  <Link
+                    to={`/book-now?event=${ev._id}`}
+                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
+                  >
+                    Book Now
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
         )}
