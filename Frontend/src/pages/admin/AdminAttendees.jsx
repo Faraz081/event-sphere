@@ -274,9 +274,9 @@ const AdminAttendees = () => {
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity self-start sm:self-auto shadow-md shadow-gold/10"
+            className="inline-flex items-center gap-1.5 bg-gold text-background text-sm font-semibold px-3 py-2 rounded-xl hover:opacity-90 transition-opacity self-start sm:self-auto sm:gap-2 sm:px-4 sm:py-2.5 shadow-md shadow-gold/10 whitespace-nowrap"
           >
-            <UserPlus size={18} />
+            <UserPlus size={16} className="sm:h-[18px] sm:w-[18px]" />
             <span>Register Attendee</span>
           </button>
         </div>
@@ -416,7 +416,7 @@ const AdminAttendees = () => {
         </div>
 
         {/* Attendees Responsive Table */}
-        <ResponsiveTable minWidth="860px">
+        <ResponsiveTable minWidth="100%">
           <thead className="border-b border-border bg-surface/50">
             <tr>
               <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
@@ -944,20 +944,20 @@ const AdminAttendees = () => {
           open={!!attendeeToDelete}
           onOpenChange={(open) => !open && setAttendeeToDelete(null)}
         >
-          <AlertDialogContent>
+          <AlertDialogContent className="border border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24] ring-[#eadfc9]">
             <AlertDialogHeader>
-              <AlertDialogTitle>Remove Attendee Record?</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-[#2f2a24]">Remove Attendee Record?</AlertDialogTitle>
+              <AlertDialogDescription className="text-[#5d574f]">
                 This will delete the registration record for{" "}
-                <span className="text-foreground font-semibold">
+                <span className="text-[#2f2a24] font-semibold">
                   "{attendeeToDelete?.user?.name || "this attendee"}"
                 </span>{" "}
                 and revoke their pass ({attendeeToDelete?.passCode || "N/A"}). This action
                 cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border border-border text-muted hover:text-foreground">
+            <AlertDialogFooter className="border-[#eadfc9] bg-[#fffdf9]">
+              <AlertDialogCancel className="border-[#eadfc9] bg-transparent text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction

@@ -379,7 +379,7 @@ const AdminUsers = () => {
           )}
         </div>
         {/* Users Table */}
-        <ResponsiveTable minWidth="860px">
+        <ResponsiveTable minWidth="100%">
           <thead className="border-b border-border bg-surface/50">
             <tr>
               <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
@@ -801,20 +801,20 @@ const AdminUsers = () => {
           open={!!userToDelete}
           onOpenChange={(open) => !open && setUserToDelete(null)}
         >
-          <AlertDialogContent>
+          <AlertDialogContent className="border border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24] ring-[#eadfc9]">
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete User Account?</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-[#2f2a24]">Delete User Account?</AlertDialogTitle>
+              <AlertDialogDescription className="text-[#5d574f]">
                 This will permanently remove{" "}
-                <span className="text-foreground font-semibold">
+                <span className="text-[#2f2a24] font-semibold">
                   "{userToDelete?.name}"
                 </span>{" "}
                 ({userToDelete?.email}) and their permissions. This action cannot be
                 undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border border-border text-muted hover:text-foreground">
+            <AlertDialogFooter className="border-[#eadfc9] bg-[#fffdf9]">
+              <AlertDialogCancel className="border-[#eadfc9] bg-transparent text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction

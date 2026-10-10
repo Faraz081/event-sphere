@@ -220,7 +220,7 @@ const Navbar = () => {
         </div>
 
         {/* Dashboard */}
-        {!isAttendee && (
+        {user && !isAttendee && (
           <Link
             to="/dashboard"
             className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 md:block"
@@ -360,7 +360,7 @@ const Navbar = () => {
               )}
 
               {/* Dashboard */}
-              {!isAttendee && (
+              {user && !isAttendee && (
                 <Link
                   to="/dashboard"
                   onClick={() => setMenuOpen(false)}

@@ -46,13 +46,19 @@ function App() {
 
   return (
     <>
-      <Toaster theme="system" position="top-right" toastOptions={{
+      <Toaster
+        theme="light"
+        position="top-right"
+        toastOptions={{
           classNames: {
-            toast: "bg-background text-foreground border-border",
-            title: "text-foreground",
-            description: "text-muted-foreground",
+            toast: "border border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24] shadow-lg",
+            title: "text-[#2f2a24]",
+            description: "text-[#5d574f]",
+            success: "border-l-4 border-l-[#c49424]",
+            error: "border-l-4 border-l-red-500",
           },
-        }} />
+        }}
+      />
 
        
 
