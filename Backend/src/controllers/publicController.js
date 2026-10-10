@@ -78,17 +78,13 @@ export const getPublicExhibitors = async (req, res) => {
 
     const filter = { expo: expo._id, status: "approved" };
     const search = req.query.search?.trim();
-    const category = req.query.category?.trim();
-
-    if (category) filter.category = category;
-
     if (search) {
       const re = new RegExp(escapeRegex(search), "i");
-      filter.$or = [{ companyName: re }, { category: re }, { productsServices: re }, { description: re }];
+      filter.$or = [{ companyName: re }, { productsServices: re }, { description: re }];
     }
 
     const applications = await ExhibitorApplication.find(filter)
-      .select("userId companyName category productsServices description logo")
+      .select("userId companyName productsServices description logo")
       .sort({ companyName: 1 });
 
     const booths = await Booth.find({
@@ -106,7 +102,6 @@ export const getPublicExhibitors = async (req, res) => {
         _id: a._id,
         userId: a.userId,
         companyName: a.companyName,
-        category: a.category,
         productsServices: a.productsServices,
         description: a.description,
         logo: a.logo,

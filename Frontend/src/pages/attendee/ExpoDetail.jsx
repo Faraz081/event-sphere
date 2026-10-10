@@ -22,7 +22,6 @@ import {
 } from '@/api/publicService'
 import { API_BASE_URL } from '@/api/api'
 import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
-import exhibitorCategories from '@/data/exhibitorCategories'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
 
 const BASE = API_BASE_URL
@@ -55,7 +54,6 @@ const ExpoDetail = () => {
   const [booths, setBooths] = useState([])
   const [exhibitors, setExhibitors] = useState([])
   const [search, setSearch] = useState('')
-  const [category, setCategory] = useState('')
   const [tab, setTab] = useState('Schedule')
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
@@ -87,10 +85,7 @@ const ExpoDetail = () => {
     const timer = setTimeout(async () => {
       try {
         const q = search.trim()
-        const params = {}
-        if (q) params.search = q
-        if (category) params.category = category
-        const data = await fetchPublicExhibitors(id, params)
+        const data = await fetchPublicExhibitors(id, q ? { search: q } : {})
         setExhibitors(data.exhibitors ?? [])
       } catch (err) {
         if (err.response?.status !== 404 && err.response?.status !== 400) {
@@ -99,7 +94,7 @@ const ExpoDetail = () => {
       }
     }, 300)
     return () => clearTimeout(timer)
-  }, [id, search, category])
+  }, [id, search])
 
   if (loading) {
     return (
@@ -228,28 +223,15 @@ const ExpoDetail = () => {
           {/* ---------- EXHIBITORS ---------- */}
           {tab === 'Exhibitors' && (
             <div>
-              <div className="mb-6 grid max-w-3xl gap-3 sm:grid-cols-2">
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search company, product or keyword"
-                    className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                  />
-                </div>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  aria-label="Filter exhibitors by category"
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-white px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                >
-                  <option value="">All categories</option>
-                  {exhibitorCategories.map((item) => (
-                    <option key={item} value={item}>{item}</option>
-                  ))}
-                </select>
+              <div className="relative mb-6 max-w-md">
+                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search by company, product or keyword"
+                  className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                />
               </div>
 
               {exhibitors.length === 0 && (
@@ -287,7 +269,6 @@ const ExpoDetail = () => {
                     </div>
 
                     <p className="mt-4 text-sm font-medium text-[#4d473f]">{ex.productsServices}</p>
-                    {ex.category && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#9a721c]">{ex.category}</p>}
                     {ex.description && <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#5d574f]">{ex.description}</p>}
                     {ex.booth?.location && (
                       <p className="mt-3 flex items-center gap-1.5 text-xs text-[#8a8379]">

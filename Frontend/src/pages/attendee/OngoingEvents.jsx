@@ -58,6 +58,7 @@ const OngoingEvents = () => {
         (expo.exhibitors || []).some((companyName) =>
           companyName.toLocaleLowerCase().includes(normalizedSearch)
         ) ||
+        (expo.theme || '').toLocaleLowerCase().includes(normalizedSearch) ||
         (expo.title || '').toLocaleLowerCase().includes(normalizedSearch)
       )
     : expos
@@ -144,7 +145,7 @@ const OngoingEvents = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by title, exhibitor or company"
+            placeholder="Search by title, category, exhibitor or company"
             aria-label="Search events"
             className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]"
           />
