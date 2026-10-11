@@ -18,6 +18,7 @@ import {
   deleteAttendee,
 } from "@/api/attendeeService";
 import { fetchUsers } from "@/api/userService";
+import { fetchExposForSelect } from "@/api/boothService";
 import { mockExpos } from "@/data/mockData";
 import { toast } from "sonner";
 import {
@@ -35,7 +36,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-// Status Badge styles strictly adhering to existing theme tokens
 const registrationStatusStyles = {
   registered: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   confirmed: "bg-emerald/20 text-emerald-300 border border-emerald/40",
@@ -78,16 +78,16 @@ const initialFormState = {
 };
 
 const AdminAttendees = () => {
-  // State
   const [attendees, setAttendees] = useState([]);
   const [usersList, setUsersList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [expos, setExpos] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [expoFilter, setExpoFilter] = useState("");
   const [selectedRegStatus, setSelectedRegStatus] = useState("all");
   const [selectedBookingStatus, setSelectedBookingStatus] = useState("all");
   const [selectedPassStatus, setSelectedPassStatus] = useState("all");
 
-  // Modals state
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
@@ -96,7 +96,6 @@ const AdminAttendees = () => {
   const [attendeeToDelete, setAttendeeToDelete] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load existing users for attendee dropdown selection
   const loadUsersForSelection = useCallback(async () => {
     try {
       const res = await fetchUsers();
@@ -108,11 +107,25 @@ const AdminAttendees = () => {
     }
   }, []);
 
-  // Load attendees with search and status filters
+  const loadExpos = useCallback(async () => {
+    try {
+      const data = await fetchExposForSelect();
+      setExpos(data.expos || []);
+    } catch (err) {
+      console.error("Failed to load expos:", err);
+    }
+  }, []);
+
   const loadAttendees = useCallback(async () => {
+    if (!expoFilter) {
+      setAttendees([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
-      const params = {};
+      const params = { expo: expoFilter };
       if (searchTerm.trim()) params.search = searchTerm.trim();
       if (selectedRegStatus !== "all") params.registrationStatus = selectedRegStatus;
       if (selectedBookingStatus !== "all") params.bookingStatus = selectedBookingStatus;
@@ -128,14 +141,13 @@ const AdminAttendees = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedRegStatus, selectedBookingStatus, selectedPassStatus]);
+  }, [searchTerm, expoFilter, selectedRegStatus, selectedBookingStatus, selectedPassStatus]);
 
-  // Initial load
   useEffect(() => {
     loadUsersForSelection();
-  }, [loadUsersForSelection]);
+    loadExpos();
+  }, [loadUsersForSelection, loadExpos]);
 
-  // Debounced search & filter load
   useEffect(() => {
     const handler = setTimeout(() => {
       loadAttendees();
@@ -143,15 +155,14 @@ const AdminAttendees = () => {
     return () => clearTimeout(handler);
   }, [loadAttendees]);
 
-  // Reset all filters
   const handleResetFilters = () => {
     setSearchTerm("");
+    setExpoFilter("");
     setSelectedRegStatus("all");
     setSelectedBookingStatus("all");
     setSelectedPassStatus("all");
   };
 
-  // Open modal for Create
   const handleOpenCreateModal = () => {
     setEditingAttendeeId(null);
     setFormData(initialFormState);
@@ -159,7 +170,6 @@ const AdminAttendees = () => {
     setIsFormModalOpen(true);
   };
 
-  // Open modal for Edit
   const handleOpenEditModal = (item) => {
     setEditingAttendeeId(item._id);
     setFormData({
@@ -176,19 +186,16 @@ const AdminAttendees = () => {
     setIsFormModalOpen(true);
   };
 
-  // Open View Modal
   const handleOpenViewModal = (item) => {
     setAttendeeToView(item);
     setIsViewModalOpen(true);
   };
 
-  // Form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit Add / Edit Form
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -200,7 +207,6 @@ const AdminAttendees = () => {
     setIsSubmitting(true);
     try {
       if (editingAttendeeId) {
-        // Edit existing attendee
         const payload = {
           registrationStatus: formData.registrationStatus,
           bookingStatus: formData.bookingStatus,
@@ -214,7 +220,6 @@ const AdminAttendees = () => {
         const res = await updateAttendee(editingAttendeeId, payload);
         toast.success(res.msg || "Attendee record updated successfully.");
       } else {
-        // Register new attendee
         const payload = {
           user: formData.userId,
           eventName: formData.eventName.trim() || "General Platform Event",
@@ -242,7 +247,6 @@ const AdminAttendees = () => {
     }
   };
 
-  // Confirm delete
   const handleDeleteConfirm = async () => {
     if (!attendeeToDelete) return;
 
@@ -261,7 +265,6 @@ const AdminAttendees = () => {
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
-        {/* Header & Primary Action */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-1">
@@ -281,11 +284,9 @@ const AdminAttendees = () => {
           </button>
         </div>
 
-        {/* Search & Filter Controls */}
         <div className="bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-            {/* Search Input */}
-            <div className="lg:col-span-4 relative">
+            <div className="lg:col-span-3 relative">
               <Search
                 size={18}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
@@ -308,8 +309,22 @@ const AdminAttendees = () => {
               )}
             </div>
 
-            {/* Registration Status Filter */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-2">
+              <select
+                value={expoFilter}
+                onChange={(e) => setExpoFilter(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
+              >
+                <option value="">Select Expo</option>
+                {expos.map((expo) => (
+                  <option key={expo._id} value={expo._id}>
+                    {expo.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="lg:col-span-2">
               <select
                 value={selectedRegStatus}
                 onChange={(e) => setSelectedRegStatus(e.target.value)}
@@ -323,7 +338,6 @@ const AdminAttendees = () => {
               </select>
             </div>
 
-            {/* Booking Status Filter */}
             <div className="lg:col-span-2">
               <select
                 value={selectedBookingStatus}
@@ -337,7 +351,6 @@ const AdminAttendees = () => {
               </select>
             </div>
 
-            {/* Pass Status Filter */}
             <div className="lg:col-span-2">
               <select
                 value={selectedPassStatus}
@@ -352,7 +365,6 @@ const AdminAttendees = () => {
               </select>
             </div>
 
-            {/* Reset Button */}
             <div className="lg:col-span-1 flex justify-end">
               <button
                 type="button"
@@ -365,8 +377,8 @@ const AdminAttendees = () => {
             </div>
           </div>
 
-          {/* Active Filter Chips */}
           {(searchTerm ||
+            expoFilter ||
             selectedRegStatus !== "all" ||
             selectedBookingStatus !== "all" ||
             selectedPassStatus !== "all") && (
@@ -376,6 +388,14 @@ const AdminAttendees = () => {
                 <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground">
                   Query: "{searchTerm}"
                   <button type="button" onClick={() => setSearchTerm("")}>
+                    <X size={12} />
+                  </button>
+                </span>
+              )}
+              {expoFilter && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground">
+                  Expo: {expos.find((e) => e._id === expoFilter)?.title || "Selected"}
+                  <button type="button" onClick={() => setExpoFilter("")}>
                     <X size={12} />
                   </button>
                 </span>
@@ -416,7 +436,7 @@ const AdminAttendees = () => {
         </div>
 
         {/* Attendees Responsive Table */}
-        <ResponsiveTable minWidth="100%">
+        <ResponsiveTable minWidth="860px">
           <thead className="border-b border-border bg-surface/50">
             <tr>
               <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
@@ -457,14 +477,18 @@ const AdminAttendees = () => {
                 <td colSpan={7} className="px-6 py-12 text-center text-muted">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <AlertCircle size={32} className="text-muted/60" />
-                    <p className="font-medium text-foreground">No attendees found</p>
+                    <p className="font-medium text-foreground">
+                      {expoFilter ? "No attendees found" : "Select an expo"}
+                    </p>
                     <p className="text-xs text-muted">
-                      {searchTerm ||
-                      selectedRegStatus !== "all" ||
-                      selectedBookingStatus !== "all" ||
-                      selectedPassStatus !== "all"
-                        ? "Try adjusting your search criteria or clearing filters."
-                        : "No attendee registrations have been created yet."}
+                      {expoFilter
+                        ? searchTerm ||
+                          selectedRegStatus !== "all" ||
+                          selectedBookingStatus !== "all" ||
+                          selectedPassStatus !== "all"
+                          ? "Try adjusting your search criteria or clearing filters."
+                          : "No attendee registrations for this expo yet."
+                        : "Select an expo to view its attendees"}
                     </p>
                   </div>
                 </td>
@@ -475,7 +499,6 @@ const AdminAttendees = () => {
                   key={item._id}
                   className="border-b border-border hover:bg-surface/60 transition-colors last:border-0"
                 >
-                  {/* Attendee Name & Details */}
                   <td data-label="Attendee" className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-gold font-semibold text-sm">
@@ -497,7 +520,6 @@ const AdminAttendees = () => {
                     </div>
                   </td>
 
-                  {/* Event / Expo */}
                   <td data-label="Event" className="px-6 py-4 text-sm text-foreground">
                     <div className="flex items-center gap-2">
                       <Calendar size={14} className="text-gold shrink-0" />
@@ -510,7 +532,6 @@ const AdminAttendees = () => {
                     )}
                   </td>
 
-                  {/* Registration Status */}
                   <td data-label="Registration" className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
@@ -521,7 +542,6 @@ const AdminAttendees = () => {
                     </span>
                   </td>
 
-                  {/* Booking Status */}
                   <td data-label="Booking" className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
@@ -532,7 +552,6 @@ const AdminAttendees = () => {
                     </span>
                   </td>
 
-                  {/* Pass Status & Pass Code */}
                   <td data-label="Pass" className="px-6 py-4">
                     <div className="flex flex-col gap-1 items-start">
                       <span
@@ -551,7 +570,6 @@ const AdminAttendees = () => {
                     </div>
                   </td>
 
-                  {/* Registered Date */}
                   <td
                     data-label="Registered Date"
                     className="px-6 py-4 text-sm text-muted font-mono"
@@ -559,7 +577,6 @@ const AdminAttendees = () => {
                     {formatDate(item.createdAt)}
                   </td>
 
-                  {/* Actions */}
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
@@ -594,7 +611,6 @@ const AdminAttendees = () => {
           </tbody>
         </ResponsiveTable>
 
-        {/* View Attendee Modal */}
         {isViewModalOpen && attendeeToView && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">
             <div className="bg-surface border border-border rounded-2xl p-6 w-full max-w-lg shadow-2xl shadow-black/50">
@@ -745,7 +761,6 @@ const AdminAttendees = () => {
           </div>
         )}
 
-        {/* Add / Edit Attendee Form Modal */}
         {isFormModalOpen && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-surface border border-border rounded-2xl p-6 w-full max-w-lg shadow-2xl shadow-black/50 my-8">
@@ -763,7 +778,6 @@ const AdminAttendees = () => {
               </div>
 
               <form onSubmit={handleFormSubmit} className="space-y-4">
-                {/* Associated User Account */}
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     User Account *
@@ -796,7 +810,6 @@ const AdminAttendees = () => {
                   )}
                 </div>
 
-                {/* Event Association */}
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Associated Event / Expo
@@ -816,7 +829,6 @@ const AdminAttendees = () => {
                   </select>
                 </div>
 
-                {/* Registration & Booking Status */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
@@ -851,7 +863,6 @@ const AdminAttendees = () => {
                   </div>
                 </div>
 
-                {/* Pass Status & Pass Code */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
@@ -884,7 +895,6 @@ const AdminAttendees = () => {
                   </div>
                 </div>
 
-                {/* Ticket Type & Notes */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
@@ -939,7 +949,6 @@ const AdminAttendees = () => {
           </div>
         )}
 
-        {/* Delete Confirmation Alert Dialog */}
         <AlertDialog
           open={!!attendeeToDelete}
           onOpenChange={(open) => !open && setAttendeeToDelete(null)}

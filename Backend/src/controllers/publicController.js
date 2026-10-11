@@ -9,8 +9,7 @@ import ExhibitorApplication from "../models/ExhibitorApplication.js";
 
 const PUBLIC_EXPO_FIELDS = "title description theme date location status banner";
 
-const PUBLIC_EVENT_FIELDS = "title description eventType location images banner exhibitor";
-
+const PUBLIC_EVENT_FIELDS = "title description eventType location images banner exhibitor date endDate";
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const findPublishedExpo = async (id) => {
@@ -145,14 +144,9 @@ export const getPublicBooths = async (req, res) => {
   }
 };
 
-// GET /api/public/events  (approved, upcoming)
-
-// GET /api/public/events  (approved events)
-
 export const getPublicEvents = async (req, res) => {
   try {
     const events = await Event.find({ status: "approved" })
-      .select(PUBLIC_EVENT_FIELDS)
       .populate("exhibitor", "name")
       .sort({ createdAt: -1 });
 
@@ -164,11 +158,23 @@ export const getPublicEvents = async (req, res) => {
 
     const companyByUser = new Map(applications.map((a) => [String(a.userId), a.companyName]));
 
-    const result = events.map((e) => ({
-      ...e.toObject(),
-      exhibitorName: e.exhibitor?.name ?? null,
-      companyName: companyByUser.get(String(e.exhibitor?._id)) ?? null,
-    }));
+    const result = events.map((e) => {
+      const obj = e.toObject();
+      return {
+        _id: obj._id,
+        title: obj.title,
+        description: obj.description,
+        eventType: obj.eventType,
+        location: obj.location,
+        images: obj.images,
+        banner: obj.banner,
+        date: obj.date,
+        endDate: obj.endDate,
+        exhibitor: obj.exhibitor,
+        exhibitorName: e.exhibitor?.name ?? null,
+        companyName: companyByUser.get(String(e.exhibitor?._id)) ?? null,
+      };
+    });
 
     return res.status(200).json({ events: result });
   } catch (error) {

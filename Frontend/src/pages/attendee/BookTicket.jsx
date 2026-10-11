@@ -3,9 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { toast } from 'sonner'
 import {
-  Ticket, UserRound, Mail, Phone, CalendarDays, MapPin, CheckCircle2, Send,
+  Ticket, UserRound, Mail, Phone, CalendarDays, MapPin, CheckCircle2, Send, Plus, Trash2,
 } from 'lucide-react'
-
 import { fetchPublicExpos } from '@/api/publicService'
 import { bookExpoTicket } from '@/api/attendeePortalService'
 
@@ -27,6 +26,8 @@ const BookTicket = () => {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [requested, setRequested] = useState(null)
+  const [bookForFriends, setBookForFriends] = useState(false)
+  const [friendRows, setFriendRows] = useState([{ name: '', phone: '' }])
 
   useEffect(() => {
     const load = async () => {
@@ -53,9 +54,47 @@ const BookTicket = () => {
       toast.error('Please select an expo')
       return
     }
+
+    let guests = []
+    if (bookForFriends) {
+      for (let i = 0; i < friendRows.length; i++) {
+        const row = friendRows[i]
+        const name = row.name.trim()
+        const phone = row.phone.trim()
+
+        if (!name && !phone) continue
+
+        if (!name) {
+          toast.error(`Friend ${i + 1}: name is required`)
+          return
+        }
+        if (!/^[A-Za-z\s]+$/.test(name)) {
+          toast.error(`Friend ${i + 1}: name can only contain letters and spaces`)
+          return
+        }
+        if (phone) {
+          if (!/^\d+$/.test(phone)) {
+            toast.error(`Friend ${i + 1}: phone must contain only numbers`)
+            return
+          }
+          if (phone.length !== 11) {
+            toast.error(`Friend ${i + 1}: phone must be exactly 11 digits`)
+            return
+          }
+        }
+
+        guests.push({ name, phone })
+      }
+
+      if (guests.length === 0) {
+        toast.error('Add at least one friend name, or turn off booking for friends')
+        return
+      }
+    }
+
     setSubmitting(true)
     try {
-      await bookExpoTicket(expoId)
+      await bookExpoTicket(expoId, guests)
       setRequested(selectedExpo)
       toast.success('Ticket request sent')
     } catch (err) {
@@ -67,8 +106,6 @@ const BookTicket = () => {
 
   return (
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
-
-      {/* ================= HEADER ================= */}
       <section className="mx-auto max-w-4xl text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff4d9]">
           <Ticket className="h-8 w-8 text-[#c49424]" />
@@ -88,11 +125,8 @@ const BookTicket = () => {
         </p>
       </section>
 
-      {/* ================= CONTENT ================= */}
       <section className="mx-auto mt-14 max-w-4xl">
         <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-7 shadow-xl sm:p-10">
-
-          {/* Not logged in */}
           {!user && (
             <div className="py-6 text-center">
               <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">Please login to book a ticket</h2>
@@ -108,7 +142,6 @@ const BookTicket = () => {
             </div>
           )}
 
-          {/* Logged in but not an attendee */}
           {user && !isAttendee && (
             <div className="py-6 text-center">
               <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">Attendee account required</h2>
@@ -116,7 +149,6 @@ const BookTicket = () => {
             </div>
           )}
 
-          {/* Request sent */}
           {isAttendee && requested && (
             <div className="py-6 text-center">
               <CheckCircle2 className="mx-auto h-14 w-14 text-[#c49424]" />
@@ -139,7 +171,6 @@ const BookTicket = () => {
             </div>
           )}
 
-          {/* Booking form */}
           {isAttendee && !requested && (
             <>
               <div className="mb-9">
@@ -148,7 +179,6 @@ const BookTicket = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-[#4d473f]">Full Name</label>
@@ -174,7 +204,6 @@ const BookTicket = () => {
                   </div>
                 </div>
 
-                {/* Expo */}
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-[#4d473f]">Select Expo</label>
                   <select
@@ -195,7 +224,6 @@ const BookTicket = () => {
                   )}
                 </div>
 
-                {/* Selected expo details */}
                 {selectedExpo && (
                   <div className="space-y-4 rounded-2xl bg-[#fffdf9] p-5">
                     {selectedExpo.description && (
@@ -222,7 +250,76 @@ const BookTicket = () => {
                   </div>
                 )}
 
-                {/* Submit */}
+                <div className="rounded-xl border border-[#eadfc9] bg-[#fffdf9] p-4">
+                  <label className="flex cursor-pointer items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={bookForFriends}
+                      onChange={(e) => {
+                        setBookForFriends(e.target.checked)
+                        if (!e.target.checked) {
+                          setFriendRows([{ name: '', phone: '' }])
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-[#e4d9c4] text-[#c49424] focus:ring-[#c49424]"
+                    />
+                    <span className="text-sm font-medium text-[#2f2a24]">
+                      Also book tickets for friends
+                    </span>
+                  </label>
+
+                  {bookForFriends && (
+                    <div className="mt-4 space-y-3">
+                      {friendRows.map((row, index) => (
+                        <div key={index} className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                          <input
+                            type="text"
+                            placeholder="Friend name *"
+                            value={row.name}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/[^A-Za-z\s]/g, '')
+                              const next = [...friendRows]
+                              next[index] = { ...next[index], name: val }
+                              setFriendRows(next)
+                            }}
+                            className="w-full rounded-xl border border-[#e4d9c4] bg-[#f8f5ef] px-4 py-3 text-black outline-none focus:border-[#c49424]"
+                          />
+                          <input
+                            type="tel"
+                            placeholder="Phone (11 digits)"
+                            value={row.phone}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/\D/g, '').slice(0, 11)
+                              const next = [...friendRows]
+                              next[index] = { ...next[index], phone: val }
+                              setFriendRows(next)
+                            }}
+                            maxLength={11}
+                            className="w-full rounded-xl border border-[#e4d9c4] bg-[#f8f5ef] px-4 py-3 text-black outline-none focus:border-[#c49424]"
+                          />
+                          {friendRows.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => setFriendRows(friendRows.filter((_, i) => i !== index))}
+                              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#eadfc9] text-[#8d681b] hover:bg-[#fff4d9]"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setFriendRows([...friendRows, { name: '', phone: '' }])}
+                        className="inline-flex items-center gap-2 text-sm font-medium text-[#c49424] hover:underline"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add another friend
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 <div className="border-t border-[#eee5d5] pt-7">
                   <button
                     type="submit"
@@ -236,7 +333,6 @@ const BookTicket = () => {
                     Your entry pass is issued after the organizer approves your request.
                   </p>
                 </div>
-
               </form>
             </>
           )}

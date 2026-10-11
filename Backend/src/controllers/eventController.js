@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import Event from "../models/Event.js";
 import Attendee from "../models/Attendee.js";
 import User from "../models/User.js";
+import Expo from "../models/Expo.js";
+import Booth from "../models/Booth.js";
 
 const getMyId = (req) =>
   String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
@@ -23,18 +25,60 @@ const createEvent = async (req, res) => {
       });
     }
 
-    const { title, description, eventType, images, boothCapacity, banner, location } = req.body;
+    const { title, description, date, eventType, images, boothCapacity, banner, location, expo } = req.body;
 
     if (
       !title?.trim() ||
       !description?.trim() ||
       !eventType?.trim() ||
       !boothCapacity ||
-      !location?.trim()
+      (!expo && !location?.trim()) ||
+      (expo && !date)
     ) {
       return res.status(400).json({
-        error: "Title, description, event type, booth capacity and location are required",
+        error: "Title, description, event type, booth capacity and either location or an expo with date are required",
       });
+    }
+
+    let expoDoc = null;
+    let parsedDate;
+
+    if (expo) {
+      if (!mongoose.isValidObjectId(expo)) {
+        return res.status(400).json({ error: "Invalid expo" });
+      }
+
+      expoDoc = await Expo.findById(expo);
+      if (!expoDoc) {
+        return res.status(404).json({ error: "Expo not found" });
+      }
+
+      if (expoDoc.status !== "published") {
+        return res.status(400).json({ error: "You can only add events to a published expo" });
+      }
+
+      const hasBooth = await Booth.findOne({
+        exhibitor,
+        expo,
+        status: { $in: ["reserved", "occupied"] },
+      });
+      if (!hasBooth) {
+        return res.status(403).json({
+          error: "You need a reserved booth on this expo before creating an event",
+        });
+      }
+    }
+
+    if (date) {
+      parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ error: "Invalid date" });
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (parsedDate < today) {
+        return res.status(400).json({ error: "Event date must be today or in the future" });
+      }
     }
 
     const parsedBoothCapacity = Number(boothCapacity);
@@ -44,17 +88,20 @@ const createEvent = async (req, res) => {
     }
 
     const event = await Event.create({
+      ...(expoDoc && { expo: expoDoc._id }),
       exhibitor,
       title: title.trim(),
       description: description.trim(),
       eventType: eventType.trim(),
-      location: location.trim(),
+      location: expoDoc?.location ?? location.trim(),
+      ...(parsedDate && { date: parsedDate }),
       images: Array.isArray(images) ? images : [],
       boothCapacity: parsedBoothCapacity,
       banner,
       status: "pending",
     });
 
+    if (expoDoc) await event.populate("expo", "title date location status");
     await event.populate("exhibitor", "name companyName");
 
     return res.status(201).json({
@@ -276,7 +323,7 @@ const updateEvent = async (req, res) => {
       return res.status(404).json({ error: "Event not found or not yours" });
     }
 
-    const { title, description, eventType, images, boothCapacity, location, banner } = req.body;
+    const { title, description, eventType, images, boothCapacity, location, date, banner } = req.body;
 
     if (
       !title?.trim() ||
@@ -309,6 +356,19 @@ const updateEvent = async (req, res) => {
     event.boothCapacity = parsedBoothCapacity;
 
     if (banner !== undefined) event.banner = banner;
+
+    if (date !== undefined) {
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ error: "Invalid date" });
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (parsedDate < today) {
+        return res.status(400).json({ error: "Event date must be today or in the future" });
+      }
+      event.date = parsedDate;
+    }
     if (Array.isArray(images)) event.images = images;
 
     event.status = "pending";

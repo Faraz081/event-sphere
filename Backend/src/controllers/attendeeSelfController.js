@@ -169,7 +169,7 @@ export const bookEvent = async (req, res) => {
 export const bookExpoTicket = async (req, res) => {
   try {
     const userId = getMyId(req);
-    const { expo } = req.body;
+    const { expo, guests } = req.body;
 
     if (!mongoose.isValidObjectId(userId)) {
       return res.status(401).json({ error: "Please login again" });
@@ -201,6 +201,16 @@ export const bookExpoTicket = async (req, res) => {
       });
     }
 
+    let guestList = [];
+    if (Array.isArray(guests) && guests.length > 0) {
+      guestList = guests
+        .filter((g) => g && typeof g.name === "string" && g.name.trim())
+        .map((g) => ({
+          name: g.name.trim(),
+          phone: typeof g.phone === "string" ? g.phone.trim() : "",
+        }));
+    }
+
     const attendee = await Attendee.create({
       user: userId,
       expo: expoDoc._id,
@@ -210,6 +220,7 @@ export const bookExpoTicket = async (req, res) => {
       bookingStatus: "pending",
       passStatus: "pending",
       uniqueKeysEnforced: true,
+      guestList,
     });
 
     await attendee.populate("expo", "title date location");

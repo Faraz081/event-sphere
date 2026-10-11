@@ -25,6 +25,10 @@ const stallSchema = new mongoose.Schema({
 });
 
 const eventSchema = new mongoose.Schema({
+  expo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Expo",
+  },
   exhibitor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -43,6 +47,9 @@ const eventSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: "",
+  },
+  date: {
+    type: Date,
   },
   eventType: {
     type: String,

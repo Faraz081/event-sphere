@@ -18,6 +18,8 @@ import {
   deleteExpo,
   uploadExpoBanner,
 } from "@/api/expoService";
+import { fetchExpoReport } from "@/api/analyticsService";
+import { generateExpoReport } from "@/lib/generateExpoReport";
 import { toast } from "sonner";
 import {
   Plus,
@@ -33,6 +35,7 @@ import {
   ChevronRight,
   Calendar,
   MapPin,
+  FileDown,
 } from "lucide-react";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
 
@@ -72,13 +75,11 @@ const AdminExpos = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const itemsPerPage = 8;
 
-  // Modal & Form state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
   const [editingId, setEditingId] = useState(null);
@@ -86,12 +87,11 @@ const AdminExpos = () => {
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Delete modal state
   const [expoToDelete, setExpoToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Status updating inline tracker
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
+  const [reportLoadingId, setReportLoadingId] = useState(null);
 
   const loadExpos = useCallback(async () => {
     try {
@@ -231,7 +231,6 @@ const AdminExpos = () => {
       return;
     }
 
-    // Future / today date check
     const selectedDate = new Date(formData.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -274,6 +273,19 @@ const AdminExpos = () => {
     }
   };
 
+  const handleGenerateReport = async (expo) => {
+    setReportLoadingId(expo._id);
+    try {
+      const data = await fetchExpoReport(expo._id);
+      generateExpoReport(data);
+      toast.success("Report downloaded");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to generate report");
+    } finally {
+      setReportLoadingId(null);
+    }
+  };
+
   const handleDelete = async () => {
     if (!expoToDelete) return;
     try {
@@ -281,7 +293,6 @@ const AdminExpos = () => {
       await deleteExpo(expoToDelete._id);
       toast.success(`"${expoToDelete.title}" deleted successfully`);
       setExpoToDelete(null);
-      // If we deleted the last item on the page, go to prev page if possible
       if (expos.length === 1 && currentPage > 1) {
         setCurrentPage((prev) => prev - 1);
       } else {
@@ -299,7 +310,6 @@ const AdminExpos = () => {
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8">
-        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-2">
@@ -329,9 +339,7 @@ const AdminExpos = () => {
           </div>
         </div>
 
-        {/* Filter bar */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6 items-stretch sm:items-center justify-between">
-          {/* Search */}
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
             <input
@@ -343,7 +351,6 @@ const AdminExpos = () => {
             />
           </div>
 
-          {/* Status Filter */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted hidden sm:inline">Status:</span>
             <select
@@ -360,7 +367,6 @@ const AdminExpos = () => {
           </div>
         </div>
 
-        {/* Error message */}
         {error && (
           <div className="mb-4 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 text-sm flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -376,7 +382,6 @@ const AdminExpos = () => {
           </div>
         )}
 
-        {/* Table */}
         <ResponsiveTable>
           <thead className="border-b border-border">
             <tr>
@@ -455,7 +460,9 @@ const AdminExpos = () => {
                         {expo.theme && (
                           <div className="text-xs text-muted mt-0.5">Theme: {expo.theme}</div>
                         )}
-                        <div className="text-xs text-muted mt-0.5">Booths: {expo.totalBooths ?? 0} / {expo.maxBooths ?? 10}</div>
+                        <div className="text-xs text-muted mt-0.5">
+                          Booths: {expo.totalBooths ?? 0} / {expo.maxBooths ?? 10}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -504,6 +511,15 @@ const AdminExpos = () => {
                   <td data-label="Actions" className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
+                        type="button"
+                        onClick={() => handleGenerateReport(expo)}
+                        disabled={reportLoadingId === expo._id}
+                        className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors disabled:opacity-50"
+                        title="Generate Report"
+                      >
+                        <FileDown size={16} className={reportLoadingId === expo._id ? "animate-pulse" : ""} />
+                      </button>
+                      <button
                         onClick={() => openEditModal(expo)}
                         className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors"
                         title="Edit Expo"
@@ -525,7 +541,6 @@ const AdminExpos = () => {
           </tbody>
         </ResponsiveTable>
 
-        {/* Pagination bar */}
         {!loading && totalCount > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-border text-sm text-muted">
             <div>
@@ -558,7 +573,6 @@ const AdminExpos = () => {
           </div>
         )}
 
-        {/* Create / Edit Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-surface border border-border rounded-2xl w-full max-w-lg p-6 shadow-xl max-h-[90vh] overflow-y-auto">
@@ -575,7 +589,6 @@ const AdminExpos = () => {
               </div>
 
               <div className="space-y-4">
-                {/* Banner Upload */}
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Banner Image</label>
                   {formData.banner ? (
@@ -734,7 +747,6 @@ const AdminExpos = () => {
           </div>
         )}
 
-        {/* Delete Confirmation */}
         <AlertDialog
           open={!!expoToDelete}
           onOpenChange={(open) => !open && setExpoToDelete(null)}

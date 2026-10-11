@@ -16,7 +16,6 @@ const todayStr = () => {
 const emptyForm = { name: '', phone: '', eventDate: '', guests: '', message: '' }
 
 export default function BookNow() {
-  // NOTE: agar tumhare authSlice mein user ka naam alag hai (state.auth.user), yahan adjust karna
   const user = useSelector((state) => state.auth.user)
   const isAttendee = user?.role === 'attendee'
 
@@ -89,6 +88,7 @@ export default function BookNow() {
     const id = e.target.value
     setSelectedEventId(id)
     id ? setSearchParams({ event: id }) : setSearchParams({})
+    setFormData((prev) => ({ ...prev, eventDate: '' }))
   }
 
   const handleChange = (e) => {
@@ -127,10 +127,17 @@ export default function BookNow() {
         phone: formData.phone,
         message: formData.message,
       })
-      setFeedback({ type: 'success', text: response.data?.msg || 'Booking request sent. You can track it from your profile.' })
-      setFormData({ ...emptyForm, name: user?.name ?? '', phone: user?.phone ?? '' })
+      setFeedback({
+        type: 'success',
+        text: response.data?.msg || 'Booking request sent. You can track it from your profile.',
+      })
+  setFormData({ ...emptyForm, name: user?.name ?? '', phone: user?.phone ?? '' })
+      setSelectedStalls([])
     } catch (error) {
-      setFeedback({ type: 'error', text: error.response?.data?.error || 'Could not send your booking request' })
+      setFeedback({
+        type: 'error',
+        text: error.response?.data?.error || 'Could not send your booking request',
+      })
     } finally {
       setSubmitting(false)
     }
@@ -138,7 +145,6 @@ export default function BookNow() {
 
   return (
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
-
       <section className="mx-auto max-w-4xl text-center">
         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">Event Booking</p>
         <h1 className="font-serif text-4xl font-bold text-[#2f2a24] sm:text-5xl">
@@ -151,7 +157,6 @@ export default function BookNow() {
 
       <section className="mx-auto mt-14 max-w-5xl">
         <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-6 shadow-xl sm:p-10">
-
           <div className="mb-10 flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff6df]">
               <ClipboardList className="h-7 w-7 text-[#b48620]" />
@@ -165,7 +170,10 @@ export default function BookNow() {
           {!user && (
             <div className="mb-8 flex flex-col gap-3 rounded-2xl border border-[#eadfc9] bg-[#fff6df] p-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-[#5d574f]">Please login with your attendee account to book an event.</p>
-              <Link to="/login" className="rounded-full bg-[#c49424] px-6 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#a97d18]">
+              <Link
+                to="/login"
+                className="rounded-full bg-[#c49424] px-6 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#a97d18]"
+              >
                 Login
               </Link>
             </div>
@@ -178,8 +186,6 @@ export default function BookNow() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-
-            {/* Event Information */}
             <div>
               <h3 className="mb-5 flex items-center gap-2 text-lg font-semibold text-[#2f2a24]">
                 <Sparkles className="h-5 w-5 text-[#b48620]" />
@@ -198,7 +204,9 @@ export default function BookNow() {
                   >
                     <option value="">{eventsLoading ? 'Loading events...' : 'Select an event'}</option>
                     {events.map((ev) => (
-                      <option key={ev._id} value={ev._id}>{ev.title ?? ev.name}</option>
+                      <option key={ev._id} value={ev._id}>
+                        {ev.title ?? ev.name}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -229,14 +237,29 @@ export default function BookNow() {
               {selectedEvent && (
                 <div className="mt-5 flex flex-col gap-5 rounded-2xl border border-[#eadfc9] bg-[#fffdf9] p-4 sm:flex-row">
                   {selectedEvent.images?.[0] && (
-                    <img src={selectedEvent.images[0]} alt="" className="h-32 w-full rounded-xl object-cover sm:w-48" />
+                    <img
+                      src={selectedEvent.images[0]}
+                      alt=""
+                      className="h-32 w-full rounded-xl object-cover sm:w-48"
+                    />
                   )}
                   <div className="space-y-2 text-sm text-[#5d574f]">
-                    <p className="font-serif text-xl font-bold text-[#c49424]">{selectedEvent.title ?? selectedEvent.name}</p>
-                    {selectedEvent.eventType && <p className="font-semibold text-[#8d681b]">{selectedEvent.eventType}</p>}
-                    {organizer && <p>Organized by <span className="font-semibold text-[#8d681b]">{organizer}</span></p>}
+                    <p className="font-serif text-xl font-bold text-[#c49424]">
+                      {selectedEvent.title ?? selectedEvent.name}
+                    </p>
+                    {selectedEvent.eventType && (
+                      <p className="font-semibold text-[#8d681b]">{selectedEvent.eventType}</p>
+                    )}
+                    {organizer && (
+                      <p>
+                        Organized by <span className="font-semibold text-[#8d681b]">{organizer}</span>
+                      </p>
+                    )}
                     {selectedEvent.location && (
-                      <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#b48620]" />{selectedEvent.location}</p>
+                      <p className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-[#b48620]" />
+                        {selectedEvent.location}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -259,19 +282,34 @@ export default function BookNow() {
                         return (
                           <label
                             key={s._id}
-                            className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm text-[#2f2a24] transition ${
-                              checked ? 'border-[#c49424] bg-[#fff4d9]' : 'border-[#e4d9c4] bg-[#fffdf9] hover:border-[#c49424]'
+                            className={`flex items-start gap-3 rounded-xl border p-4 text-sm transition ${
+                              s.booked
+                                ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400'
+                                : checked
+                                  ? 'cursor-pointer border-[#c49424] bg-[#fff4d9] text-[#2f2a24]'
+                                  : 'cursor-pointer border-[#e4d9c4] bg-[#fffdf9] text-[#2f2a24] hover:border-[#c49424]'
                             }`}
                           >
                             <input
                               type="checkbox"
                               checked={checked}
+                              disabled={s.booked}
                               onChange={() => toggleStall(s._id)}
                               className="mt-1 accent-[#c49424]"
                             />
                             <span>
-                              <span className="block font-semibold">{s.name || `Stall ${s.stallNumber}`}</span>
-                              <span className="block text-xs">#{s.stallNumber}{s.size ? ` · ${s.size}` : ''}</span>
+                              <span className="block font-semibold">
+                                {s.name || `Stall ${s.stallNumber}`}
+                              </span>
+                              <span className="block text-xs">
+                                #{s.stallNumber}
+                                {s.size ? ` · ${s.size}` : ''}
+                              </span>
+                              {s.booked && (
+                                <span className="mt-1 block text-xs font-semibold">
+                                  Booked for this date
+                                </span>
+                              )}
                             </span>
                           </label>
                         )
@@ -282,7 +320,6 @@ export default function BookNow() {
               )}
             </div>
 
-            {/* Contact Information */}
             <div>
               <h3 className="mb-5 flex items-center gap-2 text-lg font-semibold text-[#2f2a24]">
                 <UserRound className="h-5 w-5 text-[#b48620]" />
@@ -310,7 +347,15 @@ export default function BookNow() {
                   <label className="mb-2 block text-sm font-medium text-[#4d473f]">Phone Number</label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" required className={inputCls} />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Enter your phone number"
+                      required
+                      className={inputCls}
+                    />
                   </div>
                 </div>
 
@@ -318,13 +363,21 @@ export default function BookNow() {
                   <label className="mb-2 block text-sm font-medium text-[#4d473f]">Number of Guests</label>
                   <div className="relative">
                     <Users className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                    <input type="number" name="guests" value={formData.guests} onChange={handleChange} placeholder="e.g. 100" min="1" required className={inputCls} />
+                    <input
+                      type="number"
+                      name="guests"
+                      value={formData.guests}
+                      onChange={handleChange}
+                      placeholder="e.g. 100"
+                      min="1"
+                      required
+                      className={inputCls}
+                    />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Additional Message */}
             <div>
               <label className="mb-2 block text-sm font-medium text-[#4d473f]">Additional Details</label>
               <textarea
@@ -338,7 +391,11 @@ export default function BookNow() {
             </div>
 
             {feedback && (
-              <p className={`rounded-xl p-3 text-sm ${feedback.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+              <p
+                className={`rounded-xl p-3 text-sm ${
+                  feedback.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                }`}
+              >
                 {feedback.text}
               </p>
             )}
@@ -353,15 +410,15 @@ export default function BookNow() {
                 {submitting ? 'Sending...' : 'Submit Booking'}
               </button>
             </div>
-
           </form>
         </div>
       </section>
 
       <div className="mt-10 text-center">
-        <Link to="/" className="text-sm font-semibold text-[#b48620] transition hover:text-[#8f6b18]">← Back to Home</Link>
+        <Link to="/" className="text-sm font-semibold text-[#b48620] transition hover:text-[#8f6b18]">
+          ← Back to Home
+        </Link>
       </div>
-
     </main>
   )
 }

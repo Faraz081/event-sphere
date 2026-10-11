@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   Clock3,
   XCircle,
+  QrCode,
   ShieldCheck,
 } from "lucide-react";
 import { fetchMyRegistrations } from "@/api/attendeePortalService";
@@ -75,7 +76,6 @@ const AttendeeProfile = () => {
   return (
     <main className="min-h-screen bg-[#f8f5ef] px-4 pb-20 pt-28 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-6xl space-y-8">
-
         {/* Profile Card Header */}
         <div className="relative overflow-hidden rounded-3xl border border-[#eadfc9] bg-[#fffdf9] p-6 shadow-sm sm:p-8">
           <div className="absolute left-0 top-0 h-2 w-full bg-gradient-to-r from-[#2f2a24] via-[#c49424] to-[#2f2a24]" />
@@ -150,74 +150,99 @@ const AttendeeProfile = () => {
               const BadgeIcon = badge.icon;
               const isExpoTicket = !b.event && !!b.expo;
               const title = b.event?.title ?? b.eventName ?? b.expo?.title ?? "Booking";
+              const date = b.event?.date ?? b.eventDate ?? b.expo?.date;
+              const expoTitle = b.event?.expo?.title ?? b.expo?.title;
               const location = b.event?.location ?? b.expo?.location;
 
               return (
                 <div
                   key={b._id}
-                  className="overflow-hidden rounded-2xl border border-[#eadfc9] bg-[#fffdf9] p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6"
+                  className="relative flex flex-col overflow-hidden rounded-2xl border border-[#eadfc9] bg-[#fffdf9] shadow-sm transition-all duration-200 hover:shadow-md md:flex-row"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#f0e8d8] pb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#a8790d]">
-                      {isExpoTicket ? "Official Expo Pass" : "Event Booking"}
-                    </span>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-[11px] font-bold ${badge.className}`}>
-                      <BadgeIcon size={12} />
-                      {badge.label}
-                    </span>
-                  </div>
+                  <div className="flex-1 p-5 sm:p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#f0e8d8] pb-3">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#a8790d]">
+                        {isExpoTicket ? "Official Expo Pass" : "Event Booking"}
+                      </span>
+                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-[11px] font-bold ${badge.className}`}>
+                        <BadgeIcon size={12} />
+                        {badge.label}
+                      </span>
+                    </div>
 
-                  <div className="mt-3">
-                    <h3 className="font-serif text-xl font-bold text-[#2f2a24]">{title}</h3>
-                    {!isExpoTicket && b.contactName && (
-                      <p className="mt-0.5 text-xs text-[#736c62]">
-                        Booked for <span className="font-semibold text-[#2f2a24]">{b.contactName}</span>
+                    <div className="mt-3">
+                      <h3 className="font-serif text-xl font-bold text-[#2f2a24]">
+                        {title}
+                      </h3>
+                      {expoTitle && title !== expoTitle && (
+                        <p className="text-xs text-[#736c62] mt-0.5">
+                          Expo: <span className="font-semibold text-[#2f2a24]">{expoTitle}</span>
+                        </p>
+                      )}
+                      {!isExpoTicket && b.contactName && (
+                        <p className="mt-1 text-xs text-[#5d574f]">
+                          Booked for <span className="font-semibold text-[#2f2a24]">{b.contactName}</span>
+                        </p>
+                      )}
+                      {b.guestList?.length > 0 && (
+                        <p className="mt-1 text-xs text-[#5d574f]">
+                          + {b.guestList.length} friend{b.guestList.length > 1 ? "s" : ""}: {b.guestList.map((guest) => guest.name).join(", ")}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2 text-xs text-[#5d574f]">
+                      {date && <Chip icon={CalendarDays}>{new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}</Chip>}
+                      {location && <Chip icon={MapPin}>{location}</Chip>}
+                      {!isExpoTicket && b.guests && <Chip icon={Users}>{b.guests} guests</Chip>}
+                      {!!b.stallNumbers?.length && <Chip icon={Store}>Stalls: {b.stallNumbers.join(", ")}</Chip>}
+                      {b.event?.booth?.boothNumber && <Chip icon={Store}>Booth #{b.event.booth.boothNumber}</Chip>}
+                    </div>
+
+                    {b.bookingStatus === "pending" && (
+                      <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-xs font-medium text-amber-900">
+                        {isExpoTicket
+                          ? "Your pass is awaiting admin approval. Once confirmed, the download option will appear."
+                          : "Your request is waiting for the organizer to approve it."}
                       </p>
                     )}
-                  </div>
 
-                  <div className="mt-4 flex flex-wrap gap-2 text-xs text-[#5d574f]">
-                    {!isExpoTicket && b.eventDate && (
-                      <Chip icon={CalendarDays}>
-                        {new Date(b.eventDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}
-                      </Chip>
+                    {b.bookingStatus === "confirmed" && !isExpoTicket && (
+                      <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-medium text-emerald-800">
+                        The organizer has confirmed your booking for this date.
+                      </p>
                     )}
 
-                    {isExpoTicket && b.expo?.date && (
-                      <Chip icon={CalendarDays}>
-                        {new Date(b.expo.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                      </Chip>
+                    {b.bookingStatus === "cancelled" && b.decisionNote && (
+                      <p className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800">
+                        Reason: {b.decisionNote}
+                      </p>
                     )}
 
-                    {location && <Chip icon={MapPin}>{location}</Chip>}
-                    {!isExpoTicket && b.guests && <Chip icon={Users}>{b.guests} guests</Chip>}
-                    {!!b.stallNumbers?.length && <Chip icon={Store}>Stalls: {b.stallNumbers.join(", ")}</Chip>}
+                    {isExpoTicket && b.bookingStatus === "confirmed" && b.entryPassId && (
+                      <div className="mt-4 pt-2">
+                        <EntryPass booking={b} user={user} />
+                      </div>
+                    )}
                   </div>
 
-                  {b.bookingStatus === "pending" && (
-                    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-xs font-medium text-amber-900">
-                      {isExpoTicket
-                        ? "Your pass is awaiting admin approval. Once confirmed, the download option will appear."
-                        : "Your request is waiting for the organizer to approve it."}
-                    </p>
-                  )}
+                  {!isExpoTicket && b.bookingStatus === "confirmed" && b.passCode && (
+                    <>
+                      <div className="relative hidden md:flex items-center justify-center w-0 border-l-2 border-dashed border-[#d9c9a3] bg-[#f8f5ef]">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 h-5 w-5 rounded-full bg-[#f8f5ef] border border-[#eadfc9]" />
+                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-5 w-5 rounded-full bg-[#f8f5ef] border border-[#eadfc9]" />
+                      </div>
 
-                  {b.bookingStatus === "confirmed" && !isExpoTicket && (
-                    <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-medium text-emerald-800">
-                      The organizer has confirmed your booking for this date.
-                    </p>
-                  )}
-
-                  {b.bookingStatus === "cancelled" && b.decisionNote && (
-                    <p className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800">
-                      Reason: {b.decisionNote}
-                    </p>
-                  )}
-
-                  {isExpoTicket && b.bookingStatus === "confirmed" && b.entryPassId && (
-                    <div className="mt-4 pt-2">
-                      <EntryPass booking={b} user={user} />
-                    </div>
+                      <div className="relative flex flex-col items-center justify-center bg-[#fdf8ee] p-6 text-center md:w-56 border-t md:border-t-0 border-dashed border-[#d9c9a3]">
+                        <QrCode className="h-6 w-6 text-[#c49424] mb-1" />
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#8a8379]">
+                          Pass Code
+                        </p>
+                        <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[#2f2a24]">
+                          {b.passCode}
+                        </p>
+                      </div>
+                    </>
                   )}
                 </div>
               );

@@ -10,7 +10,7 @@ export const fetchMyRegistrations = async () => {
   return response.data;
 };
 
-export const bookExpoTicket = async (expo) => {
-  const response = await api.post("/api/attendee-portal/book-expo", { expo });
+export const bookExpoTicket = async (expo, guests = []) => {
+  const response = await api.post("/api/attendee-portal/book-expo", { expo, guests });
   return response.data;
 };
