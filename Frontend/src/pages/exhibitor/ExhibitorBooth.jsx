@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { X, Plus, Trash2 } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
+import FloorPlan from "@/components/shared/FloorPlan";
+import { fetchPublicBooths } from "@/api/publicService";
 import { fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails } from "@/store/slices/boothSlice";
 import { Link } from "react-router-dom";
 
@@ -11,6 +13,8 @@ const ExhibitorBooth = () => {
   const dispatch = useDispatch();
   const { expos, booths, myBooths = [], loading } = useSelector((state) => state.booth);
   const [selectedExpo, setSelectedExpo] = useState("");
+  const [planBooths, setPlanBooths] = useState([]);
+  const [pickedId, setPickedId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedBooth, setSelectedBooth] = useState(null);
   const [products, setProducts] = useState([]);
@@ -24,14 +28,35 @@ const ExhibitorBooth = () => {
     dispatch(fetchMyBooth());
   }, [dispatch]);
 
+  // floor plan: saare booths (available/pending/reserved) dikhane ke liye
+  const loadPlan = async (expoId) => {
+    try {
+      const data = await fetchPublicBooths(expoId);
+      setPlanBooths(data.booths ?? []);
+    } catch {
+      setPlanBooths([]);
+    }
+  };
+
   useEffect(() => {
-    if (selectedExpo) dispatch(fetchAvailableBooths(selectedExpo));
+    setPickedId(null);
+    if (selectedExpo) {
+      dispatch(fetchAvailableBooths(selectedExpo));
+      loadPlan(selectedExpo);
+    } else {
+      setPlanBooths([]);
+    }
   }, [selectedExpo, dispatch]);
 
   const handleReserve = async (boothId) => {
     const result = await dispatch(reserveBooth(boothId));
     if (reserveBooth.fulfilled.match(result)) {
       toast.success("Booth requested, waiting for admin approval");
+      setPickedId(null);
+      if (selectedExpo) {
+        dispatch(fetchAvailableBooths(selectedExpo));
+        loadPlan(selectedExpo);
+      }
     } else {
       toast.error(result.payload?.error || "Could not request booth");
     }
@@ -41,7 +66,11 @@ const ExhibitorBooth = () => {
     const result = await dispatch(releaseBooth(boothId));
     if (releaseBooth.fulfilled.match(result)) {
       toast.success("Booth released successfully");
-      if (selectedExpo) dispatch(fetchAvailableBooths(selectedExpo));
+      setPickedId(null);
+      if (selectedExpo) {
+        dispatch(fetchAvailableBooths(selectedExpo));
+        loadPlan(selectedExpo);
+      }
     } else {
       toast.error(result.payload?.error || "Could not release booth");
     }
@@ -80,6 +109,13 @@ const ExhibitorBooth = () => {
       toast.error(result.payload?.error || "Could not update details");
     }
   };
+
+  // derived values (handlers ke baad, return se pehle)
+  const mineIds = myBooths.map((b) => b._id);
+  const alreadyInExpo = myBooths.some((b) => (b.expo?._id || b.expo) === selectedExpo);
+  const picked =
+    booths.find((b) => b._id === pickedId) ||
+    planBooths.find((b) => b._id === pickedId);
 
   return (
     <DashboardLayout role="exhibitor">
@@ -159,20 +195,41 @@ const ExhibitorBooth = () => {
 
           {loading && <p className="text-sm text-muted">Loading...</p>}
 
-          {!loading && selectedExpo && booths.length === 0 && (
-            <p className="text-sm text-muted">No available booths for this expo.</p>
-          )}
+          {selectedExpo && (
+            <div className="space-y-5 text-foreground">
+              <FloorPlan
+                booths={planBooths}
+                mineIds={mineIds}
+                selectedId={pickedId}
+                onSelect={alreadyInExpo ? undefined : (b) => setPickedId(b._id)}
+                variant="dashboard"
+              />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {booths.map((booth) => (
-              <div key={booth._id} className="rounded-2xl border border-border bg-background p-4 space-y-2">
-                <p className="font-semibold text-foreground">Booth {booth.boothNumber}</p>
-                <p className="text-sm text-muted">{booth.size} · {booth.location}</p>
-                <p className="text-sm text-muted font-mono">PKR {booth.price}</p>
-                <button onClick={() => handleReserve(booth._id)} className="w-full rounded-lg bg-gold text-background py-2 text-sm font-medium">Reserve</button>
-              </div>
-            ))}
-          </div>
+              {alreadyInExpo && (
+                <p className="text-sm text-muted">
+                  You already have a booth request in this expo. Release it first if you want a different one.
+                </p>
+              )}
+
+              {picked && !alreadyInExpo && (
+                <div className="flex flex-col gap-3 rounded-2xl border border-gold/40 bg-background p-4 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="font-semibold text-foreground">Booth {picked.boothNumber}</p>
+                    <p className="text-sm text-muted">
+                      {picked.size} · {picked.location}
+                      {picked.price != null && <span className="font-mono"> · PKR {picked.price}</span>}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleReserve(picked._id)}
+                    className="rounded-lg bg-gold px-6 py-2 text-sm font-medium text-background"
+                  >
+                    Request this booth
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {modalOpen && (

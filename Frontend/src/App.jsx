@@ -40,6 +40,7 @@ import AdminTickets from "./pages/admin/AdminTickets";
 import AttendeeMessages from "./pages/attendee/AttendeeMessages";
 import AdminEvents from "./pages/admin/AdminEvents";
 import ExhibitorPublicProfile from "./pages/attendee/ExhibitorPublicProfile";
+import ExhibitorBookings from "./pages/exhibitor/ExhibitorBookings";
 
 function App() {
   const { email, otp } = useSelector((state) => state.forgotPassword);
@@ -116,8 +117,8 @@ function App() {
             <Route path="/exhibitor/booth" element={<ExhibitorBooth />} />
             <Route path="/exhibitor/messages" element={<ExhibitorMessages />} />
             <Route path="/exhibitor/profile" element={<ExhibitorProfile />} />
-            <Route path="/exhibitor/events" element={<ExhibitorEvents />}
-            />
+            <Route path="/exhibitor/events" element={<ExhibitorEvents />} />
+            <Route path="/exhibitor/bookings" element={<ExhibitorBookings />} />
           </Route>
         </Route>
 
