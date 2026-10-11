@@ -46,14 +46,24 @@ const statusStyles = {
   cancelled: "bg-red-500/20 text-red-300 border border-red-500/30",
 };
 
-const formatDate = (isoDate) => {
+const toDateTimeInputValue = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 16);
+};
+
+const formatDateTime = (isoDate) => {
   if (!isoDate) return "-";
   const dateObj = new Date(isoDate);
   if (isNaN(dateObj.getTime())) return "-";
-  return dateObj.toLocaleDateString("en-US", {
+  return dateObj.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
   });
 };
 
@@ -189,9 +199,12 @@ const AdminExpos = () => {
   };
 
   const openEditModal = (expo) => {
+    const hasLegacyDateOnlyTime = expo.date?.endsWith("T00:00:00.000Z");
     setFormData({
       title: expo.title || "",
-      date: expo.date ? expo.date.split("T")[0] : "",
+      date: hasLegacyDateOnlyTime
+        ? `${expo.date.slice(0, 10)}T00:00`
+        : toDateTimeInputValue(expo.date),
       location: expo.location || "",
       description: expo.description || "",
       theme: expo.theme || "",
@@ -232,21 +245,28 @@ const AdminExpos = () => {
     }
 
     const selectedDate = new Date(formData.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    if (Number.isNaN(selectedDate.getTime())) {
+      toast.error("Please select a valid expo date and time");
+      return;
+    }
 
-    if (!editingId && selectedDate < today) {
-      toast.error("Expo date must be today or in the future");
+    if (!editingId && selectedDate < new Date()) {
+      toast.error("Expo date and time must be in the future");
       return;
     }
 
     try {
       setSaving(true);
+      const expoData = {
+        ...formData,
+        date: selectedDate.toISOString(),
+        maxBooths: Number(formData.maxBooths),
+      };
       if (editingId) {
-        await updateExpo(editingId, { ...formData, maxBooths: Number(formData.maxBooths) });
+        await updateExpo(editingId, expoData);
         toast.success("Expo updated successfully");
       } else {
-        await createExpo({ ...formData, maxBooths: Number(formData.maxBooths) });
+        await createExpo(expoData);
         toast.success("Expo created successfully");
       }
       closeModal();
@@ -305,7 +325,9 @@ const AdminExpos = () => {
     }
   };
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const minimumDateTime = toDateTimeInputValue(
+    new Date(Math.ceil(Date.now() / 60000) * 60000)
+  );
 
   return (
     <DashboardLayout role="admin">
@@ -470,7 +492,7 @@ const AdminExpos = () => {
                   <td data-label="Date" className="px-6 py-4 text-muted whitespace-nowrap">
                     <div className="flex items-center gap-1.5 text-sm">
                       <Calendar size={14} className="text-muted/70" />
-                      <span>{formatDate(expo.date)}</span>
+                      <span>{formatDateTime(expo.date)}</span>
                     </div>
                   </td>
 
@@ -663,11 +685,11 @@ const AdminExpos = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-muted mb-1.5">Date *</label>
+                    <label className="block text-sm text-muted mb-1.5">Date & time *</label>
                     <input
                       name="date"
-                      type="date"
-                      min={!editingId ? todayStr : undefined}
+                      type="datetime-local"
+                      min={!editingId ? minimumDateTime : undefined}
                       value={formData.date}
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"

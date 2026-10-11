@@ -32,10 +32,8 @@ export const createExpo = async (req, res) => {
       return res.status(400).json({ error: "Invalid date format" });
     }
 
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    if (parsedDate < startOfToday) {
-      return res.status(400).json({ error: "Expo date must be today or in the future" });
+    if (parsedDate < new Date()) {
+      return res.status(400).json({ error: "Expo date and time must be in the future" });
     }
 
     let expoStatus = "draft";

@@ -106,8 +106,10 @@ const initialFormState = {
   endTime: "",
 };
 
+const MAX_EXPO_SCHEDULE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const MAX_SESSION_DURATION_MS = 48 * 60 * 60 * 1000;
+
 const AdminSchedule = () => {
-  const minStartTime = toDatetimeLocal(new Date(Math.ceil(Date.now() / 60000) * 60000));
   const [schedules, setSchedules] = useState([]);
   const [expos, setExpos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,6 +126,23 @@ const AdminSchedule = () => {
   // Delete modal state
   const [sessionToDelete, setSessionToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+
+  const selectedExpo = expos.find((expo) => expo._id === formData.expo);
+  const expoStart = selectedExpo?.date ? new Date(selectedExpo.date) : null;
+  const expoEnd = expoStart
+    ? new Date(expoStart.getTime() + MAX_EXPO_SCHEDULE_WINDOW_MS)
+    : null;
+  const currentMinute = new Date(Math.ceil(Date.now() / 60000) * 60000);
+  const expoStartMinute = expoStart
+    ? new Date(Math.ceil(expoStart.getTime() / 60000) * 60000)
+    : null;
+  const minimumStart = expoStartMinute && expoStartMinute > currentMinute
+    ? expoStartMinute
+    : currentMinute;
+  const selectedStart = formData.startTime ? new Date(formData.startTime) : null;
+  const maximumEnd = selectedStart && expoEnd
+    ? new Date(Math.min(expoEnd.getTime(), selectedStart.getTime() + MAX_SESSION_DURATION_MS))
+    : expoEnd;
 
   // Load available Expos for filtering & selection
   const loadExpos = useCallback(async () => {
@@ -171,7 +190,21 @@ const AdminSchedule = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      if (name === "expo") {
+        return { ...prev, expo: value, startTime: "", endTime: "" };
+      }
+
+      if (name === "startTime") {
+        const nextStart = new Date(value);
+        const currentEnd = prev.endTime ? new Date(prev.endTime) : null;
+        const keepEnd = currentEnd && currentEnd > nextStart &&
+          currentEnd - nextStart <= MAX_SESSION_DURATION_MS;
+        return { ...prev, startTime: value, endTime: keepEnd ? prev.endTime : "" };
+      }
+
+      return { ...prev, [name]: value };
+    });
   };
 
   const openCreateModal = () => {
@@ -224,24 +257,46 @@ const AdminSchedule = () => {
 
     const start = new Date(formData.startTime);
     const end = new Date(formData.endTime);
+    const expoDate = selectedExpo?.date ? new Date(selectedExpo.date) : null;
 
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    if (isNaN(start.getTime()) || isNaN(end.getTime()) || !expoDate || isNaN(expoDate.getTime())) {
       toast.error("Please provide valid start and end dates/times");
       return;
     }
 
+    if (start < new Date()) {
+      toast.error("Session start time cannot be in the past");
+      return;
+    }
+    if (start < expoDate) {
+      toast.error("Session cannot start before the selected Expo begins");
+      return;
+    }
     if (start >= end) {
       toast.error("Start time must be before end time");
+      return;
+    }
+    if (end - start > MAX_SESSION_DURATION_MS) {
+      toast.error("A session cannot last longer than 48 hours");
+      return;
+    }
+    if (end > new Date(expoDate.getTime() + MAX_EXPO_SCHEDULE_WINDOW_MS)) {
+      toast.error("Session must finish within 30 days of the Expo start");
       return;
     }
 
     try {
       setSaving(true);
+      const scheduleData = {
+        ...formData,
+        startTime: start.toISOString(),
+        endTime: end.toISOString(),
+      };
       if (editingId) {
-        await updateSchedule(editingId, formData);
+        await updateSchedule(editingId, scheduleData);
         toast.success("Session updated successfully");
       } else {
-        await createSchedule(formData);
+        await createSchedule(scheduleData);
         toast.success("Session added successfully");
       }
       closeModal();
@@ -502,6 +557,7 @@ const AdminSchedule = () => {
                     name="expo"
                     value={formData.expo}
                     onChange={handleInputChange}
+                    required
                     className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
                   >
                     <option value="" disabled>
@@ -570,9 +626,11 @@ const AdminSchedule = () => {
                     <input
                       name="startTime"
                       type="datetime-local"
-                      min={minStartTime}
+                      min={toDatetimeLocal(minimumStart)}
+                      max={expoEnd ? toDatetimeLocal(expoEnd) : undefined}
                       value={formData.startTime}
                       onChange={handleInputChange}
+                      required
                       className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
                     />
                   </div>
@@ -581,8 +639,11 @@ const AdminSchedule = () => {
                     <input
                       name="endTime"
                       type="datetime-local"
+                      min={formData.startTime || (expoStart ? toDatetimeLocal(minimumStart) : undefined)}
+                      max={maximumEnd ? toDatetimeLocal(maximumEnd) : undefined}
                       value={formData.endTime}
                       onChange={handleInputChange}
+                      required
                       className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
                     />
                   </div>

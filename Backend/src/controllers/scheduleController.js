@@ -2,6 +2,22 @@ import Schedule from "../models/Schedule.js";
 import Expo from "../models/Expo.js";
 import mongoose from "mongoose";
 
+const MAX_EXPO_SCHEDULE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const MAX_SESSION_DURATION_MS = 48 * 60 * 60 * 1000;
+
+const getScheduleTimeError = (start, end, expoDate) => {
+  if (start < new Date()) return "Cannot schedule in the past";
+  if (start < expoDate) return "Session cannot start before the selected Expo begins";
+  if (start >= end) return "Start time must be before end time";
+  if (end - start > MAX_SESSION_DURATION_MS) {
+    return "A session cannot last longer than 48 hours";
+  }
+  if (end > new Date(expoDate.getTime() + MAX_EXPO_SCHEDULE_WINDOW_MS)) {
+    return "Session must finish within 30 days of the Expo start";
+  }
+  return null;
+};
+
 // CREATE Schedule
 export const createSchedule = async (req, res) => {
   try {
@@ -33,21 +49,21 @@ export const createSchedule = async (req, res) => {
       return res.status(404).json({ error: "Selected expo does not exist" });
     }
 
-    // Validate times
+    // Validate times against the selected Expo's schedule window.
     const start = new Date(startTime);
     const end = new Date(endTime);
 
     if (isNaN(start.getTime())) {
       return res.status(400).json({ error: "Invalid start time format" });
     }
-    if (start < new Date()) {
-      return res.status(400).json({ error: "Cannot schedule in the past" });
-    }
     if (isNaN(end.getTime())) {
       return res.status(400).json({ error: "Invalid end time format" });
     }
-    if (start >= end) {
-      return res.status(400).json({ error: "Start time must be before end time" });
+
+    const expoDate = new Date(expoExists.date);
+    const timingError = getScheduleTimeError(start, end, expoDate);
+    if (timingError) {
+      return res.status(400).json({ error: timingError });
     }
 
     const schedule = await Schedule.create({
@@ -152,18 +168,16 @@ export const updateSchedule = async (req, res) => {
 
     const updates = {};
 
-    // Validate expo if changed
-    const targetExpoId = req.body.expo || req.body.expoId;
-    if (targetExpoId !== undefined) {
-      if (!mongoose.Types.ObjectId.isValid(targetExpoId)) {
-        return res.status(400).json({ error: "Invalid expo ID" });
-      }
-      const expoExists = await Expo.findById(targetExpoId);
-      if (!expoExists) {
-        return res.status(404).json({ error: "Selected expo does not exist" });
-      }
-      updates.expo = expoExists._id;
+    const requestedExpoId = req.body.expo ?? req.body.expoId;
+    const targetExpoId = requestedExpoId ?? existingSchedule.expo;
+    if (!mongoose.Types.ObjectId.isValid(targetExpoId)) {
+      return res.status(400).json({ error: "Invalid expo ID" });
     }
+    const targetExpo = await Expo.findById(targetExpoId);
+    if (!targetExpo) {
+      return res.status(404).json({ error: "Selected expo does not exist" });
+    }
+    if (requestedExpoId !== undefined) updates.expo = targetExpo._id;
 
     if (req.body.title !== undefined) {
       if (!req.body.title || !req.body.title.trim()) {
@@ -208,8 +222,11 @@ export const updateSchedule = async (req, res) => {
       }
     }
 
-    if (start >= end) {
-      return res.status(400).json({ error: "Start time must be before end time" });
+    if (hasNewStart || hasNewEnd || requestedExpoId !== undefined) {
+      const timingError = getScheduleTimeError(start, end, new Date(targetExpo.date));
+      if (timingError) {
+        return res.status(400).json({ error: timingError });
+      }
     }
 
     if (hasNewStart) updates.startTime = start;
