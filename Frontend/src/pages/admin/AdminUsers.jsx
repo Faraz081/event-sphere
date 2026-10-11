@@ -36,18 +36,20 @@ import {
   Calendar,
   AlertCircle,
 } from "lucide-react";
-// Role & Status Badge Styling adhering to Tailwind v4 theme
+
 const roleBadgeStyles = {
   admin: "bg-gold/20 text-gold border border-gold/40",
   organizer: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
   attendee: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   exhibitor: "bg-emerald/20 text-emerald-300 border border-emerald/40",
 };
+
 const statusBadgeStyles = {
   active: "bg-emerald/20 text-emerald-300 border border-emerald/40",
   inactive: "bg-muted/20 text-muted border border-muted/30",
   suspended: "bg-red-500/20 text-red-300 border border-red-500/30",
 };
+
 const formatDate = (isoDate) => {
   if (!isoDate) return "—";
   return new Date(isoDate).toLocaleDateString("en-US", {
@@ -56,6 +58,7 @@ const formatDate = (isoDate) => {
     year: "numeric",
   });
 };
+
 const initialFormState = {
   name: "",
   email: "",
@@ -65,10 +68,11 @@ const initialFormState = {
   status: "active",
   password: "",
 };
+
 const AdminUsers = () => {
   const { user: authUser, currentUser } = useSelector((state) => state.auth);
   const currentLoggedInAdmin = authUser || currentUser;
-  // State
+
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -84,7 +88,7 @@ const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  // Modals state
+
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
@@ -92,7 +96,7 @@ const AdminUsers = () => {
   const [userToView, setUserToView] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Load stats
+
   const loadStats = useCallback(async () => {
     try {
       const res = await fetchUserStats();
@@ -104,7 +108,7 @@ const AdminUsers = () => {
       toast.error(err.response?.data?.error || "Failed to load user statistics.");
     }
   }, []);
-  // Load users with search and filters
+
   const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
@@ -123,30 +127,30 @@ const AdminUsers = () => {
       setLoading(false);
     }
   }, [searchTerm, selectedRole, selectedStatus]);
-  // Initial load
+
   useEffect(() => {
     loadStats();
   }, [loadStats]);
-  // Debounced search / filter reload
+
   useEffect(() => {
     const handler = setTimeout(() => {
       loadUsers();
     }, 250);
     return () => clearTimeout(handler);
   }, [loadUsers]);
-  // Reset filters
+
   const handleResetFilters = () => {
     setSearchTerm("");
     setSelectedRole("all");
     setSelectedStatus("all");
   };
-  // Open modal for Create
+
   const handleOpenCreateModal = () => {
     setEditingUserId(null);
     setFormData(initialFormState);
     setIsFormModalOpen(true);
   };
-  // Open modal for Edit
+
   const handleOpenEditModal = (user) => {
     setEditingUserId(user._id);
     setFormData({
@@ -156,43 +160,83 @@ const AdminUsers = () => {
       companyName: user.companyName || "",
       role: user.role || "attendee",
       status: user.status || "active",
-      password: "", // blank indicates keep existing
+      password: "",
     });
     setIsFormModalOpen(true);
   };
-  // Open View Modal
+
   const handleOpenViewModal = (user) => {
     setUserToView(user);
     setIsViewModalOpen(true);
   };
-  // Form input change
-  const handleInputChange = (e) => {
+
+    const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let next = value;
+
+    if (name === "name") {
+      next = value.replace(/[^A-Za-z\s]/g, "");
+    }
+    if (name === "phone") {
+      next = value.replace(/\D/g, "").slice(0, 11);
+    }
+    if (name === "email") {
+      next = value.replace(/\s/g, "").toLowerCase();
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: next }));
   };
-  // Submit Add / Edit Form
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.email.trim()) {
+
+    const name = formData.name.trim();
+    const phone = formData.phone.trim();
+    const email = formData.email.trim().toLowerCase();
+
+    if (!name || !email) {
       toast.error("Name and Email are required.");
       return;
     }
+
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      toast.error("Name can only contain letters and spaces.");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
+      toast.error("Enter a valid email (must start with a letter or number).");
+      return;
+    }
+
+    if (phone) {
+      if (!/^\d{11}$/.test(phone)) {
+        toast.error("Phone must be exactly 11 digits.");
+        return;
+      }
+      if (!phone.startsWith("03") && !phone.startsWith("021")) {
+        toast.error("Phone must start with 03 or 021.");
+        return;
+      }
+    }
+
     if (!editingUserId && !formData.password) {
       toast.error("Password is required when creating a new user.");
       return;
     }
+
     if (formData.password && formData.password.length < 6) {
       toast.error("Password must be at least 6 characters.");
       return;
     }
+
     setIsSubmitting(true);
     try {
       if (editingUserId) {
-        // Edit existing user
         const payload = {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim(),
+          name,
+          email,
+          phone,
           companyName: formData.companyName.trim(),
           role: formData.role,
           status: formData.status,
@@ -203,11 +247,10 @@ const AdminUsers = () => {
         const res = await updateUser(editingUserId, payload);
         toast.success(res.msg || "User updated successfully.");
       } else {
-        // Create new user
         const payload = {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim(),
+          name,
+          email,
+          phone,
           companyName: formData.companyName.trim(),
           role: formData.role,
           status: formData.status,
@@ -216,6 +259,7 @@ const AdminUsers = () => {
         const res = await createUser(payload);
         toast.success(res.msg || "User created successfully.");
       }
+
       setIsFormModalOpen(false);
       setEditingUserId(null);
       setFormData(initialFormState);
@@ -228,7 +272,7 @@ const AdminUsers = () => {
       setIsSubmitting(false);
     }
   };
-  // Confirm delete
+  
   const handleDeleteConfirm = async () => {
     if (!userToDelete) return;
     if (currentLoggedInAdmin?._id && userToDelete._id === currentLoggedInAdmin._id) {
@@ -248,10 +292,10 @@ const AdminUsers = () => {
       setUserToDelete(null);
     }
   };
+
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
-        {/* Header & Primary Action */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-1">
@@ -270,16 +314,15 @@ const AdminUsers = () => {
             <span>Add User</span>
           </button>
         </div>
-        {/* Statistics Cards: three equal-width cards */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
           <StatCard label="Total Users" value={stats.total} />
           <StatCard label="Total Attendees" value={stats.attendees} />
           <StatCard label="Total Exhibitors" value={stats.exhibitors} />
         </div>
-        {/* Search & Filter Controls */}
+
         <div className="bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-            {/* Search Input */}
             <div className="lg:col-span-6 relative">
               <Search
                 size={18}
@@ -302,7 +345,6 @@ const AdminUsers = () => {
                 </button>
               )}
             </div>
-            {/* Role Filter */}
             <div className="lg:col-span-3">
               <select
                 value={selectedRole}
@@ -315,7 +357,6 @@ const AdminUsers = () => {
                 <option value="exhibitor">Exhibitor</option>
               </select>
             </div>
-            {/* Status Filter */}
             <div className="lg:col-span-2">
               <select
                 value={selectedStatus}
@@ -328,7 +369,6 @@ const AdminUsers = () => {
                 <option value="suspended">Suspended</option>
               </select>
             </div>
-            {/* Reset Button */}
             <div className="lg:col-span-1 flex justify-end">
               <button
                 type="button"
@@ -340,7 +380,7 @@ const AdminUsers = () => {
               </button>
             </div>
           </div>
-          {/* Quick Active Filter Badges */}
+
           {(searchTerm || selectedRole !== "all" || selectedStatus !== "all") && (
             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50 text-xs text-muted">
               <span>Active Filters:</span>
@@ -378,7 +418,7 @@ const AdminUsers = () => {
             </div>
           )}
         </div>
-        {/* Users Table */}
+
         <ResponsiveTable minWidth="100%">
           <thead className="border-b border-border bg-surface/50">
             <tr>
@@ -435,16 +475,13 @@ const AdminUsers = () => {
                   key={item._id}
                   className="border-b border-border hover:bg-surface/60 transition-colors last:border-0"
                 >
-                  {/* Name & Avatar */}
                   <td data-label="User" className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-gold font-semibold text-sm">
                         {item.name ? item.name[0].toUpperCase() : "U"}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {item.name}
-                        </p>
+                        <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
                         {item.companyName && (
                           <p className="text-xs text-muted truncate flex items-center gap-1">
                             <Building2 size={12} />
@@ -454,21 +491,12 @@ const AdminUsers = () => {
                       </div>
                     </div>
                   </td>
-                  {/* Email */}
-                  <td
-                    data-label="Email"
-                    className="px-6 py-4 text-sm text-muted font-mono truncate"
-                  >
+                  <td data-label="Email" className="px-6 py-4 text-sm text-muted font-mono truncate">
                     {item.email}
                   </td>
-                  {/* Phone */}
-                  <td
-                    data-label="Phone"
-                    className="px-6 py-4 text-sm text-muted font-mono"
-                  >
+                  <td data-label="Phone" className="px-6 py-4 text-sm text-muted font-mono">
                     {item.phone || "—"}
                   </td>
-                  {/* Role */}
                   <td data-label="Role" className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
@@ -478,7 +506,6 @@ const AdminUsers = () => {
                       {item.role}
                     </span>
                   </td>
-                  {/* Status */}
                   <td data-label="Status" className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
@@ -488,14 +515,9 @@ const AdminUsers = () => {
                       {item.status || "active"}
                     </span>
                   </td>
-                  {/* Registered Date */}
-                  <td
-                    data-label="Registered"
-                    className="px-6 py-4 text-sm text-muted font-mono"
-                  >
+                  <td data-label="Registered" className="px-6 py-4 text-sm text-muted font-mono">
                     {formatDate(item.createdAt)}
                   </td>
-                  {/* Actions */}
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
@@ -529,7 +551,7 @@ const AdminUsers = () => {
             )}
           </tbody>
         </ResponsiveTable>
-        {/* View User Modal */}
+
         {isViewModalOpen && userToView && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">
             <div className="bg-surface border border-border rounded-2xl p-6 w-full max-w-lg shadow-2xl shadow-black/50">
@@ -641,7 +663,7 @@ const AdminUsers = () => {
             </div>
           </div>
         )}
-        {/* Add / Edit User Form Modal */}
+
         {isFormModalOpen && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-surface border border-border rounded-2xl p-6 w-full max-w-lg shadow-2xl shadow-black/50 my-8">
@@ -658,7 +680,6 @@ const AdminUsers = () => {
                 </button>
               </div>
               <form onSubmit={handleFormSubmit} className="space-y-4">
-                {/* Full Name */}
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Full Name *
@@ -669,11 +690,10 @@ const AdminUsers = () => {
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="e.g. Jane Doe"
+                    placeholder="Letters and spaces only"
                     className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
                   />
                 </div>
-                {/* Email Address */}
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Email Address *
@@ -688,7 +708,6 @@ const AdminUsers = () => {
                     className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
                   />
                 </div>
-                {/* Phone & Company */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
@@ -696,10 +715,11 @@ const AdminUsers = () => {
                     </label>
                     <input
                       name="phone"
-                      type="text"
+                      type="tel"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="03001234567"
+                      placeholder="11 digits e.g. 03001234567"
+                      maxLength={11}
                       className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
                     />
                   </div>
@@ -717,7 +737,6 @@ const AdminUsers = () => {
                     />
                   </div>
                 </div>
-                {/* Role & Status */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
@@ -750,7 +769,6 @@ const AdminUsers = () => {
                     </select>
                   </div>
                 </div>
-                {/* Password field */}
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     {editingUserId
@@ -788,15 +806,15 @@ const AdminUsers = () => {
                     {isSubmitting
                       ? "Saving..."
                       : editingUserId
-                      ? "Update User"
-                      : "Create User"}
+                        ? "Update User"
+                        : "Create User"}
                   </button>
                 </div>
               </form>
             </div>
           </div>
         )}
-        {/* Delete Confirmation Alert Dialog */}
+
         <AlertDialog
           open={!!userToDelete}
           onOpenChange={(open) => !open && setUserToDelete(null)}
@@ -806,11 +824,8 @@ const AdminUsers = () => {
               <AlertDialogTitle className="text-[#2f2a24]">Delete User Account?</AlertDialogTitle>
               <AlertDialogDescription className="text-[#5d574f]">
                 This will permanently remove{" "}
-                <span className="text-[#2f2a24] font-semibold">
-                  "{userToDelete?.name}"
-                </span>{" "}
-                ({userToDelete?.email}) and their permissions. This action cannot be
-                undone.
+                <span className="text-[#2f2a24] font-semibold">"{userToDelete?.name}"</span> (
+                {userToDelete?.email}) and their permissions. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="border-[#eadfc9] bg-[#fffdf9]">
@@ -830,4 +845,5 @@ const AdminUsers = () => {
     </DashboardLayout>
   );
 };
+
 export default AdminUsers;
