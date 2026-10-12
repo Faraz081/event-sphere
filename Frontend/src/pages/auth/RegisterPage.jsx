@@ -312,7 +312,7 @@ const RegisterPage = () => {
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
 
-                  <SelectContent className="border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24]">
+                  <SelectContent className="border-[#eadfc9] bg-[#fffdf9] text-[#69635b]">
                     <SelectItem value="exhibitor">Exhibitor</SelectItem>
                     <SelectItem value="attendee">Attendee</SelectItem>
                   </SelectContent>

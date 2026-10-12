@@ -287,59 +287,6 @@ const OngoingEvents = () => {
             </div>
           </>
         )}
-
-        {/* ---------- EXHIBITOR EVENTS (approved) ---------- */}
-        {!loading && filteredEvents.length > 0 && (
-          <div className="mt-14">
-            <h3 className="mb-5 font-serif text-xl font-bold text-[#2f2a24]">
-              Exhibitor Events
-            </h3>
-            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredEvents.map((ev) => (
-                <div
-                  key={ev._id}
-                  className="flex flex-col rounded-[1.5rem] border border-[#eadfc9] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="rounded-full bg-[#fff4d9] px-3 py-1 text-xs font-semibold text-[#9a721c]">
-                      {ev.eventType || 'Event'}
-                    </span>
-                    <BookmarkButton event={ev} className="border border-[#eadfc9]" />
-                  </div>
-
-                  <h3 className="mt-4 font-serif text-xl font-bold text-[#2f2a24]">
-                    {ev.title}
-                  </h3>
-
-                  <p className="mt-2 flex-1 line-clamp-3 text-sm leading-6 text-[#5d574f]">
-                    {ev.description}
-                  </p>
-
-                  <div className="mt-4 space-y-2 text-sm text-[#4d473f]">
-                    {ev.location && (
-                      <p className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-[#c49424]" />
-                        {ev.location}
-                      </p>
-                    )}
-                    <p className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-[#c49424]" />
-                      {ev.companyName || ev.exhibitorName || 'Exhibitor'}
-                    </p>
-                  </div>
-
-                  <Link
-                    to={`/book-now?event=${ev._id}`}
-                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-                  >
-                    Book Now
-                    <ArrowUpRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
 
       <section className="mx-auto mt-16 max-w-5xl">
