@@ -9,11 +9,9 @@ const TZ = "Asia/Karachi";
 
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
 
-// "YYYY-MM-DD" Pakistan ke hisaab se
 const dayKey = (d) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(d));
 
-// time sirf tab jab expo ki date mein asli time ho (00:00 nahi)
 const timeLabel = (d) => {
   const hm = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(d));
   if (hm === "00:00") return "";

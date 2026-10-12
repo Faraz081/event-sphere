@@ -26,7 +26,6 @@ const timeAgo = (iso) => {
   return `${Math.floor(mins / (60 * 24))}d ago`;
 };
 
-// har notification ki pehchan: id + last update (message wali notification wahi id rakh ke update hoti hai)
 const keyOf = (n) => `${n._id}:${n.updatedAt}`;
 
 const NotificationBell = () => {

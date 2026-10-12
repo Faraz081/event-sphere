@@ -26,19 +26,26 @@ const initialFormData = {
   name: "",
   companyName: "",
   email: "",
-  role: "",
+  role: "attendee",
   password: "",
   confirmPassword: "",
   phone: "",
 };
 
 const inputClass =
-  "w-full rounded-xl border border-[#eadfca] bg-[#fffdf9] py-3 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20";
+  "w-full rounded-xl border border-[#eadfca] bg-[#fffdf9] py-3 pl-12 pr-4 text-black placeholder:text-gray-400 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20";
 
 const labelClass = "mb-2 block text-sm font-semibold text-[#2f2a24]";
 
 const countLetters = (str) => (str.match(/\p{L}/gu) || []).length;
 const lettersOnly = /^[\p{L}\s]+$/u;
+
+// Email: local part letter se start ho, number/dot/symbol se nahi
+const emailRegex =
+  /^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+
+// Phone: 03XXXXXXXXX, +923XXXXXXXXX, 021XXXXXXXX (Karachi landline), +9221XXXXXXXX
+const phoneRegex = /^(\+92|0)(3\d{9}|21\d{8})$/;
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState(initialFormData);
@@ -49,12 +56,15 @@ const RegisterPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Phone: sirf digits, max 11
+    // Phone: digits, aur sirf shuru mein ek "+" allowed
+    // "+" se start ho to max 13 chars (+923001234567), warna max 11
     if (name === "phone") {
-      setFormData((prev) => ({
-        ...prev,
-        phone: value.replace(/\D/g, "").slice(0, 11),
-      }));
+      let cleaned = value.replace(/[^\d+]/g, "");
+      const hasPlus = cleaned.startsWith("+");
+      cleaned = (hasPlus ? "+" : "") + cleaned.replace(/\+/g, "");
+      cleaned = cleaned.slice(0, hasPlus ? 13 : 11);
+
+      setFormData((prev) => ({ ...prev, phone: cleaned }));
       return;
     }
 
@@ -82,8 +92,11 @@ const RegisterPage = () => {
     if (name.length > 50 || !lettersOnly.test(name) || countLetters(name) < 3) {
       return "Name must contain only letters and spaces (at least 3 letters)";
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return "Please enter a valid email";
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email (must start with a letter)";
+    }
+    if (email.includes("..")) {
+      return "Email cannot contain consecutive dots";
     }
     if (!role) {
       return "Please select your role";
@@ -110,8 +123,8 @@ const RegisterPage = () => {
     if (password !== confirmPassword) {
       return "Passwords do not match";
     }
-    if (!/^\d{11}$/.test(phone)) {
-      return "Phone number must contain exactly 11 digits (numbers only)";
+    if (!phoneRegex.test(phone)) {
+      return "Phone number must start with +92, 03 or 021 (e.g. 03001234567, +923001234567, 02112345678)";
     }
     return null;
   };
@@ -287,9 +300,7 @@ const RegisterPage = () => {
 
               {/* Role */}
               <div>
-                <label className={labelClass}>
-                  Role
-                </label>
+                <label className={labelClass}>Role</label>
 
                 <Select
                   value={formData.role}
@@ -297,7 +308,7 @@ const RegisterPage = () => {
                     setFormData((prev) => ({ ...prev, role: value }))
                   }
                 >
-                  <SelectTrigger className="h-[50px] w-full rounded-xl border-[#eadfca] bg-[#fffdf9] text-sm text-black">
+                  <SelectTrigger className="h-[50px] data-[size=default]:h-[50px] w-full rounded-xl border-[#eadfca] bg-[#fffdf9] px-4 text-base text-black data-[placeholder]:text-gray-400 shadow-none focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20 focus-visible:border-[#c49424] focus-visible:ring-2 focus-visible:ring-[#c49424]/20">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
 
@@ -363,9 +374,9 @@ const RegisterPage = () => {
                     id="phone"
                     name="phone"
                     type="tel"
-                    inputMode="numeric"
-                    maxLength={11}
-                    placeholder="03001234567"
+                    inputMode="tel"
+                    maxLength={13}
+                    placeholder="03001234567 or +923001234567"
                     value={formData.phone}
                     onChange={handleChange}
                     className={inputClass}

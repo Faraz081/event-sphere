@@ -100,7 +100,6 @@ const register = async (req, res) => {
       });
     }
 
-    // Name: only letters and spaces, at least 3 letters, max 50
     if (
       name.length > 50 ||
       !/^[\p{L}\s]+$/u.test(name) ||
@@ -111,11 +110,15 @@ const register = async (req, res) => {
       });
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({
-        msg: "Please enter a valid email",
-      });
-    }
+   if (!/^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(email)) {
+  return res.status(400).json({
+    msg: "Please enter a valid email",
+  });
+}
+
+if (email.includes("..")) {
+  return res.status(400).json({ msg: "Email cannot contain consecutive dots" });
+}
 
     if (password.length < 6) {
       return res.status(400).json({
@@ -141,12 +144,11 @@ const register = async (req, res) => {
       });
     }
 
-    if (!/^\d{11}$/.test(phone)) {
-      return res.status(400).json({
-        msg: "Phone number must contain exactly 11 digits (numbers only)",
-      });
-    }
-
+   if (!/^(\+92|0)(3\d{9}|21\d{8})$/.test(phone)) {
+  return res.status(400).json({
+    msg: "Phone number must start with +92, 03 or 021",
+  });
+}
     if (role === "admin") {
       return res.status(403).json({
         error: "Admin accounts cannot be created through public registration.",
