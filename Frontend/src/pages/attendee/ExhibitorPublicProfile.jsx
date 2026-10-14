@@ -5,7 +5,8 @@ import { toast } from 'sonner'
 import { ArrowLeft, ArrowUpRight, MessageSquare } from 'lucide-react'
 import gallery1 from '../../assets/gallery-1.jpg'
 import { fetchPublicExhibitorProfile } from '../../api/publicService'
-import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
+import BookmarkButton from '@/components/shared/BookmarkButton'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
 
 const ExhibitorPublicProfile = () => {
   const { id } = useParams()

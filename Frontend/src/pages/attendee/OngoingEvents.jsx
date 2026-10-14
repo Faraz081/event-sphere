@@ -9,8 +9,9 @@ import {
 } from 'lucide-react'
 
 import api from '@/api/api'
-import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
+import BookmarkButton from '@/components/shared/BookmarkButton'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
 
 const OngoingEvents = () => {
   const [events, setEvents] = useState([])

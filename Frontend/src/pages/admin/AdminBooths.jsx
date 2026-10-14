@@ -130,14 +130,6 @@ const AdminBooths = () => {
     }
   };
 
-  const loadApprovedExhibitors = async () => {
-    try {
-      const data = await fetchExhibitors({ exhibitorStatus: "approved" });
-      setApprovedExhibitors(data.exhibitors || []);
-    } catch (err) {
-      console.error("Failed to load exhibitors:", err);
-    }
-  };
 
   useEffect(() => {
     loadExpos();
@@ -241,6 +233,8 @@ const AdminBooths = () => {
       const data = await fetchApplications({ status: "approved", expo: booth.expo?._id });
       setApprovedExhibitors(data.applications ?? []);
     } catch (err) {
+      console.log(err);
+      
       toast.error("Failed to load approved exhibitors");
     }
   };

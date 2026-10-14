@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { LogOut, Sparkles } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import api from '../../api/api'
 import { logout } from '@/store/slices/authSlice'
 import { fetchUnreadCounts } from '@/store/slices/messageSlice'
 import { clearNotifications } from '@/store/slices/notificationSlice'
 import { clearBookmarks } from '@/store/slices/bookmarkSlice'
 import NotificationBell from '@/components/shared/NotificationBell'
+import LogoImg from '@/assets/Logo.jpg' // <-- Yahan apni local image import ki hai
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -15,7 +16,6 @@ const Navbar = () => {
   const { user } = useSelector((state) => state.auth)
   const { unread } = useSelector((state) => state.message)
   const isAttendee = user?.role === 'attendee'
-  const isStaff = ['admin', 'exhibitor'].includes(user?.role)
   const isGuest = !user
 
   const navigate = useNavigate()
@@ -60,17 +60,16 @@ const Navbar = () => {
   const logo = settings?.logo || ''
 
   const renderLogo = () => {
-    if (logo) {
-      return (
-        <img
-          src={logo}
-          alt={websiteName}
-          className="mr-2 h-8 w-8 rounded-full object-cover"
-        />
-      )
-    }
+    // Agar backend se logo aaye to wo dikhao, warna local 'logo.jpg' dikhao
+    const imageSource = logo || LogoImg
 
-    return <Sparkles className="mr-2 h-6 w-6 text-[#c49424]" />
+    return (
+      <img
+        src={imageSource}
+        alt={websiteName}
+        className="mr-2 h-35 w-35   rounded-full object-cover [0_1px_3px_rgba(0,0,0,0.3)]"
+      />
+    )
   }
 
   const scrollToSection = (id) => {
@@ -121,53 +120,53 @@ const Navbar = () => {
         {/* Logo */}
         <Link
           to="/"
-          className="inline-flex items-center font-serif text-2xl font-medium tracking-wider text-white transition-opacity hover:opacity-80"
+          className="inline-flex items-center font-serif text-2xl font-medium tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] transition-opacity hover:opacity-80"
         >
           {renderLogo()}
           {websiteName}
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-10 md:flex">
+        <div className="hidden items-center gap-7 lg:flex whitespace-nowrap">
 
           <button
             onClick={goHome}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             Home
           </button>
 
           <button
             onClick={() => scrollToSection('about')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             About
           </button>
 
           <button
             onClick={() => scrollToSection('services')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             Services
           </button>
 
           <button
             onClick={() => scrollToSection('gallery')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             Gallery
           </button>
 
           <Link
             to="/contact"
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             Contact
           </Link>
 
           <button
             onClick={() => navigate('/book-now')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             Book Now
           </button>
@@ -175,7 +174,7 @@ const Navbar = () => {
           {isAttendee && (
             <Link
               to="/attendee/messages"
-              className="relative text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="relative text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
             >
               Messages
               {unreadCount > 0 && (
@@ -189,7 +188,7 @@ const Navbar = () => {
           {isAttendee && (
             <Link
               to="/profile"
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
             >
               Profile
             </Link>
@@ -199,7 +198,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="inline-flex items-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
             >
               <LogOut size={16} />
               Logout
@@ -210,14 +209,14 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
               >
                 Login
               </Link>
 
               <Link
                 to="/register"
-                className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
               >
                 Sign Up
               </Link>
@@ -232,7 +231,7 @@ const Navbar = () => {
           {user && !isAttendee && (
             <Link
               to="/dashboard"
-              className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 md:block"
+              className="hidden rounded-full border border-[#c49424]/40 bg-white/20 px-5 py-2 text-xs font-medium uppercase tracking-widest text-[#9a721c] backdrop-blur-md transition-all duration-300 hover:border-[#c49424] hover:bg-[#c49424] hover:text-white hover:shadow-lg hover:shadow-[#c49424]/20 lg:block whitespace-nowrap"
             >
               Dashboard
             </Link>
@@ -242,7 +241,7 @@ const Navbar = () => {
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-xl text-neutral-900 focus:outline-none md:hidden"
+            className="text-xl text-neutral-900 focus:outline-none lg:hidden"
             aria-label="Toggle menu"
           >
             {menuOpen ? '×' : '☰'}
@@ -252,12 +251,12 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       {menuOpen && (
-        <div className="absolute inset-x-4 top-20 rounded-3xl border border-white/80 bg-white/30 p-6 shadow-[0_16px_48px_0_rgba(196,148,36,0.2)] backdrop-blur-3xl md:hidden">
+        <div className="absolute inset-x-4 top-20 rounded-3xl border border-white/80 bg-white/30 p-6 shadow-[0_16px_48px_0_rgba(196,148,36,0.2)] backdrop-blur-3xl lg:hidden">
           <div className="flex flex-col gap-4 text-center">
 
             <button
               onClick={goHome}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
             >
               Home
             </button>
@@ -267,7 +266,7 @@ const Navbar = () => {
                 scrollToSection('about')
                 setMenuOpen(false)
               }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
             >
               About
             </button>
@@ -277,7 +276,7 @@ const Navbar = () => {
                 scrollToSection('services')
                 setMenuOpen(false)
               }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
             >
               Services
             </button>
@@ -287,7 +286,7 @@ const Navbar = () => {
                 scrollToSection('gallery')
                 setMenuOpen(false)
               }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
             >
               Gallery
             </button>
@@ -295,7 +294,7 @@ const Navbar = () => {
             <Link
               to="/contact"
               onClick={() => setMenuOpen(false)}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
             >
               Contact
             </Link>
@@ -305,7 +304,7 @@ const Navbar = () => {
                 navigate('/book-now')
                 setMenuOpen(false)
               }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
             >
               Book Now
             </button>
@@ -316,7 +315,7 @@ const Navbar = () => {
                 <Link
                   to="/attendee/messages"
                   onClick={() => setMenuOpen(false)}
-                  className="relative text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                  className="relative text-sm text-[#c49424] transition-opacity hover:opacity-75"
                 >
                   Messages
                   {unreadCount > 0 && (
@@ -331,7 +330,7 @@ const Navbar = () => {
                 <Link
                   to="/profile"
                   onClick={() => setMenuOpen(false)}
-                  className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                  className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
                 >
                   Profile
                 </Link>
@@ -341,7 +340,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                  className="inline-flex items-center justify-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-75"
                 >
                   <LogOut size={16} />
                   Logout
@@ -353,7 +352,7 @@ const Navbar = () => {
                   <Link
                     to="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                    className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
                   >
                     Login
                   </Link>
@@ -361,7 +360,7 @@ const Navbar = () => {
                   <Link
                     to="/register"
                     onClick={() => setMenuOpen(false)}
-                    className="text-sm text-[#c49424] transition-opacity hover:opacity-70"
+                    className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
                   >
                     Sign Up
                   </Link>

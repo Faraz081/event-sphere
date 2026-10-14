@@ -73,6 +73,7 @@ export default function BookNow() {
         setStalls(response.data?.stalls ?? [])
         setDateBooked(!!response.data?.dateBooked)
       } catch (error) {
+        console.log(error)
         setStalls([])
       } finally {
         setStallsLoading(false)

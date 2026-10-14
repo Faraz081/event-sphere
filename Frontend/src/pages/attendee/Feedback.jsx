@@ -22,9 +22,6 @@ const TYPES = [
   { value: 'other', label: 'Other', icon: MessageSquareText },
 ]
 
-const inputClass =
-  'w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20'
-
 const readOnlyClass =
   'w-full rounded-xl border border-[#e4d9c4] bg-[#f8f5ef] py-3.5 pl-12 pr-4 text-black outline-none'
 

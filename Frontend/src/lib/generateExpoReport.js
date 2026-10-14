@@ -210,6 +210,6 @@ export const generateExpoReport = (payload) => {
     });
   }
 
-  const safeTitle = (expo.title || "expo").replace(/[^\w\-]+/g, "_").slice(0, 40);
+ const safeTitle = (expo.title || "expo").replace(/[^\w-]+/g, "_").slice(0, 40);
   doc.save(`${safeTitle}-report.pdf`);
 };

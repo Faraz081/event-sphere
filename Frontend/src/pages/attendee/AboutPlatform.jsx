@@ -278,11 +278,6 @@ export default function AboutPlatform() {
             </div>
           ))}
         </div>
-
-        <p className="mt-5 text-center text-xs text-[#8a8175]">
-          Sample partner designs — replace with actual company logos and
-          confirmed partners when available.
-        </p>
       </section>
 
       {/* Memorable Events Section */}

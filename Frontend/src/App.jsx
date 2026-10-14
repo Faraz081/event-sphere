@@ -4,6 +4,7 @@ import WebsiteLayout from "./layouts/WebsiteLayout";
 import Home from "./pages/attendee/Home";
 import EventGallery from "./pages/attendee/EventGallery";
 import Service from "./pages/attendee/Service";
+import Service1 from "./pages/attendee/Service1";
 import AboutPlatform from "./pages/attendee/AboutPlatform";
 import ContactUs from "./pages/attendee/ContactUs";
 import OngoingEvents from "./pages/attendee/OngoingEvents";
@@ -70,6 +71,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="event-gallery" element={<EventGallery />} />
           <Route path="service" element={<Service />} />
+          <Route path="service1" element={<Service1 />} />
           <Route path="about-platform" element={<AboutPlatform />} />
           <Route path="book-now" element={<BookNow />} />
           <Route path="feedback" element={<Feedback />} />

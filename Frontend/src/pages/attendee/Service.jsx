@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
 import servicesImage from '../../assets/service-gallery/service.jpg'
 import gallery1 from '../../assets/gallery-1.jpg'
 import { API_BASE_URL } from '../../api/api'
 import { fetchPublicExpos } from '@/api/publicService'
-import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
+import BookmarkButton from '@/components/shared/BookmarkButton'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
 
 import { ArrowUpRight, CalendarDays, Clock3, MapPin, Sparkles, Search, X } from 'lucide-react'
 
@@ -31,7 +31,6 @@ const getBadge = (iso) => {
   if (d > today) return { label: 'Upcoming', text: 'text-[#9a721c]', dot: 'bg-[#c49424]' }
   return { label: 'Ended', text: 'text-gray-500', dot: 'bg-gray-400' }
 }
-
 const Service = () => {
   const [expos, setExpos] = useState([])
   const [exposLoading, setExposLoading] = useState(true)
