@@ -1,3 +1,4 @@
+import { fetchBookmarks } from "@/store/slices/bookmarkSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
