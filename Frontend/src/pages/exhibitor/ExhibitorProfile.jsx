@@ -23,8 +23,6 @@ const ExhibitorProfile = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [form, setForm] = useState({ email: "", phone: "", address: "" });
   const [logo, setLogo] = useState(null);
 

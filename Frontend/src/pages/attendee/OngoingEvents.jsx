@@ -10,13 +10,13 @@ import {
   Radio,
   Search,
   X,
-  Building2,
 } from 'lucide-react'
 
 import { fetchPublicExpos, fetchPublicEvents } from '@/api/publicService'
 import { API_BASE_URL } from '@/api/api'
-import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
+import BookmarkButton from '@/components/shared/BookmarkButton'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
 
 const BASE = API_BASE_URL
 

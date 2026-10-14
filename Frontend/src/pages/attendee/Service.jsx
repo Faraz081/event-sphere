@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import servicesImage from '../../assets/service-gallery/service.jpg'
 import gallery1 from '../../assets/gallery-1.jpg'
 import api from '../../api/api'
-import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
+import BookmarkButton from '@/components/shared/BookmarkButton'
 
 import { ArrowUpRight } from 'lucide-react'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
 
 const Service = () => {
   const [events, setEvents] = useState([])

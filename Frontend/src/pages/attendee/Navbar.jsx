@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { LogOut, Sparkles } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import api from '../../api/api'
 import { logout } from '@/store/slices/authSlice'
 import { fetchUnreadCounts } from '@/store/slices/messageSlice'
 import { clearNotifications } from '@/store/slices/notificationSlice'
 import { clearBookmarks } from '@/store/slices/bookmarkSlice'
 import NotificationBell from '@/components/shared/NotificationBell'
+import LogoImg from '@/assets/Logo.jpg' // <-- Yahan apni local image import ki hai
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -15,7 +16,6 @@ const Navbar = () => {
   const { user } = useSelector((state) => state.auth)
   const { unread } = useSelector((state) => state.message)
   const isAttendee = user?.role === 'attendee'
-  const isStaff = ['admin', 'exhibitor'].includes(user?.role)
   const isGuest = !user
 
   const navigate = useNavigate()
@@ -60,17 +60,16 @@ const Navbar = () => {
   const logo = settings?.logo || ''
 
   const renderLogo = () => {
-    if (logo) {
-      return (
-        <img
-          src={logo}
-          alt={websiteName}
-          className="mr-2 h-8 w-8 rounded-full object-cover drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
-        />
-      )
-    }
+    // Agar backend se logo aaye to wo dikhao, warna local 'logo.jpg' dikhao
+    const imageSource = logo || LogoImg
 
-    return <Sparkles className="mr-2 h-6 w-6 text-[#c49424] drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]" />
+    return (
+      <img
+        src={imageSource}
+        alt={websiteName}
+        className="mr-2 h-35 w-35   rounded-full object-cover [0_1px_3px_rgba(0,0,0,0.3)]"
+      />
+    )
   }
 
   const scrollToSection = (id) => {

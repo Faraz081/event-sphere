@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import React, { useEffect, useState, } from 'react'
+import { Link, } from 'react-router-dom'
 import { ArrowUpRight, ArrowRight, ArrowLeft, ChevronDown } from 'lucide-react'
 
 import heroImage from '../../assets/hero.jpg'
@@ -9,12 +9,11 @@ import gallery3 from '../../assets/gallery-3.jpg'
 import weddingImage from '../../assets/wedding.jpg'
 import corporateImage from '../../assets/corporate.jpg'
 import birthdayImage from '../../assets/birthday.jpg'
-import Footer from './Footer'
 import api from '../../api/api'
-import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
+import BookmarkButton from '@/components/shared/BookmarkButton'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
 
 const Home = () => {
-  const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
   const [websiteSettings, setWebsiteSettings] = useState(null)
   const [events, setEvents] = useState([])
@@ -36,7 +35,7 @@ useEffect(() => {
   fetchEvents()
 }, [])
 
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''
+
 
   useEffect(() => {
     const fetchWebsiteSettings = async () => {

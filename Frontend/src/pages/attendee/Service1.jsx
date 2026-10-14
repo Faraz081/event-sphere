@@ -9,16 +9,7 @@ import mehndi from '../../assets/service-gallery/mehndi.jpg'
 import engaged from '../../assets/service-gallery/engaged.jpg'
 import graduationevent from '../../assets/service-gallery/graduation-event.jpg'
 
-import {
-  ArrowUpRight,
-  CalendarDays,
-  Users,
-  Clock3,
-  UserRoundCheck,
-  BarChart3,
-  Radio,
-  MessageCircle,
-} from 'lucide-react'
+import { ArrowUpRight,} from 'lucide-react'
 
 const Service1 = () => {
   const services = [

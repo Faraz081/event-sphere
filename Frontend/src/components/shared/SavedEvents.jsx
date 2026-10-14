@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Bookmark, MapPin, CalendarDays, ArrowUpRight, X } from "lucide-react";
 import { toggleBookmark, toggleExpoBookmark } from "@/store/slices/bookmarkSlice";
-import { useLoadBookmarks } from "@/components/shared/BookmarkButton";
+import { useLoadBookmarks } from "@/hooks/useLoadBookmarks";
 import { API_BASE_URL } from "@/api/api";
 
 const imgUrl = (url) => (!url ? "" : url.startsWith("http") ? url : `${API_BASE_URL}${url}`);
