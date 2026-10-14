@@ -45,10 +45,15 @@ const ExhibitorRegistration = () => {
           <p className="text-sm text-muted">Loading...</p>
         ) : (
           <>
-            <button onClick={() => navigate("/exhibitor/registration/new")} disabled={availableExpos.length === 0}
-              className="mb-6 rounded-xl bg-[#d4a62a] px-6 py-3 text-sm font-bold text-black disabled:opacity-60">
-              {availableExpos.length === 0 ? "No expos available to apply" : "Apply for an expo"}
-            </button>
+           <div className="mb-6 flex w-full justify-end">
+  <button
+    onClick={() => navigate("/exhibitor/registration/new")}
+    disabled={availableExpos.length === 0}
+    className="w-fit rounded-xl bg-[#d4a62a] px-6 py-3 text-sm font-bold text-black disabled:opacity-60"
+  >
+    {availableExpos.length === 0 ? "No expos available to apply" : "Apply for an expo"}
+  </button>
+</div>
 
             <div className="space-y-4">
               {applications.length === 0 && (
