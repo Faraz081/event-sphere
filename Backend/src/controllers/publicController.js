@@ -15,14 +15,16 @@ const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const findPublishedExpo = async (id) => {
   if (!mongoose.isValidObjectId(id)) return null;
 
-  return Expo.findOne({ _id: id, status: "published" }).select(PUBLIC_EXPO_FIELDS);
+  await Expo.updateLifecycleStatuses();
+  return Expo.findOne({ _id: id, status: { $in: ["published", "ongoing"] } }).select(PUBLIC_EXPO_FIELDS);
 };
 
 // GET /api/public/expos
 
 export const getPublicExpos = async (req, res) => {
   try {
-    const expos = await Expo.find({ status: "published" }).select(PUBLIC_EXPO_FIELDS).sort({ date: 1 });
+    await Expo.updateLifecycleStatuses();
+    const expos = await Expo.find({ status: { $in: ["published", "ongoing"] } }).select(PUBLIC_EXPO_FIELDS).sort({ date: 1 });
 
     const applications = await ExhibitorApplication.find({
       expo: { $in: expos.map((expo) => expo._id) },

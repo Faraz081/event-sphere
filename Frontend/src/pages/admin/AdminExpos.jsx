@@ -42,6 +42,7 @@ import ResponsiveTable from "@/components/shared/ResponsiveTable";
 const statusStyles = {
   draft: "bg-muted/20 text-muted border border-muted/30",
   published: "bg-gold/20 text-gold border border-gold/40",
+  ongoing: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   completed: "bg-emerald/20 text-emerald-300 border border-emerald/40",
   cancelled: "bg-red-500/20 text-red-300 border border-red-500/30",
 };
@@ -383,6 +384,7 @@ const AdminExpos = () => {
               <option value="all">All Statuses</option>
               <option value="draft">Draft</option>
               <option value="published">Published</option>
+              <option value="ongoing">Ongoing</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
@@ -471,6 +473,7 @@ const AdminExpos = () => {
           >
             <option value="draft" className="bg-background text-foreground">Draft</option>
             <option value="published" className="bg-background text-foreground">Published</option>
+            <option value="ongoing" className="bg-background text-foreground">Ongoing</option>
             <option value="completed" className="bg-background text-foreground">Completed</option>
             <option value="cancelled" className="bg-background text-foreground">Cancelled</option>
           </select>
@@ -635,6 +638,9 @@ const AdminExpos = () => {
                         </option>
                         <option value="published" className="bg-background text-foreground">
                           Published
+                        </option>
+                        <option value="ongoing" className="bg-background text-foreground">
+                          Ongoing
                         </option>
                         <option value="completed" className="bg-background text-foreground">
                           Completed
@@ -822,6 +828,7 @@ const AdminExpos = () => {
                     >
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
+                      <option value="ongoing">Ongoing</option>
                       <option value="completed">Completed</option>
                       <option value="cancelled">Cancelled</option>
                     </select>

@@ -5,7 +5,7 @@ import Booth from "../models/Booth.js";
 import ExhibitorApplication from "../models/ExhibitorApplication.js";
 import Schedule from "../models/Schedule.js";
 
-const VALID_STATUSES = ["draft", "published", "completed", "cancelled"];
+const VALID_STATUSES = ["draft", "published", "ongoing", "completed", "cancelled"];
 
 // CREATE Expo
 export const createExpo = async (req, res) => {
@@ -82,6 +82,8 @@ export const createExpo = async (req, res) => {
 // GET all expos with optional filtering and pagination.
 export const getAllExpos = async (req, res) => {
   try {
+    await Expo.updateLifecycleStatuses();
+
     const { status, search, page, limit } = req.query;
     const filter = {};
 

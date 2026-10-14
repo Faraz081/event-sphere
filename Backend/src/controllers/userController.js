@@ -174,7 +174,7 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, password, role, status, phone, companyName } = req.body;
+    const { name, email, role, status, phone, companyName } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid user ID format" });
@@ -219,13 +219,6 @@ export const updateUser = async (req, res) => {
         return res.status(400).json({ error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` });
       }
       user.status = status;
-    }
-
-    if (password && password.trim() !== "") {
-      if (password.length < 6) {
-        return res.status(400).json({ error: "Password must be at least 6 characters long." });
-      }
-      user.password = await bcrypt.hash(password, 10);
     }
 
     await user.save();
