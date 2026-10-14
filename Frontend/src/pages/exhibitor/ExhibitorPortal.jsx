@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare, Store, ClipboardList, User, CalendarDays, CalendarCheck } from "lucide-react";
@@ -10,7 +10,7 @@ import { fetchMyBooth } from "@/store/slices/boothSlice";
 import { fetchMyEvents, fetchBookingRequests } from "@/store/slices/eventSlice";
 import { fetchContacts, fetchUnreadCounts } from "@/store/slices/messageSlice";
 
-const POLL_MS = 30000; 
+const POLL_MS = 30000;
 const groupOf = (status) =>
   status === "confirmed" || status === "approved"
     ? "approved" : status === "cancelled" || status === "rejected"
@@ -28,7 +28,6 @@ const ExhibitorPortal = () => {
   const { myBooths = [] } = useSelector((state) => state.booth);
   const { events = [], requests = [] } = useSelector((state) => state.event);
   const { contacts, unread } = useSelector((state) => state.message);
-  const [lastUpdated, setLastUpdated] = useState(null);
 
   const refresh = useCallback(async () => {
     await Promise.all([
@@ -38,7 +37,6 @@ const ExhibitorPortal = () => {
       dispatch(fetchContacts()),
       dispatch(fetchUnreadCounts()),
     ]);
-    setLastUpdated(new Date());
   }, [dispatch]);
 
   useEffect(() => {
