@@ -8,6 +8,7 @@ import FloorPlan from "@/components/shared/FloorPlan";
 import {fetchPublicBooths} from "@/api/publicService";
 import {fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails} from "@/store/slices/boothSlice";
 import {Link} from "react-router-dom";
+import {getExpoEndedLabel} from "@/utils/expoStatus";
 
 const ExhibitorBooth = () => {
   const dispatch = useDispatch();
@@ -109,73 +110,80 @@ const ExhibitorBooth = () => {
     }
   };
 
-  const mineIds = myBooths.map((b) => b._id);
-  const alreadyInExpo = myBooths.some((b) => (b.expo?._id || b.expo) === selectedExpo);
+  const activeBooths = myBooths.filter((b) => !getExpoEndedLabel(b.expo));
+  const pastBooths = myBooths.filter((b) => getExpoEndedLabel(b.expo));
+  const mineIds = activeBooths.map((b) => b._id);
+  const alreadyInExpo = activeBooths.some((b) => (b.expo?._id || b.expo) === selectedExpo);
   const picked = booths.find((b) => b._id === pickedId) || planBooths.find((b) => b._id === pickedId);
+
+  const renderBoothCard = (myBooth, endedLabel = null) => {
+    const isPending = myBooth.status === "pending";
+    const readOnly = Boolean(endedLabel);
+    return (
+      <div key={myBooth._id} className={`relative rounded-3xl border ${readOnly || isPending ? "border-border" : "border-gold/40"} ${readOnly ? "opacity-75" : ""} bg-surface p-6 md:p-8 overflow-hidden mb-6`}>
+        <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-background rounded-full border border-border" />
+        <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-background rounded-full border border-border" />
+        <p className={`text-xs uppercase tracking-widest font-medium mb-2 ${readOnly || isPending ? "text-muted" : "text-gold"}`}>
+          {readOnly ? endedLabel : isPending ? "Pending Admin Approval" : "Reserved Booth"}
+        </p>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <p className="mb-1 text-sm font-medium text-gold">{myBooth.expo?.title}</p>
+            <p className="font-display text-3xl md:text-4xl font-bold text-foreground">Booth {myBooth.boothNumber}</p>
+            <p className="mt-1 text-sm text-muted">{myBooth.location}</p>
+          </div>
+          <div className="flex gap-6 font-mono">
+            <div>
+              <p className="text-xs text-muted mb-1">Size</p>
+              <p className="text-lg text-foreground">{myBooth.size}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted mb-1">Rate</p>
+              <p className="text-lg text-emerald">PKR {myBooth.price}</p>
+            </div>
+          </div>
+        </div>
+
+        {!readOnly && isPending && (
+          <p className="mt-4 text-sm text-muted">Your booth request is awaiting admin confirmation. You'll be able to manage details once approved.</p>
+        )}
+
+        {!isPending && (myBooth.products?.length > 0 || myBooth.staff?.length > 0) && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {myBooth.products?.map((p, i) => (
+              <span key={i} className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted">{p}</span>
+            ))}
+            {myBooth.staff?.map((s, i) => (
+              <span key={i} className="rounded-full border border-gold/30 bg-background px-3 py-1 text-xs text-gold">{s.name} · {s.role}</span>
+            ))}
+          </div>
+        )}
+
+        {!readOnly && (
+          <div className="mt-4 flex gap-3">
+            {!isPending && (
+              <button onClick={() => openModal(myBooth)} className="rounded-lg border border-gold/40 px-6 py-2 text-sm font-medium text-gold hover:bg-gold/10">Manage Details</button>
+            )}
+            <button onClick={() => handleRelease(myBooth._id)} className="rounded-lg border border-border px-6 py-2 text-sm font-medium text-muted hover:text-foreground hover:border-gold/40">
+              {isPending ? "Cancel Request" : "Release Booth"}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <DashboardLayout role="exhibitor">
       <DashboardSectionPage title="My Booth" description="Reserve a booth space and manage your presence on the expo floor.">
-        {myBooths.map((myBooth) => {
-          const isPending = myBooth.status === "pending";
-          return (
-          <div key={myBooth._id} className={`relative rounded-3xl border ${isPending ? "border-border" : "border-gold/40"} bg-surface p-6 md:p-8 overflow-hidden mb-6`}>
-            <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-background rounded-full border border-border" />
-            <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-background rounded-full border border-border" />
-            <p className={`text-xs uppercase tracking-widest font-medium mb-2 ${isPending ? "text-muted" : "text-gold"}`}>
-              {isPending ? "Pending Admin Approval" : "Reserved Booth"}
-            </p>
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-              <div>
-                <p className="mb-1 text-sm font-medium text-gold">{myBooth.expo?.title}</p>
-                <p className="font-display text-3xl md:text-4xl font-bold text-foreground">Booth {myBooth.boothNumber}</p>
-                <p className="mt-1 text-sm text-muted">{myBooth.location}</p>
-              </div>
-              <div className="flex gap-6 font-mono">
-                <div>
-                  <p className="text-xs text-muted mb-1">Size</p>
-                  <p className="text-lg text-foreground">{myBooth.size}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted mb-1">Rate</p>
-                  <p className="text-lg text-emerald">PKR {myBooth.price}</p>
-                </div>
-              </div>
-            </div>
+        {activeBooths.map((b) => renderBoothCard(b))}
 
-            {isPending && (
-              <p className="mt-4 text-sm text-muted">Your booth request is awaiting admin confirmation. You'll be able to manage details once approved.</p>
-            )}
-
-            {!isPending && (myBooth.products?.length > 0 || myBooth.staff?.length > 0) && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {myBooth.products?.map((p, i) => (
-                  <span key={i} className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted">{p}</span>
-                ))}
-                {myBooth.staff?.map((s, i) => (
-                  <span key={i} className="rounded-full border border-gold/30 bg-background px-3 py-1 text-xs text-gold">{s.name} · {s.role}</span>
-                ))}
-              </div>
-            )}
-
-            <div className="mt-4 flex gap-3">
-              {!isPending && (
-                <button onClick={() => openModal(myBooth)} className="rounded-lg border border-gold/40 px-6 py-2 text-sm font-medium text-gold hover:bg-gold/10">Manage Details</button>
-              )}
-              <button onClick={() => handleRelease(myBooth._id)} className="rounded-lg border border-border px-6 py-2 text-sm font-medium text-muted hover:text-foreground hover:border-gold/40">
-                {isPending ? "Cancel Request" : "Release Booth"}
-              </button>
-            </div>
-          </div>
-          );
-        })}
-
-        <div className="rounded-3xl border border-border bg-surface p-6 space-y-4">
+        <div className="rounded-3xl border border-border bg-surface p-6 space-y-4 mb-6">
           <h2 className="text-lg font-semibold text-foreground">
-            {myBooths.length ? "Browse other expos" : "Select an expo to reserve a booth"}
+            {activeBooths.length ? "Browse other expos" : "Select an expo to reserve a booth"}
           </h2>
 
-          {!loading && expos.length === 0 && (
+          {!loading && expos.filter((expo) => !getExpoEndedLabel(expo)).length === 0 && (
             <p className="text-sm text-muted">
               You can reserve a booth only after your expo application is approved.{" "}
               <Link to="/exhibitor/registration" className="text-gold hover:underline">Go to Registration</Link>
@@ -184,7 +192,7 @@ const ExhibitorBooth = () => {
 
           <select value={selectedExpo} onChange={(e) => setSelectedExpo(e.target.value)} className="w-full rounded-lg border border-border bg-background p-2 text-foreground">
             <option value="">Select an expo</option>
-            {expos.map((expo) => (
+            {expos.filter((expo) => !getExpoEndedLabel(expo)).map((expo) => (
               <option key={expo._id} value={expo._id}>{expo.title}</option>
             ))}
           </select>
@@ -218,6 +226,13 @@ const ExhibitorBooth = () => {
             </div>
           )}
         </div>
+
+        {pastBooths.length > 0 && (
+          <div className="mb-6">
+            <h2 className="mb-3 text-lg font-semibold text-foreground">Past Booths</h2>
+            {pastBooths.map((b) => renderBoothCard(b, getExpoEndedLabel(b.expo)))}
+          </div>
+        )}
 
         {modalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">

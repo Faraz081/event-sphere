@@ -49,7 +49,7 @@ const ExhibitorRegistration = () => {
   <button
     onClick={() => navigate("/exhibitor/registration/new")}
     disabled={availableExpos.length === 0}
-    className="w-fit rounded-xl bg-[#d4a62a] px-6 py-3 text-sm font-bold text-black disabled:opacity-60"
+    className="w-fit rounded-xl bg-[#d4a62a] px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
   >
     {availableExpos.length === 0 ? "No expos available to apply" : "Apply for an expo"}
   </button>

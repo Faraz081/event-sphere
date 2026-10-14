@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Booth from "../models/Booth.js";
+import Expo from "../models/Expo.js";
 import ExhibitorApplication from "../models/ExhibitorApplication.js";
+import { isExpoEnded, isExpoOpenForExhibitors } from "../utils/expoStatus.js";
 
 const ACTIVE = ["pending", "reserved", "occupied"];
 
@@ -14,6 +16,13 @@ export const getAvailableBooths = async (req, res) => {
     if (!(await isApprovedFor(req.user._id, expo))) {
       return res.status(403).json({ error: "Your application for this expo is not approved yet" });
     }
+
+    // Closed expo (draft / completed / cancelled / date passed): nothing to reserve
+    const expoDoc = await Expo.findById(expo).select("status date");
+    if (!isExpoOpenForExhibitors(expoDoc)) {
+      return res.status(200).json({ booths: [] });
+    }
+
     const booths = await Booth.find({ expo, status: "available" }).sort({ boothNumber: 1 });
     return res.status(200).json({ booths });
   } catch (error) {
@@ -21,10 +30,11 @@ export const getAvailableBooths = async (req, res) => {
   }
 };
 
-// GET /mine
+// GET /mine  (status + date populate zaroori hain, frontend Active/Past split inhi se karta hai)
 export const getMyBooth = async (req, res) => {
   try {
-    const booths = await Booth.find({ exhibitor: req.user._id, status: { $in: ACTIVE } }).populate("expo", "title date location");
+    const booths = await Booth.find({ exhibitor: req.user._id, status: { $in: ACTIVE } })
+      .populate("expo", "title date location status");
     return res.status(200).json({ booths, booth: booths[0] ?? null });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -41,6 +51,11 @@ export const reserveBooth = async (req, res) => {
     if (!booth) return res.status(404).json({ error: "Booth not found" });
     if (booth.status !== "available") return res.status(409).json({ error: "Booth is not available" });
 
+    const expoDoc = await Expo.findById(booth.expo).select("status date");
+    if (!isExpoOpenForExhibitors(expoDoc)) {
+      return res.status(400).json({ error: "This expo is no longer open for booth reservations" });
+    }
+
     if (!(await isApprovedFor(req.user._id, booth.expo))) {
       return res.status(403).json({ error: "Your application for this expo is not approved yet" });
     }
@@ -52,7 +67,7 @@ export const reserveBooth = async (req, res) => {
       { _id: id, status: "available" },
       { status: "pending", exhibitor: req.user._id },
       { new: true }
-    ).populate("expo", "title date location");
+    ).populate("expo", "title date location status");
     if (!updated) return res.status(409).json({ error: "Booth was just taken by someone else" });
 
     return res.status(200).json({ msg: "Booth requested", booth: updated });
@@ -68,8 +83,12 @@ export const releaseBooth = async (req, res) => {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id)) return res.status(400).json({ error: "Invalid booth ID" });
 
-    const booth = await Booth.findOne({ _id: id, exhibitor: req.user._id });
+    const booth = await Booth.findOne({ _id: id, exhibitor: req.user._id }).populate("expo", "title date location status");
     if (!booth) return res.status(404).json({ error: "Booth not found" });
+
+    if (isExpoEnded(booth.expo)) {
+      return res.status(400).json({ error: "This expo has ended. Booth is read-only" });
+    }
 
     booth.exhibitor = null;
     booth.status = "available";
@@ -87,8 +106,9 @@ export const updateBoothDetails = async (req, res) => {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id)) return res.status(400).json({ error: "Invalid booth ID" });
 
-    const booth = await Booth.findOne({ _id: id, exhibitor: req.user._id });
+    const booth = await Booth.findOne({ _id: id, exhibitor: req.user._id }).populate("expo", "title date location status");
     if (!booth) return res.status(404).json({ error: "Booth not found" });
+    if (isExpoEnded(booth.expo)) return res.status(400).json({ error: "This expo has ended. Booth is read-only" });
     if (booth.status === "pending") return res.status(403).json({ error: "Booth is awaiting admin approval" });
 
     const { products, staff } = req.body;
@@ -102,7 +122,6 @@ export const updateBoothDetails = async (req, res) => {
         .slice(0, 20);
     }
     await booth.save();
-    await booth.populate("expo", "title date location");
 
     return res.status(200).json({ msg: "Booth details updated", booth });
   } catch (error) {

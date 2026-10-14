@@ -8,11 +8,6 @@ import { toast } from "sonner";
 
 const inputClass = "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-sm text-foreground outline-none focus:border-[#d4a62a]";
 const labelClass = "mb-1 block text-sm text-muted";
-const statusStyles = {
-  pending: "bg-yellow-500",
-  approved: "bg-green-500",
-  rejected: "bg-red-500",
-};
 
 const ExhibitorProfile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -99,9 +94,6 @@ const ExhibitorProfile = () => {
 
       <div>
         <p className="text-lg font-semibold text-foreground">{application.companyName}</p>
-        <span className={`mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-bold capitalize text-black ${statusStyles[application.status]}`}>
-          {application.status}
-        </span>
       </div>
     </div>
   );
