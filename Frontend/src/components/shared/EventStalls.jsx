@@ -44,13 +44,9 @@ const EventStalls = ({ event }) => {
     setBusy(true);
 
     try {
-      const result = editingId
-        ? await dispatch(updateStall({ eventId: event._id, stallId: editingId, data: form }))
-        : await dispatch(addStall({ eventId: event._id, data: form }));
+      const result = editingId? await dispatch(updateStall({ eventId: event._id, stallId: editingId, data: form })) : await dispatch(addStall({ eventId: event._id, data: form }));
 
-      const ok = editingId
-        ? updateStall.fulfilled.match(result)
-        : addStall.fulfilled.match(result);
+      const ok = editingId ? updateStall.fulfilled.match(result) : addStall.fulfilled.match(result);
 
       if (ok) {
         toast.success(result.payload?.msg || "Saved");

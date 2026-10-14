@@ -1,12 +1,5 @@
 import express from "express";
-import {
-  getExhibitors,
-  approveExhibitor,
-  rejectExhibitor,
-  getApplications,
-  approveApplication,
-  rejectApplication,
-} from "../controllers/exhibitorController.js";
+import {getExhibitors,approveExhibitor,rejectExhibitor,getApplications,approveApplication,rejectApplication} from "../controllers/exhibitorController.js";
 import { adminAuth } from "../middleware/authMiddleware.js";
 
 const exhibitorRoute = express.Router();

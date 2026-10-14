@@ -464,36 +464,36 @@ const AdminAttendees = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-muted">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
-                    <p className="text-sm">Loading attendees directory...</p>
-                  </div>
-                </td>
-              </tr>
-            ) : attendees.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-muted">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <AlertCircle size={32} className="text-muted/60" />
-                    <p className="font-medium text-foreground">
-                      {expoFilter ? "No attendees found" : "Select an expo"}
-                    </p>
-                    <p className="text-xs text-muted">
-                      {expoFilter
-                        ? searchTerm ||
-                          selectedRegStatus !== "all" ||
-                          selectedBookingStatus !== "all" ||
-                          selectedPassStatus !== "all"
-                          ? "Try adjusting your search criteria or clearing filters."
-                          : "No attendee registrations for this expo yet."
-                        : "Select an expo to view its attendees"}
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
+  <tr>
+    <td colSpan={7} className="!block px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+        <p className="text-sm">Loading attendees directory...</p>
+      </div>
+    </td>
+  </tr>
+) : attendees.length === 0 ? (
+  <tr>
+    <td colSpan={7} className="!block px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <AlertCircle size={32} className="text-muted/60" />
+        <p className="font-medium text-foreground">
+          {expoFilter ? "No attendees found" : "Select an expo"}
+        </p>
+        <p className="text-xs text-muted">
+          {expoFilter
+            ? searchTerm ||
+              selectedRegStatus !== "all" ||
+              selectedBookingStatus !== "all" ||
+              selectedPassStatus !== "all"
+              ? "Try adjusting your search criteria or clearing filters."
+              : "No attendee registrations for this expo yet."
+            : "Select an expo to view its attendees"}
+        </p>
+      </div>
+    </td>
+  </tr>
+) : (
               attendees.map((item) => (
                 <tr
                   key={item._id}

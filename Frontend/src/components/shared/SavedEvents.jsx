@@ -61,10 +61,7 @@ const SavedEvents = () => {
                   </p>
                 )}
 
-                <Link
-                  to={`/book-now?event=${ev._id}`}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#c49424] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#b48620]"
-                >
+                <Link to={`/book-now?event=${ev._id}`} className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#c49424] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#b48620]">
                   Book Now <ArrowUpRight size={13} />
                 </Link>
               </div>
@@ -114,16 +111,10 @@ const SavedEvents = () => {
                 )}
 
                 <div className="mt-2 flex gap-2">
-                  <Link
-                    to={`/expos/${expo._id}`}
-                    className="rounded-full border border-[#c49424] px-4 py-2 text-xs font-semibold text-[#8d681b] transition hover:bg-[#fffdf9]"
-                  >
+                  <Link to={`/expos/${expo._id}`} className="rounded-full border border-[#c49424] px-4 py-2 text-xs font-semibold text-[#8d681b] transition hover:bg-[#fffdf9]">
                     Details
                   </Link>
-                  <Link
-                    to={`/book-ticket?expo=${expo._id}`}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#c49424] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#b48620]"
-                  >
+                  <Link to={`/book-ticket?expo=${expo._id}`} className="inline-flex items-center gap-1.5 rounded-full bg-[#c49424] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#b48620]">
                     Book Ticket <ArrowUpRight size={13} />
                   </Link>
                 </div>

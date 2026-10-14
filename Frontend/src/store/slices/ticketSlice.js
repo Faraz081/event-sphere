@@ -1,10 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {
-  fetchExpoTickets,
-  approveExpoTicket,
-  rejectExpoTicket,
-  cancelExpoTicket,
-} from "@/api/adminTicketService";
+import {fetchExpoTickets, approveExpoTicket, rejectExpoTicket, cancelExpoTicket} from "@/api/adminTicketService";
 
 export const loadTickets = createAsyncThunk(
   "tickets/load",

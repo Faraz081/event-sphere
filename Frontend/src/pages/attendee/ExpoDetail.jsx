@@ -129,9 +129,9 @@ const ExpoDetail = () => {
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-36 pb-24 lg:px-10">
       <div className="mx-auto max-w-6xl">
 
-        <Link to="/ongoing-events" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-[#b48620] hover:text-[#8f6b18]">
+        <Link to="/service" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-[#b48620] hover:text-[#8f6b18]">
           <ArrowLeft className="h-4 w-4" />
-          All Events
+          All Expos
         </Link>
 
         {/* ================= HEADER ================= */}

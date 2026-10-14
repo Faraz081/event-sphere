@@ -3,30 +3,66 @@ import { Link } from 'react-router-dom'
 
 import servicesImage from '../../assets/service-gallery/service.jpg'
 import gallery1 from '../../assets/gallery-1.jpg'
-import api from '../../api/api'
+import { API_BASE_URL } from '../../api/api'
+import { fetchPublicExpos } from '@/api/publicService'
 import BookmarkButton, { useLoadBookmarks } from '@/components/shared/BookmarkButton'
 
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, CalendarDays, Clock3, MapPin, Sparkles, Search, X } from 'lucide-react'
+
+const getImage = (banner) => {
+  if (!banner) return gallery1
+  return banner.startsWith('http') ? banner : `${API_BASE_URL}${banner}`
+}
+
+const formatDate = (iso) =>
+  new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+
+const formatTime = (iso) => {
+  const d = new Date(iso)
+  if (d.getHours() === 0 && d.getMinutes() === 0) return null
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}
+
+const getBadge = (iso) => {
+  const d = new Date(iso)
+  const today = new Date()
+  const sameDay = d.toDateString() === today.toDateString()
+  if (sameDay) return { label: 'Live Today', text: 'text-green-600', dot: 'bg-green-500' }
+  if (d > today) return { label: 'Upcoming', text: 'text-[#9a721c]', dot: 'bg-[#c49424]' }
+  return { label: 'Ended', text: 'text-gray-500', dot: 'bg-gray-400' }
+}
 
 const Service = () => {
-  const [events, setEvents] = useState([])
-  const [eventsLoading, setEventsLoading] = useState(true)
+  const [expos, setExpos] = useState([])
+  const [exposLoading, setExposLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useLoadBookmarks()
 
+  const normalizedSearch = search.trim().toLocaleLowerCase()
+
+  const filteredExpos = normalizedSearch
+    ? expos.filter((expo) =>
+        (expo.exhibitors || []).some((companyName) =>
+          companyName.toLocaleLowerCase().includes(normalizedSearch)
+        ) ||
+        (expo.theme || '').toLocaleLowerCase().includes(normalizedSearch) ||
+        (expo.title || '').toLocaleLowerCase().includes(normalizedSearch)
+      )
+    : expos
+
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchExpos = async () => {
       try {
-        const response = await api.get('/api/public/events')
-        const list = response.data?.events ?? response.data
-        setEvents(Array.isArray(list) ? list : [])
+        const data = await fetchPublicExpos()
+        setExpos(data.expos ?? [])
       } catch (error) {
-        console.error('Failed to load events:', error)
+        console.error('Failed to load expos:', error)
       } finally {
-        setEventsLoading(false)
+        setExposLoading(false)
       }
     }
-    fetchEvents()
+    fetchExpos()
   }, [])
 
   return (
@@ -95,71 +131,155 @@ const Service = () => {
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl text-[#5d574f]">
-              From intimate celebrations to professional events, explore what
-              our exhibitors are offering and book your spot.
+              From trade shows to large-scale expos, explore what is
+              happening and book your spot.
             </p>
           </div>
 
-          {eventsLoading ? (
-            <p className="text-center text-[#5d574f]">Loading events...</p>
-          ) : events.length === 0 ? (
+          <form
+            className="mx-auto mb-10 flex w-full max-w-xl items-center gap-3 rounded-full border border-[#eadfc9] bg-white p-2 shadow-sm"
+            onSubmit={(e) => e.preventDefault()}
+            role="search"
+          >
+            <Search className="ml-3 h-5 w-5 shrink-0 text-[#c49424]" aria-hidden="true" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by title, category, exhibitor or company"
+              aria-label="Search expos"
+              className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                aria-label="Clear search"
+                className="rounded-full p-2 text-[#8a8379] transition hover:bg-[#fff4d9] hover:text-[#9a721c]"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
+            >
+              <Search className="h-4 w-4" aria-hidden="true" />
+              Search
+            </button>
+          </form>
+
+          {exposLoading ? (
+            <p className="text-center text-[#5d574f]">Loading expos...</p>
+          ) : filteredExpos.length === 0 ? (
             <p className="text-center text-[#5d574f]">
-              No events available right now. Please check back soon.
+              {normalizedSearch
+                ? 'No expos match your search.'
+                : 'No expos available right now. Please check back soon.'}
             </p>
           ) : (
-            <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-              {events.map((ev) => (
-                <div
-                  key={ev._id}
-                  className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={ev.images?.[0] || gallery1}
-                      alt={ev.title ?? ev.name}
-                      className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
-                    />
-                    <BookmarkButton event={ev} className="absolute right-4 top-4" />
-                  </div>
+            <div className="grid gap-7 md:grid-cols-2">
+              {filteredExpos.map((expo) => {
+                const badge = getBadge(expo.date)
+                const time = formatTime(expo.date)
 
-                  <div className="p-7 text-center">
-                    <h3 className="font-serif text-2xl font-bold text-[#c49424]">
-                      {ev.title ?? ev.name}
-                    </h3>
+                return (
+                  <div
+                    key={expo._id}
+                    className="group overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    <div className="relative h-56 overflow-hidden">
+                      <img
+                        src={getImage(expo.banner)}
+                        alt={expo.title}
+                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/20" />
+                      <BookmarkButton expo={expo} className="absolute left-5 top-5" />
+                      <span
+                        className={`absolute right-5 top-5 flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold shadow-md ${badge.text}`}
+                      >
+                        <span className={`h-2 w-2 rounded-full ${badge.dot}`} />
+                        {badge.label}
+                      </span>
+                    </div>
 
-                    {(ev.companyName || ev.exhibitorName) && (
-                      <p className="mt-1 text-sm font-medium text-[#8d681b]">
-                        by{' '}
-                        {ev.exhibitor?._id ? (
-                          <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
-                            {ev.companyName ?? ev.exhibitorName}
-                          </Link>
-                        ) : (
-                          ev.companyName ?? ev.exhibitorName
+                    <div className="p-7">
+                      <span className="rounded-full bg-[#fff4d9] px-3 py-1 text-xs font-semibold text-[#9a721c]">
+                        {expo.theme || 'Expo'}
+                      </span>
+
+                      <h3 className="mt-4 font-serif text-2xl font-bold text-[#2f2a24]">
+                        {expo.title}
+                      </h3>
+
+                      <p className="mt-3 line-clamp-3 leading-7 text-[#5d574f]">
+                        {expo.description}
+                      </p>
+
+                      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                        <div className="flex items-center gap-3">
+                          <CalendarDays className="h-5 w-5 text-[#c49424]" />
+                          <div>
+                            <p className="text-xs text-[#8a8379]">Date</p>
+                            <p className="text-sm font-medium text-[#4d473f]">
+                              {formatDate(expo.date)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {time && (
+                          <div className="flex items-center gap-3">
+                            <Clock3 className="h-5 w-5 text-[#c49424]" />
+                            <div>
+                              <p className="text-xs text-[#8a8379]">Time</p>
+                              <p className="text-sm font-medium text-[#4d473f]">{time}</p>
+                            </div>
+                          </div>
                         )}
-                      </p>
-                    )}
 
-                    {ev.location && (
-                      <p className="mt-2 text-sm text-[#8a8379]">
-                        📍 {ev.location}
-                      </p>
-                    )}
+                        <div className="flex items-center gap-3">
+                          <MapPin className="h-5 w-5 text-[#c49424]" />
+                          <div>
+                            <p className="text-xs text-[#8a8379]">Location</p>
+                            <p className="text-sm font-medium text-[#4d473f]">
+                              {expo.location}
+                            </p>
+                          </div>
+                        </div>
 
-                    <p className="mt-3 leading-6 text-[#5d574f]">
-                      {ev.description}
-                    </p>
+                        {expo.theme && (
+                          <div className="flex items-center gap-3">
+                            <Sparkles className="h-5 w-5 text-[#c49424]" />
+                            <div>
+                              <p className="text-xs text-[#8a8379]">Theme</p>
+                              <p className="text-sm font-medium text-[#4d473f]">
+                                {expo.theme}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
 
-                    <Link
-                      to={`/book-now?event=${ev._id}`}
-                      className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-                    >
-                      Book Now
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Link>
+                      <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                        <Link
+                          to={`/expos/${expo._id}`}
+                          className="inline-flex flex-1 items-center justify-center rounded-full border border-[#c49424] px-6 py-3.5 text-sm font-semibold text-[#8d681b] transition hover:bg-[#fffdf9]"
+                        >
+                          View Details
+                        </Link>
+                        <Link
+                          to={`/book-ticket?expo=${expo._id}`}
+                          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#c49424] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg"
+                        >
+                          Book Ticket
+                          <ArrowUpRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
 

@@ -10,13 +10,11 @@ export const RequireAuth = () => {
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
-
-  return <Outlet />;
+return <Outlet />;
 };
 
 export const RequireRole = ({ allowedRoles }) => {
   const { user } = useSelector((state) => state.auth);
-
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -24,7 +22,6 @@ export const RequireRole = ({ allowedRoles }) => {
   if (!allowedRoles.includes(user.role)) {
     return <Navigate to={getRoleHomePath(user.role)} replace />;
   }
-
   return <Outlet />;
 };
 
@@ -33,13 +30,9 @@ export const PublicOnlyRoute = () => {
 
   if (user) {
     return (
-      <Navigate
-        to={user.role === "attendee" ? "/" : getRoleHomePath(user.role)}
-        replace
-      />
+      <Navigate to={user.role === "attendee" ? "/" : getRoleHomePath(user.role)} replace/>
     );
   }
-
   return <Outlet />;
 };
 
@@ -49,6 +42,5 @@ export const DashboardRedirect = () => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-
   return <Navigate to={user.role === "attendee" ? "/" : getRoleHomePath(user.role)} replace />;
 };

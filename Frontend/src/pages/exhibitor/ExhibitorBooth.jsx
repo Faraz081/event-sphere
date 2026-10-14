@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
-import { X, Plus, Trash2 } from "lucide-react";
+import React, {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {toast} from "sonner";
+import {X, Plus, Trash2} from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import FloorPlan from "@/components/shared/FloorPlan";
-import { fetchPublicBooths } from "@/api/publicService";
-import { fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails } from "@/store/slices/boothSlice";
-import { Link } from "react-router-dom";
+import {fetchPublicBooths} from "@/api/publicService";
+import {fetchExpos, fetchAvailableBooths, reserveBooth, fetchMyBooth, releaseBooth, updateBoothDetails} from "@/store/slices/boothSlice";
+import {Link} from "react-router-dom";
 
 const ExhibitorBooth = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,6 @@ const ExhibitorBooth = () => {
     dispatch(fetchMyBooth());
   }, [dispatch]);
 
-  // floor plan: saare booths (available/pending/reserved) dikhane ke liye
   const loadPlan = async (expoId) => {
     try {
       const data = await fetchPublicBooths(expoId);
@@ -110,12 +109,9 @@ const ExhibitorBooth = () => {
     }
   };
 
-  // derived values (handlers ke baad, return se pehle)
   const mineIds = myBooths.map((b) => b._id);
   const alreadyInExpo = myBooths.some((b) => (b.expo?._id || b.expo) === selectedExpo);
-  const picked =
-    booths.find((b) => b._id === pickedId) ||
-    planBooths.find((b) => b._id === pickedId);
+  const picked = booths.find((b) => b._id === pickedId) || planBooths.find((b) => b._id === pickedId);
 
   return (
     <DashboardLayout role="exhibitor">
@@ -197,13 +193,7 @@ const ExhibitorBooth = () => {
 
           {selectedExpo && (
             <div className="space-y-5 text-foreground">
-              <FloorPlan
-                booths={planBooths}
-                mineIds={mineIds}
-                selectedId={pickedId}
-                onSelect={alreadyInExpo ? undefined : (b) => setPickedId(b._id)}
-                variant="dashboard"
-              />
+              <FloorPlan booths={planBooths} mineIds={mineIds} selectedId={pickedId} onSelect={alreadyInExpo ? undefined : (b) => setPickedId(b._id)} variant="dashboard"/>
 
               {alreadyInExpo && (
                 <p className="text-sm text-muted">
@@ -220,10 +210,7 @@ const ExhibitorBooth = () => {
                       {picked.price != null && <span className="font-mono"> · PKR {picked.price}</span>}
                     </p>
                   </div>
-                  <button
-                    onClick={() => handleReserve(picked._id)}
-                    className="rounded-lg bg-gold px-6 py-2 text-sm font-medium text-background"
-                  >
+                  <button onClick={() => handleReserve(picked._id)} className="rounded-lg bg-gold px-6 py-2 text-sm font-medium text-background">
                     Request this booth
                   </button>
                 </div>

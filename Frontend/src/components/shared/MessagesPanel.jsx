@@ -45,9 +45,7 @@ const MessagesPanel = ({ attendee = false }) => {
     return () => clearInterval(interval);
   }, [selectedContact, dispatch]);
 
-  const messages = selectedContact
-    ? conversation.filter((m) => [m.sender, m.receiver].includes(selectedContact._id))
-    : [];
+  const messages = selectedContact ? conversation.filter((m) => [m.sender, m.receiver].includes(selectedContact._id)) : [];
 
  useEffect(() => {
   if (messagesContainerRef.current) {
@@ -86,11 +84,8 @@ const MessagesPanel = ({ attendee = false }) => {
           const count = unreadCountFor(contact._id);
 
           return (
-            <button
-              key={contact._id}
-              onClick={() => setSelectedContact(contact)}
-              className={`w-full text-left p-4 border-b flex items-center justify-between ${attendee ? `border-[#eadfc9] hover:bg-[#fff4d9] ${selectedContact?._id === contact._id ? "bg-[#fff4d9]" : ""}` : `border-border hover:bg-background ${selectedContact?._id === contact._id ? "bg-background" : ""}`}`}
-            >
+            <button key={contact._id} onClick={() => setSelectedContact(contact)}
+              className={`w-full text-left p-4 border-b flex items-center justify-between ${attendee ? `border-[#eadfc9] hover:bg-[#fff4d9] ${selectedContact?._id === contact._id ? "bg-[#fff4d9]" : ""}` : `border-border hover:bg-background ${selectedContact?._id === contact._id ? "bg-background" : ""}`}`}>
               <div>
                 <p className={`text-sm font-medium ${attendee ? "text-[#2f2a24]" : "text-foreground"}`}>{contact.name}</p>
                 <p className={`text-xs ${attendee ? "text-[#8a8379]" : "text-muted"}`}>
@@ -99,10 +94,9 @@ const MessagesPanel = ({ attendee = false }) => {
               </div>
 
               {count > 0 && (
-                <span className="ml-2 flex-shrink-0 rounded-full bg-[#c49424] text-white text-xs font-semibold w-5 h-5 flex items-center justify-center">{count}</span>
+                <span className="ml-2 shrink-0 rounded-full bg-[#c49424] text-white text-xs font-semibold w-5 h-5 flex items-center justify-center">{count}</span>
               )}
-            </button>
-          );
+            </button> );
         })}
       </div>
 
@@ -130,30 +124,17 @@ const MessagesPanel = ({ attendee = false }) => {
               )}
 
               {messages.map((msg) => (
-                <div
-                  key={msg._id}
-                  className={`max-w-[70%] rounded-2xl p-3 text-sm ${msg.sender === user._id
-                    ? attendee
-                      ? "ml-auto bg-[#c49424] text-white"
-                      : "ml-auto bg-gold text-background"
-                    : attendee
-                      ? "bg-white border border-[#eadfc9] text-[#2f2a24]"
-                      : "bg-background text-foreground"
-                  }`}
-                >
+                <div key={msg._id} className={`max-w-[70%] rounded-2xl p-3 text-sm ${msg.sender === user._id
+                    ? attendee ? "ml-auto bg-[#c49424] text-white" : "ml-auto bg-gold text-background" : attendee
+                      ? "bg-white border border-[#eadfc9] text-[#2f2a24]" : "bg-background text-foreground"}`}>
                   {msg.content}
                 </div>
               ))}
             </div>
 
             <div className={`p-4 border-t flex gap-2 ${attendee ? "border-[#eadfc9] bg-white" : "border-border"}`}>
-              <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Type a message..."
-                className={`flex-1 rounded-lg border p-2 text-sm outline-none ${attendee ? "border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24] placeholder:text-[#a39b90] focus:border-[#c49424] focus:ring-1 focus:ring-[#c49424]" : "border-border bg-background text-foreground"}`}
-              />
+              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSend()} placeholder="Type a message..."
+                className={`flex-1 rounded-lg border p-2 text-sm outline-none ${attendee ? "border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24] placeholder:text-[#a39b90] focus:border-[#c49424] focus:ring-1 focus:ring-[#c49424]" : "border-border bg-background text-foreground"}`}/>
 
               <button onClick={handleSend} className={`rounded-lg px-4 py-2 text-sm font-medium ${attendee ? "bg-[#c49424] text-white hover:bg-[#b48620]" : "bg-gold text-background"}`}>
                 Send

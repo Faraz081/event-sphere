@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Bookmark } from "lucide-react";
 import { fetchBookmarks, toggleBookmark, toggleExpoBookmark } from "@/store/slices/bookmarkSlice";
 
-// page par ek baar call karo, attendee ke bookmarks load ho jayenge
 export const useLoadBookmarks = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -17,7 +16,6 @@ export const useLoadBookmarks = () => {
   }, [dispatch, user, userId, loadedFor]);
 };
 
-// <BookmarkButton event={ev} /> ya <BookmarkButton expo={expo} />
 const BookmarkButton = ({ event, expo, className = "" }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -53,12 +51,7 @@ const BookmarkButton = ({ event, expo, className = "" }) => {
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      aria-label={saved ? "Remove bookmark" : "Add bookmark"}
-      className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur transition hover:scale-110 ${className}`}
-    >
+    <button type="button" onClick={handleClick} aria-label={saved ? "Remove bookmark" : "Add bookmark"} className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur transition hover:scale-110 ${className}`}>
       <Bookmark size={18} className="text-[#c49424]" fill={saved ? "currentColor" : "none"} />
     </button>
   );

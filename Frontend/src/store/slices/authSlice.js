@@ -1,7 +1,6 @@
 import api from "@/api/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// LOGIN
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData, { rejectWithValue }) => {
@@ -16,7 +15,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// REGISTER
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
@@ -42,9 +40,7 @@ const initialState = {
 
 const authSlice = createSlice({
   name: "auth",
-
   initialState,
-
   reducers: {
     logout: (state) => {
       state.user = null;
@@ -103,5 +99,4 @@ const authSlice = createSlice({
 });
 
 export const { logout } = authSlice.actions;
-
 export default authSlice.reducer;

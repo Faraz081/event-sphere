@@ -419,6 +419,88 @@ const AdminUsers = () => {
           )}
         </div>
 
+       <div className="space-y-3 md:hidden">
+  {loading ? (
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface py-10 text-muted">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+      <p className="text-sm">Loading users directory...</p>
+    </div>
+  ) : users.length === 0 ? (
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface py-10 text-center">
+      <AlertCircle size={32} className="text-muted/60" />
+      <p className="font-medium text-foreground">No users found</p>
+      <p className="px-4 text-xs text-muted">
+        {searchTerm || selectedRole !== "all" || selectedStatus !== "all"
+          ? "Try adjusting your search criteria or clearing filters."
+          : "No users exist in the platform yet."}
+      </p>
+    </div>
+  ) : (
+    users.map((item) => (
+      <div key={item._id} className="rounded-xl border border-border bg-surface p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-sm font-semibold text-gold">
+              {item.name ? item.name[0].toUpperCase() : "U"}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
+              {item.companyName && (
+                <p className="flex items-center gap-1 truncate text-xs text-muted">
+                  <Building2 size={12} className="shrink-0" />
+                  {item.companyName}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${roleBadgeStyles[item.role] || "bg-muted/20 text-muted"}`}>
+              {item.role}
+            </span>
+            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusBadgeStyles[item.status] || "bg-muted/20 text-muted"}`}>
+              {item.status || "active"}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 space-y-1 font-mono text-xs text-muted">
+          <p className="flex items-center gap-2 truncate">
+            <Mail size={12} className="shrink-0 text-gold" />
+            {item.email}
+          </p>
+          <div className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Phone size={12} className="shrink-0 text-gold" />
+              {item.phone || "—"}
+            </span>
+            <span className="flex items-center gap-2">
+              <Calendar size={12} className="shrink-0 text-gold" />
+              {formatDate(item.createdAt)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
+          <button type="button" onClick={() => handleOpenViewModal(item)} title="View User Details"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-foreground">
+            <Eye size={15} />
+          </button>
+          <button type="button" onClick={() => handleOpenEditModal(item)} title="Edit User"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold">
+            <Edit2 size={15} />
+          </button>
+          <button type="button" onClick={() => setUserToDelete(item)} title="Delete User"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400">
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
+        <div className="hidden md:block">
         <ResponsiveTable minWidth="100%">
           <thead className="border-b border-border bg-surface/50">
             <tr>
@@ -551,6 +633,7 @@ const AdminUsers = () => {
             )}
           </tbody>
         </ResponsiveTable>
+        </div>
 
         {isViewModalOpen && userToView && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">

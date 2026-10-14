@@ -1,4 +1,3 @@
-
 const STYLES = {
   dashboard: {
     available: "border-gold/60 bg-gold/10 text-gold",
@@ -27,8 +26,6 @@ const LABELS = {
 
 const FloorPlan = ({ booths = [], onSelect, selectedId, mineIds = [], variant = "dashboard" }) => {
   const s = STYLES[variant] ?? STYLES.dashboard;
-
-  // A-2 should come before A-10
   const sorted = [...booths].sort((a, b) =>
     String(a.boothNumber).localeCompare(String(b.boothNumber), undefined, { numeric: true })
   );
@@ -41,7 +38,6 @@ const FloorPlan = ({ booths = [], onSelect, selectedId, mineIds = [], variant = 
 
   return (
     <div>
-      {/* Legend */}
       <div className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
         {Object.keys(LABELS).map((key) => (
           <span key={key} className="flex items-center gap-2">
@@ -59,14 +55,10 @@ const FloorPlan = ({ booths = [], onSelect, selectedId, mineIds = [], variant = 
           const Tag = selectable ? "button" : "div";
 
           return (
-            <Tag
-              key={b._id}
-              type={selectable ? "button" : undefined}
-              onClick={selectable ? () => onSelect(b) : undefined}
+            <Tag key={b._id} type={selectable ? "button" : undefined} onClick={selectable ? () => onSelect(b) : undefined}
               className={`relative rounded-2xl border-2 p-4 text-left transition ${s[b.status] ?? s.available} ${
                 selectable ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-md" : ""
-              } ${selectedId === b._id ? s.ring : ""}`}
-            >
+              } ${selectedId === b._id ? s.ring : ""}`}>
               {mine && (
                 <span className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-semibold ${s.badge}`}>
                   Yours

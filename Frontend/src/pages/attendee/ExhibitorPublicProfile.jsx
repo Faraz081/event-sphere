@@ -65,7 +65,7 @@ const ExhibitorPublicProfile = () => {
     <main className="min-h-screen bg-[#fffdf9] px-4 py-20 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl">
 
-        <Link to="/service" className="inline-flex items-center gap-2 text-sm font-semibold text-[#9a721c] hover:text-[#c49424]">
+        <Link to="/ongoing-events" className="inline-flex items-center gap-2 text-sm font-semibold text-[#9a721c] hover:text-[#c49424]">
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
 
