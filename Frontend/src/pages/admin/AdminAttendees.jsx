@@ -465,7 +465,7 @@ const AdminAttendees = () => {
           <tbody>
             {loading ? (
   <tr>
-    <td colSpan={7} className="!block px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
         <p className="text-sm">Loading attendees directory...</p>
@@ -474,7 +474,7 @@ const AdminAttendees = () => {
   </tr>
 ) : attendees.length === 0 ? (
   <tr>
-    <td colSpan={7} className="!block px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <AlertCircle size={32} className="text-muted/60" />
         <p className="font-medium text-foreground">

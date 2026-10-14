@@ -26,9 +26,9 @@ const ExhibitorProfile = () => {
 
   const fillForm = (app) =>
     setForm({
-      email: app.email ?? "",
-      phone: app.phone ?? "",
-      address: app.address ?? "",
+      email: app?.email ?? "",
+      phone: app?.phone ?? "",
+      address: app?.address ?? "",
     });
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const ExhibitorProfile = () => {
         const res = await api.get("/api/exhibitor-profile/profile");
         const profileApplications = res.data.applications ?? [res.data.application].filter(Boolean);
         setApplications(profileApplications);
-        fillForm(profileApplications[0]);
+        if (profileApplications[0]) fillForm(profileApplications[0]);
       } catch (err) {
         if (err.response?.status !== 404) {
           toast.error(err.response?.data?.error || "Could not load profile");
@@ -60,7 +60,6 @@ const ExhibitorProfile = () => {
   const handleCancel = () => {
     fillForm(application);
     setLogo(null);
-    setError("");
     setEditing(false);
   };
 
@@ -77,7 +76,7 @@ const ExhibitorProfile = () => {
       const res = await api.put("/api/exhibitor-profile/profile", formData);
       const profileApplications = res.data.applications ?? [res.data.application].filter(Boolean);
       setApplications(profileApplications);
-      fillForm(profileApplications[0]);
+      if (profileApplications[0]) fillForm(profileApplications[0]);
       setLogo(null);
       setEditing(false);
       toast.success("Profile updated successfully");
@@ -128,7 +127,7 @@ const ExhibitorProfile = () => {
           <div className="rounded-3xl border border-border bg-surface p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">Company profile</h2>
-              <button onClick={() => { setSuccess(""); setEditing(true);}}
+              <button onClick={() => setEditing(true)}
                 className="rounded-xl bg-[#d4a62a] px-5 py-2 text-sm font-bold text-black">
                 Edit Profile
               </button>

@@ -307,7 +307,7 @@ const AdminExhibitors = () => {
           <tbody>
            {loading ? (
   <tr>
-    <td colSpan={6} className="!block px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
         <p className="text-sm">Loading applications...</p>
@@ -316,7 +316,7 @@ const AdminExhibitors = () => {
   </tr>
 ) : applications.length === 0 ? (
   <tr>
-    <td colSpan={6} className="!block px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <Building2 className="opacity-40" size={32} />
         <p className="text-sm">No applications found for this filter.</p>

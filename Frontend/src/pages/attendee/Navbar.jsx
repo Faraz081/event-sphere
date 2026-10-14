@@ -144,7 +144,7 @@ const Navbar = () => {
           </button>
 
           <button
-            onClick={() => scrollToSection('services')}
+            onClick={() => scrollToSection('expos')}
             className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             Services
@@ -273,7 +273,7 @@ const Navbar = () => {
 
             <button
               onClick={() => {
-                scrollToSection('services')
+                scrollToSection('expos')
                 setMenuOpen(false)
               }}
               className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
