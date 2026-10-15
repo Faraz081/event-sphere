@@ -25,6 +25,11 @@ const createEvent = async (req, res) => {
     }
 
     const { title, description, date, eventType, images, boothCapacity, banner, location, expo } = req.body;
+    const eventPrice = Number(req.body.price ?? 0);
+
+    if (!Number.isFinite(eventPrice) || eventPrice < 0) {
+      return res.status(400).json({ error: "Event price must be a valid non-negative amount" });
+    }
 
     if (
       !title?.trim() ||
@@ -96,6 +101,7 @@ const createEvent = async (req, res) => {
       ...(parsedDate && { date: parsedDate }),
       images: Array.isArray(images) ? images : [],
       boothCapacity: parsedBoothCapacity,
+      price: eventPrice,
       banner,
       status: "pending",
     });
@@ -138,9 +144,11 @@ const getAllEvents = async (req, res) => {
       filter.status = req.query.status;
     }
 
-    const events = await Event.find(filter)
-      .populate("exhibitor", "name companyName")
-      .sort({ createdAt: -1 });
+    const allEvents = await Event.find(filter)
+  .populate({ path: "exhibitor", select: "name companyName", match: { status: "active" } })
+  .sort({ createdAt: -1 });
+
+const events = allEvents.filter((e) => e.exhibitor);
 
     return res.status(200).json({ msg: "All approved events fetched", events });
   } catch (error) {
@@ -368,6 +376,14 @@ const updateEvent = async (req, res) => {
     event.eventType = eventType.trim();
     event.location = location.trim();
     event.boothCapacity = parsedBoothCapacity;
+
+    if (req.body.price !== undefined) {
+      const eventPrice = Number(req.body.price);
+      if (!Number.isFinite(eventPrice) || eventPrice < 0) {
+        return res.status(400).json({ error: "Event price must be a valid non-negative amount" });
+      }
+      event.price = eventPrice;
+    }
 
     if (banner !== undefined) event.banner = banner;
 

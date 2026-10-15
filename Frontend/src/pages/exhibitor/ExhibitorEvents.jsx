@@ -5,7 +5,6 @@ import { Plus, Trash2, Pencil } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import EventStalls from "@/components/shared/EventStalls";
-import { uploadExpoBanner } from "@/api/expoService";
 import {fetchMyEvents, createEvent, updateEvent, deleteEvent, uploadEventImage} from "@/store/slices/eventSlice";
 
 const BASE = import.meta.env.VITE_API_URL || "";
@@ -27,7 +26,7 @@ const ExhibitorEvents = () => {
   const [location, setLocation] = useState("");
   const [eventType, setEventType] = useState("");
   const [boothCapacity, setBoothCapacity] = useState("");
-  const [banner, setBanner] = useState("");
+  const [eventPrice, setEventPrice] = useState("");
   const [images, setImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -55,7 +54,7 @@ const ExhibitorEvents = () => {
     setLocation("");
     setEventType("");
     setBoothCapacity("");
-    setBanner("");
+    setEventPrice("");
     setImages([]);
     setExistingImages([]);
     setFormOpen(false);
@@ -66,32 +65,6 @@ const ExhibitorEvents = () => {
   setFormOpen(true);
 };
 
-  const uploadOne = async (file) => {
-    if (!file.type.startsWith("image/")) throw new Error("Please select an image.");
-    if (file.size > 10 * 1024 * 1024) throw new Error("Image size must be under 10MB.");
-
-    const result = await uploadExpoBanner(file);
-
-    if (!result?.image?.url) throw new Error("Image upload failed.");
-    return result.image.url;
-  };
-
-  const handleBanner = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploadingImages(true);
-      setBanner(await uploadOne(file));
-      toast.success("Banner uploaded");
-    } catch (error) {
-      toast.error(error.message || "Banner upload failed");
-    } finally {
-      setUploadingImages(false);
-      event.target.value = "";
-    }
-  };
-
   const handleEdit = (event) => {
   setEditingId(event._id);
   setTitle(event.title ?? "");
@@ -99,15 +72,20 @@ const ExhibitorEvents = () => {
   setLocation(event.location ?? "");
   setEventType(event.eventType ?? "");
   setBoothCapacity(String(event.boothCapacity ?? ""));
-  setBanner(event.banner || "");
+  setEventPrice(String(event.price ?? 0));
   setExistingImages(event.images ?? []);
   setImages([]);
   setFormOpen(true);
 };
 
   const handleSubmit = async () => {
-    if (!title.trim() || !description.trim() || !eventType.trim() || !location.trim() || !boothCapacity) {
+    if (!title.trim() || !description.trim() || !eventType.trim() || !location.trim() || !boothCapacity || eventPrice === "") {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (!Number.isFinite(Number(eventPrice)) || Number(eventPrice) < 0) {
+      toast.error("Event price must be a valid non-negative amount");
       return;
     }
 
@@ -121,6 +99,9 @@ const ExhibitorEvents = () => {
 
       const imageUrls = [...existingImages];
       for (const file of images) {
+        if (!file.type.startsWith("image/")) {
+          throw new Error(`"${file.name}" is not an image.`);
+        }
         if (file.size > 10 * 1024 * 1024) {
           throw new Error(`"${file.name}" is larger than 10MB.`);
         }
@@ -138,7 +119,7 @@ const ExhibitorEvents = () => {
         location: location.trim(),
         eventType: eventType.trim(),
         boothCapacity: Number(boothCapacity),
-        banner,
+        price: Number(eventPrice),
         images: imageUrls,
       };
 
@@ -226,20 +207,7 @@ const ExhibitorEvents = () => {
 
       <input type="number" min="1" step="1" value={boothCapacity} onChange={(e) => setBoothCapacity(e.target.value)} placeholder="Maximum number of stalls *" className={field}/>
 
-      <div className={`${field} flex items-center gap-3`}>
-        <span className="shrink-0 text-sm text-muted">Banner</span>
-        <input type="file" accept="image/*" onChange={handleBanner} disabled={uploadingImages}
-          className="min-w-0 flex-1 text-sm text-foreground"/>
-      </div>
-
-      {banner && (
-        <div className="relative inline-block">
-          <img src={img(banner)} alt="Event banner" className="h-24 w-40 rounded-lg border border-border object-cover"/>
-          <button type="button" onClick={() => setBanner("")} className="absolute -right-2 -top-2 rounded-full bg-red-500 px-1.5 text-xs text-white" aria-label="Remove banner">
-            x
-          </button>
-        </div>
-      )}
+      <input type="number" min="0" step="0.01" value={eventPrice} onChange={(e) => setEventPrice(e.target.value)} placeholder="Event price (Rs.) *" className={field}/>
 
       <div className={`${field} flex items-center gap-3`}>
         <span className="shrink-0 text-sm text-muted">Images</span>
@@ -290,9 +258,6 @@ const ExhibitorEvents = () => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {events.map((event) => (
             <div key={event._id} className="space-y-2 rounded-2xl border border-border bg-surface p-4">
-              {event.banner && (
-                <img src={img(event.banner)} alt={event.title} className="h-28 w-full rounded-lg object-cover"/>
-              )}
 
               <div className="flex items-start justify-between gap-2">
                 <div>
@@ -318,6 +283,7 @@ const ExhibitorEvents = () => {
               <p className="text-xs text-gold">Type: <span className="text-foreground">{event.eventType}</span></p>
               <p className="text-xs text-gold">Location: <span className="text-foreground">{event.location || "Not set"}</span></p>
               <p className="text-xs text-gold">Stall capacity: <span className="text-foreground">{event.boothCapacity}</span></p>
+              <p className="text-xs text-gold">Event price: <span className="text-foreground">Rs. {(event.price ?? 0).toLocaleString()}</span></p>
 
               {!!event.images?.length && (
                 <div className="flex flex-wrap gap-2 pt-2">

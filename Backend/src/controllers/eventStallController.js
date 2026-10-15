@@ -27,6 +27,7 @@ const cleanStall = (body) => ({
   name: body.name?.trim() ?? "",
   size: body.size?.trim() ?? "",
   description: body.description?.trim() ?? "",
+  price: Number(body.price),
 });
 
 const isDuplicate = (event, stallNumber, ignoreId) =>
@@ -48,6 +49,9 @@ const addStall = async (req, res) => {
     if (isDuplicate(event, data.stallNumber)) {
       return res.status(409).json({ error: "This stall number already exists in this event" });
     }
+    if (!Number.isFinite(data.price) || data.price < 0) {
+  return res.status(400).json({ error: "Please enter a valid stall price" });
+}
 
     event.stalls.push(data);
     await event.save({ validateModifiedOnly: true });
@@ -73,6 +77,10 @@ const updateStall = async (req, res) => {
     if (isDuplicate(event, data.stallNumber, stall._id)) {
       return res.status(409).json({ error: "This stall number already exists in this event" });
     }
+
+    if (!Number.isFinite(data.price) || data.price < 0) {
+  return res.status(400).json({ error: "Please enter a valid stall price" });
+}
 
     stall.set(data);
     await event.save({ validateModifiedOnly: true });

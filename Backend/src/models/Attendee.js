@@ -65,6 +65,7 @@ const attendeeSchema = new mongoose.Schema(
 eventDate: { type: Date },
 stalls: [{type: mongoose.Schema.Types.ObjectId}],
 stallNumbers: [{type: String}],
+totalAmount: { type: Number, min: 0, default: 0 },
 contactName: {type: String, trim: true},
 guests: { type: Number, min: 1 },
 guestList: [{

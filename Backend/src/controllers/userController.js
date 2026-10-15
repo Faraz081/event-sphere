@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
+import Event from "../models/Event.js";
+import Attendee from "../models/Attendee.js";
 
 const VALID_ROLES = ["admin", "attendee", "exhibitor"];
 const VALID_STATUSES = ["active", "inactive", "suspended"];
@@ -256,6 +258,22 @@ export const deleteUser = async (req, res) => {
     if (target.role === "admin") {
       return res.status(403).json({ error: "Admin account cannot be deleted." });
     }
+
+    if (target.role === "exhibitor") {
+  const events = await Event.find({ exhibitor: id }).select("_id");
+
+  await Attendee.updateMany(
+    { event: { $in: events.map((e) => e._id) }, bookingStatus: { $ne: "cancelled" } },
+    {
+      bookingStatus: "cancelled",
+      registrationStatus: "cancelled",
+      passStatus: "revoked",
+      decisionNote: "This event was cancelled because the exhibitor account was removed",
+    }
+  );
+
+  await Event.deleteMany({ exhibitor: id });
+}
 
     await User.findByIdAndDelete(id);
 

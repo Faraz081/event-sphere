@@ -61,13 +61,18 @@ export const bookEvent = async (req, res) => {
     }
 
     const eventDoc = await Event.findOne({
-      _id: event,
-      status: "approved",
-    }).select("title location eventType images stalls");
+  _id: event,
+  status: "approved",
+}).select("title location eventType images price stalls exhibitor");
 
-    if (!eventDoc) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+if (!eventDoc) {
+  return res.status(404).json({ error: "Event not found" });
+}
+
+const exhibitorActive = await User.exists({ _id: eventDoc.exhibitor, status: "active" });
+if (!exhibitorActive) {
+  return res.status(404).json({ error: "Event not found" });
+}
 
     const parsedDate = new Date(eventDate);
 
@@ -129,6 +134,8 @@ export const bookEvent = async (req, res) => {
       });
     }
 
+    const totalAmount = (eventDoc.price ?? 0) + chosen.reduce((sum, s) => sum + (s.price ?? 0), 0);
+
     const attendee = await Attendee.create({
       user: userId,
       event: eventDoc._id,
@@ -142,6 +149,7 @@ export const bookEvent = async (req, res) => {
       contactName,
       stalls: chosen.map((s) => s._id),
       stallNumbers: chosen.map((s) => String(s.stallNumber)),
+      totalAmount,
       contactPhone: phone?.trim() || undefined,
       notes: message?.trim() || undefined,
       registrationEventKey: `event:${eventDoc._id}:${dateKey}`,
