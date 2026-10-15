@@ -120,7 +120,7 @@ const BookTicket = () => {
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
-          Choose an expo and request your entry ticket. The organizer reviews
+          Choose an expo and request your entry ticket. The admin team reviews
           your request and your entry pass is issued once it is approved.
         </p>
       </section>
@@ -154,7 +154,7 @@ const BookTicket = () => {
               <CheckCircle2 className="mx-auto h-14 w-14 text-[#c49424]" />
               <h2 className="mt-4 font-serif text-2xl font-bold text-[#2f2a24]">Ticket Request Sent</h2>
               <p className="mt-2 text-[#5d574f]">
-                Your request for <b>{requested?.title}</b> is waiting for approval from the organizer.
+                Your request for <b>{requested?.title}</b> is waiting for admin approval.
               </p>
               <p className="mt-2 text-sm text-[#8a8379]">
                 Your entry pass will appear in My Bookings on your profile once it is approved.
@@ -330,7 +330,7 @@ const BookTicket = () => {
                     <Send className="h-4 w-4" />
                   </button>
                   <p className="mt-4 text-center text-xs text-[#8a8379]">
-                    Your entry pass is issued after the organizer approves your request.
+                    Your entry pass is issued after the admin team approves your request.
                   </p>
                 </div>
               </form>

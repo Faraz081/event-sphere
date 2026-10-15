@@ -1,10 +1,15 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { Search, RotateCcw, AlertCircle, Inbox, CalendarDays, Building2, Store, Check, X } from "lucide-react";
+import { Search, RotateCcw, AlertCircle, Inbox, CalendarDays, Building2, Store, Check, X, Trash2 } from "lucide-react";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { fetchPendingEvents, approveEvent, rejectEvent } from "@/store/slices/eventSlice";
+import {
+  fetchAdminEvents,
+  deleteAdminEvent,
+  approveEvent,
+  rejectEvent,
+} from "@/store/slices/eventSlice";
 
 const statusStyles = {
   pending: "bg-gold/20 text-gold border border-gold/40",
@@ -65,6 +70,21 @@ const EventCard = ({ event, onRefresh }) => {
       onRefresh();
     } catch (msg) {
       toast.error(typeof msg === "string" ? msg : "Failed to reject event");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Delete this event? Its booking requests will be cancelled.")) return;
+
+    try {
+      setBusy(true);
+      await dispatch(deleteAdminEvent(event._id)).unwrap();
+      toast.success("Event deleted");
+      onRefresh();
+    } catch (error) {
+      toast.error(error?.error || error?.msg || "Could not delete event");
     } finally {
       setBusy(false);
     }
@@ -203,17 +223,28 @@ const EventCard = ({ event, onRefresh }) => {
           Reason: {event.rejectionReason}
         </p>
       )}
+
+      <div className="mt-5 border-t border-border pt-4">
+        <button
+          onClick={handleDelete}
+          disabled={busy}
+          className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-40"
+        >
+          <Trash2 size={16} />
+          Delete Event
+        </button>
+      </div>
     </div>
   );
 };
 
 const AdminEvents = () => {
   const dispatch = useDispatch();
-  const { pendingEvents, loading, error } = useSelector((state) => state.event);
+  const { adminEvents, loading, error } = useSelector((state) => state.event);
   const [search, setSearch] = useState("");
 
   const load = useCallback(() => {
-    dispatch(fetchPendingEvents())
+    dispatch(fetchAdminEvents())
       .unwrap()
       .catch((msg) => toast.error(typeof msg === "string" ? msg : "Failed to load events"));
   }, [dispatch]);
@@ -225,9 +256,9 @@ const AdminEvents = () => {
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
 
-    if (!q) return pendingEvents;
+    if (!q) return adminEvents;
 
-    return pendingEvents.filter((event) =>
+    return adminEvents.filter((event) =>
       [
         event.title,
         event.eventType,
@@ -238,7 +269,7 @@ const AdminEvents = () => {
         .filter(Boolean)
         .some((value) => value.toLowerCase().includes(q))
     );
-  }, [pendingEvents, search]);
+  }, [adminEvents, search]);
 
   return (
     <DashboardLayout role="admin">
@@ -246,13 +277,13 @@ const AdminEvents = () => {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="mb-2 font-display text-2xl font-bold text-foreground md:text-4xl">
-              Event Approvals
+              Events
             </h1>
             <p className="text-sm text-muted md:text-base">
-              Review events submitted by exhibitors and approve or reject them.
-              {pendingEvents.length > 0 && (
+              Review, approve, reject, and manage events submitted by exhibitors.
+              {adminEvents.filter((event) => event.status === "pending").length > 0 && (
                 <span className="ml-2 font-semibold text-gold">
-                  {pendingEvents.length} pending
+                  {adminEvents.filter((event) => event.status === "pending").length} pending
                 </span>
               )}
             </p>
@@ -289,14 +320,14 @@ const AdminEvents = () => {
           </div>
         )}
 
-        {loading && pendingEvents.length === 0 && (
+        {loading && adminEvents.length === 0 && (
           <p className="py-12 text-center text-muted">Loading events...</p>
         )}
 
         {!loading && visible.length === 0 && (
           <div className="py-12 text-center text-muted">
             <Inbox className="mx-auto mb-2 opacity-40" size={32} />
-            <p>{search ? "No events found for your search." : "No pending events."}</p>
+            <p>{search ? "No events found for your search." : "No events have been submitted yet."}</p>
           </div>
         )}
 

@@ -261,7 +261,7 @@ export const mockTestimonials = [
   {
     id: 3,
     name: "Bilal Sheikh",
-    role: "Organizer, HealthTech Expo",
+    role: "Admin, HealthTech Expo",
     quote: "Managing hundreds of exhibitor applications used to take weeks. With EventSphere's dashboard, we approved and assigned booths in a single afternoon.",
   },
 ];
@@ -270,7 +270,7 @@ export const mockFAQs = [
   {
     id: 1,
     question: "How do I register as an exhibitor?",
-    answer: "Simply sign up on the Register page, select 'Exhibitor' as your role, and submit your company details. Once approved by the event organizer, you'll be able to select and reserve your booth.",
+    answer: "Simply sign up on the Register page, select 'Exhibitor' as your role, and submit your company details. Once your application is approved by an admin, you'll be able to select and reserve your booth.",
   },
   {
     id: 2,
@@ -284,7 +284,7 @@ export const mockFAQs = [
   },
   {
     id: 4,
-    question: "Is there a fee to create an organizer account?",
-    answer: "No, creating an account is completely free. Organizers only manage their own events — pricing for exhibitor booths or attendee tickets is set individually per event.",
+    question: "Is there a fee to create an exhibitor account?",
+    answer: "No, creating an exhibitor account is free. Pricing for exhibitor booths or attendee tickets is set individually per event.",
   },
 ];

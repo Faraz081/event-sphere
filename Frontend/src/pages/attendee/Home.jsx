@@ -11,7 +11,6 @@ import {
   Sparkles,
 } from 'lucide-react'
 
-import heroImage from '../../assets/hero.jpg'
 import gallery1 from '../../assets/gallery-1.jpg'
 import gallery2 from '../../assets/gallery-2.jpg'
 import gallery3 from '../../assets/gallery-3.jpg'
@@ -19,6 +18,7 @@ import api, { API_BASE_URL } from '../../api/api'
 import { fetchPublicExpos } from '@/api/publicService'
 import BookmarkButton from '@/components/shared/BookmarkButton'
 import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
+import websiteDefaults from '@/data/websiteDefaults'
 
 const getImage = (banner) => {
   if (!banner) return gallery1
@@ -95,17 +95,23 @@ const [eventsLoading, setEventsLoading] = useState(true)
   }, [])
 
   const mainBannerImage =
-    websiteSettings?.hero?.image || heroImage
-
-  const savedHeroTitle = websiteSettings?.hero?.title?.trim() || ''
+    websiteSettings?.hero?.image?.trim() || websiteDefaults.hero.image
   const mainBannerTitle =
-    /^welcome\s+to\s+eventsphere$/i.test(savedHeroTitle) ? '' : savedHeroTitle
-
+    websiteSettings?.hero?.title?.trim() || websiteDefaults.hero.title
   const mainBannerDescription =
-    websiteSettings?.hero?.description || ''
-
+    websiteSettings?.hero?.description?.trim() ||
+    websiteDefaults.hero.description
   const mainBannerButtonText =
-    websiteSettings?.hero?.buttonText || ''
+    websiteSettings?.hero?.buttonText?.trim() || websiteDefaults.hero.buttonText
+  const tagline =
+    websiteSettings?.tagline?.trim() || websiteDefaults.tagline
+  const aboutTitle =
+    websiteSettings?.about?.title?.trim() || websiteDefaults.about.title
+  const aboutDescription =
+    websiteSettings?.about?.description?.trim() ||
+    websiteDefaults.about.description
+  const aboutSectionImage =
+    websiteSettings?.about?.image?.trim() || websiteDefaults.about.image
 
   const faqs = [
     {
@@ -124,9 +130,9 @@ const [eventsLoading, setEventsLoading] = useState(true)
         'Exhibitors can view available booth information and select a suitable booth based on the event requirements and availability.',
     },
     {
-      question: 'Is there a fee to create an organizer account?',
+      question: 'Is there a fee to create an exhibitor account?',
       answer:
-        'Creating an organizer account is simple. Any applicable event or service charges depend on the selected services.',
+        'Creating an exhibitor account is free. Any applicable event or service charges depend on the selected services.',
     },
   ]
 
@@ -154,29 +160,15 @@ const [eventsLoading, setEventsLoading] = useState(true)
             <div className="max-w-2xl">
 
               <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-                Event Management Platform
+                {tagline}
               </p>
 
               <h1 className="whitespace-pre-line font-serif text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-                {mainBannerTitle || (
-                  <>
-                    Create
-                    <br />
-
-                    <span className="text-[#c49424]">
-                      Unforgettable
-                    </span>
-
-                    <br />
-
-                    Events With Style
-                  </>
-                )}
+                {mainBannerTitle}
               </h1>
 
               <p className="mt-7 max-w-xl text-base leading-7 text-[#5d574f] sm:text-lg">
-                {mainBannerDescription ||
-                  'Plan, manage and experience extraordinary events with EventSphere. From exhibitors and schedules to attendees and event analytics, everything is managed in one place.'}
+                {mainBannerDescription}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -192,7 +184,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
                   to="/book-now"
                   className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
                 >
-                  {mainBannerButtonText || 'Book Now'}
+                  {mainBannerButtonText}
                 </Link>
 
               </div>
@@ -204,12 +196,12 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-[#c49424]/25 blur-2xl" />
 
-              <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/60 shadow-2xl">
+              <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] border border-white/60 shadow-2xl">
 
                 <img
                   src={mainBannerImage}
                   alt="Elegant event venue"
-                  className="h-[430px] w-full object-cover sm:h-[500px]"
+                  className="h-full w-full object-cover"
                 />
 
               </div>
@@ -238,19 +230,12 @@ const [eventsLoading, setEventsLoading] = useState(true)
               About EventSphere
             </p>
 
-            <h2 className="font-serif text-4xl font-bold leading-tight sm:text-5xl">
-              Everything You Need
-              <br />
-              <span className="text-[#c49424]">
-                For A Perfect Event
-              </span>
+            <h2 className="font-serif whitespace-pre-line text-4xl font-bold leading-tight sm:text-5xl">
+              {aboutTitle}
             </h2>
 
             <p className="mt-6 leading-7 text-[#5d574f]">
-              EventSphere is an event and expo management platform designed
-              to make event planning simple, organized and efficient.
-              Organizers can manage exhibitors, schedules, attendees,
-              communication and event information from one place.
+              {aboutDescription}
             </p>
 
             <p className="mt-4 leading-7 text-[#5d574f]">
@@ -269,49 +254,32 @@ const [eventsLoading, setEventsLoading] = useState(true)
           </div>
 
 
-          {/* About Card */}
-          <div className="rounded-[2rem] bg-white p-8 shadow-lg">
-
-            <div className="grid grid-cols-2 gap-5">
-
-              <div className="rounded-2xl bg-[#f8f5ef] p-6 text-center">
-                <h3 className="font-serif text-4xl font-bold text-[#c49424]">
-                  01
-                </h3>
-                <p className="mt-2 text-sm text-[#5d574f]">
-                  Easy Management
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[#f8f5ef] p-6 text-center">
-                <h3 className="font-serif text-4xl font-bold text-[#c49424]">
-                  02
-                </h3>
-                <p className="mt-2 text-sm text-[#5d574f]">
-                  Smart Scheduling
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[#f8f5ef] p-6 text-center">
-                <h3 className="font-serif text-4xl font-bold text-[#c49424]">
-                  03
-                </h3>
-                <p className="mt-2 text-sm text-[#5d574f]">
-                  Exhibitor Support
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[#f8f5ef] p-6 text-center">
-                <h3 className="font-serif text-4xl font-bold text-[#c49424]">
-                  04
-                </h3>
-                <p className="mt-2 text-sm text-[#5d574f]">
-                  Event Analytics
-                </p>
-              </div>
-
+          <div className="space-y-5">
+            <div className="relative h-64 overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-lg sm:h-80">
+              <img
+                src={aboutSectionImage}
+                alt="EventSphere event management"
+                className="h-full w-full object-cover"
+              />
             </div>
 
+            <div className="grid grid-cols-2 gap-4 rounded-[2rem] bg-white p-5 shadow-lg sm:gap-5 sm:p-8">
+              {[
+                ["01", "Easy Management"],
+                ["02", "Smart Scheduling"],
+                ["03", "Exhibitor Support"],
+                ["04", "Event Analytics"],
+              ].map(([number, label]) => (
+                <div key={number} className="rounded-2xl bg-[#f8f5ef] p-4 text-center sm:p-6">
+                  <h3 className="font-serif text-3xl font-bold text-[#c49424] sm:text-4xl">
+                    {number}
+                  </h3>
+                  <p className="mt-2 text-xs text-[#5d574f] sm:text-sm">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>

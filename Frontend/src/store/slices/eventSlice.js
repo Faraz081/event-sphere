@@ -54,6 +54,24 @@ export const fetchPendingEvents = createAsyncThunk("event/fetchPendingEvents", a
   }
 });
 
+export const fetchAdminEvents = createAsyncThunk("event/fetchAdminEvents", async (_, {rejectWithValue}) => {
+  try {
+    const data = await api.get("/api/admin/events");
+    return data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {msg: "Unable to connect to the server"});
+  }
+});
+
+export const deleteAdminEvent = createAsyncThunk("event/deleteAdminEvent", async (eventId, {rejectWithValue}) => {
+  try {
+    await api.delete(`/api/admin/events/${eventId}`);
+    return eventId;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || {msg: "Unable to connect to the server"});
+  }
+});
+
 export const approveEvent = createAsyncThunk("event/approveEvent", async (eventId, {rejectWithValue}) => {
   try {
     const data = await api.put(`/api/admin/events/${eventId}/approve`);
@@ -138,6 +156,7 @@ export const deleteStall = createAsyncThunk("event/deleteStall", async ({eventId
 const initialState = {
   events: [],
   pendingEvents: [],
+  adminEvents: [],
   requests: [],
   error: null,
   loading: false,
@@ -185,6 +204,10 @@ const eventSlice = createSlice({
           r.event?._id === action.payload ? {...r, bookingStatus: "cancelled", decisionNote: "This event was cancelled by the exhibitor"} : r
         );
       })
+      .addCase(deleteAdminEvent.fulfilled, (state, action) => {
+        state.adminEvents = state.adminEvents.filter((event) => event._id !== action.payload);
+        state.pendingEvents = state.pendingEvents.filter((event) => event._id !== action.payload);
+      })
       .addCase(fetchPendingEvents.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -197,11 +220,29 @@ const eventSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(fetchAdminEvents.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAdminEvents.fulfilled, (state, action) => {
+        state.adminEvents = action.payload.events;
+        state.loading = false;
+      })
+      .addCase(fetchAdminEvents.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(approveEvent.fulfilled, (state, action) => {
         state.pendingEvents = state.pendingEvents.filter((event) => event._id !== action.payload.event._id);
+        state.adminEvents = state.adminEvents.map((event) =>
+          event._id === action.payload.event._id ? action.payload.event : event
+        );
       })
       .addCase(rejectEvent.fulfilled, (state, action) => {
         state.pendingEvents = state.pendingEvents.filter((event) => event._id !== action.payload.event._id);
+        state.adminEvents = state.adminEvents.map((event) =>
+          event._id === action.payload.event._id ? action.payload.event : event
+        );
       })
       .addCase(fetchBookingRequests.fulfilled, (state, action) => {
         state.requests = action.payload.requests;

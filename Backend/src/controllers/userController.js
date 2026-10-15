@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 
-const VALID_ROLES = ["admin", "organizer", "attendee", "exhibitor"];
+const VALID_ROLES = ["admin", "attendee", "exhibitor"];
 const VALID_STATUSES = ["active", "inactive", "suspended"];
 
 export const getAllUsers = async (req, res) => {
@@ -58,7 +58,6 @@ export const getUserStats = async (req, res) => {
   try {
     const [
       total,
-      organizers,
       attendees,
       exhibitors,
       active,
@@ -66,7 +65,6 @@ export const getUserStats = async (req, res) => {
       suspended,
     ] = await Promise.all([
       User.countDocuments({ role: { $ne: "admin" } }),
-      User.countDocuments({ role: "organizer" }),
       User.countDocuments({ role: "attendee" }),
       User.countDocuments({ role: "exhibitor" }),
       User.countDocuments({ status: "active", role: { $ne: "admin" } }),
@@ -78,7 +76,6 @@ export const getUserStats = async (req, res) => {
       success: true,
       stats: {
         total,
-        organizers,
         attendees,
         exhibitors,
         active,

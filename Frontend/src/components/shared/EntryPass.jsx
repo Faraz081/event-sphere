@@ -5,6 +5,10 @@ import { QRCodeCanvas } from "qrcode.react";
 import jsPDF from "jspdf";
 
 const EntryPass = ({ booking, user }) => {
+  const passCode = booking.passCode || booking.entryPassId;
+  const isCheckedIn = booking.passStatus === "scanned";
+  const isRevoked = booking.passStatus === "revoked" || booking.bookingStatus === "cancelled";
+
   const handleDownloadPass = () => {
     try {
       const qrCanvas = document.querySelector(`#entry-pass-${booking._id} canvas`);
@@ -19,14 +23,17 @@ const EntryPass = ({ booking, user }) => {
       const ticketHeight = 95;
 
       const attendeeName = user?.name || "Valued Guest";
-      const expoName = booking.expo?.title || booking.eventName || "EventSphere Expo";
-      const date = booking.expo?.date ? new Date(booking.expo.date).toLocaleDateString("en-US", {
+      const expoName = booking.event?.title || booking.expo?.title || booking.eventName || "EventSphere Expo";
+      const eventDate = booking.eventDate || booking.expo?.date || booking.event?.date;
+      const date = eventDate
+        ? new Date(eventDate).toLocaleDateString("en-US", {
             weekday: "short",
             month: "short",
             day: "numeric",
             year: "numeric",
-          }) : "N/A";
-      const location = booking.expo?.location || "Main Arena";
+          })
+        : "N/A";
+      const location = booking.event?.location || booking.expo?.location || "Main Arena";
 
       pdf.setFillColor(248, 245, 239); 
       pdf.rect(0, 0, ticketWidth, ticketHeight, "F");
@@ -78,7 +85,7 @@ const EntryPass = ({ booking, user }) => {
       pdf.setTextColor(196, 148, 36);
       pdf.setFont("courier", "bold");
       pdf.setFontSize(8);
-      pdf.text(`PASS ID: ${booking.entryPassId || "N/A"}`, 14, 81);
+      pdf.text(`PASS ID: ${passCode || "N/A"}`, 14, 81);
 
       pdf.setDrawColor(180, 160, 130);
       pdf.setLineWidth(0.6);
@@ -114,9 +121,9 @@ const EntryPass = ({ booking, user }) => {
       pdf.setTextColor(196, 148, 36);
       pdf.setFont("courier", "bold");
       pdf.setFontSize(7);
-      pdf.text(booking.entryPassId || "ESP-PASS", 176, 76, { align: "center" });
+      pdf.text(passCode || "ESP-PASS", 176, 76, { align: "center" });
 
-      pdf.save(`EventSphere-Pass-${booking.entryPassId || "VIP"}.pdf`);
+      pdf.save(`EventSphere-Pass-${passCode || "VIP"}.pdf`);
       toast.success("Entry pass downloaded");
     } catch (error) {
       console.error("Entry pass download error:", error);
@@ -126,19 +133,40 @@ const EntryPass = ({ booking, user }) => {
 
   return (
     <>
-      <div className="mt-6">
-        <button onClick={handleDownloadPass} className="flex items-center gap-2 rounded-xl bg-[#2f2a24] px-5 py-3 text-sm font-semibold text-white transition hover:bg-gold-100">
-          <Download size={17} />
-          Download Entry Pass
-        </button>
-
-        <p className="mt-2 text-xs text-[#8a8379]">
-          Download your official entry pass as a PDF.
-        </p>
-      </div>
-
-      <div id={`entry-pass-${booking._id}`} className="absolute left-[9999px] top-0">
-        <QRCodeCanvas value={booking.entryPassId} size={180} bgColor="#ffffff" fgColor="#2f2a24" includeMargin/>
+      <div className="mt-5 flex flex-col gap-4 rounded-xl border border-[#eadfc9] bg-[#fdf8ee] p-4 sm:flex-row sm:items-center">
+        <div className="flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#8a8379]">Pass code</p>
+          <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[#2f2a24]">{passCode || "Not issued"}</p>
+          {isCheckedIn ? (
+            <p className="mt-2 text-sm font-semibold text-emerald-800">
+              Checked in — pass used{booking.checkedInAt ? ` on ${new Date(booking.checkedInAt).toLocaleString()}` : ""}
+            </p>
+          ) : isRevoked ? (
+            <p className="mt-2 text-sm font-semibold text-rose-700">Pass expired or revoked</p>
+          ) : (
+            <p className="mt-2 text-sm font-semibold text-emerald-800">Valid for one check-in</p>
+          )}
+          {!isCheckedIn && !isRevoked && passCode && (
+            <button
+              onClick={handleDownloadPass}
+              className="mt-3 flex items-center gap-2 rounded-xl bg-[#2f2a24] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a8790d]"
+            >
+              <Download size={17} />
+              Download Entry Pass
+            </button>
+          )}
+        </div>
+        {passCode && (
+          <div id={`entry-pass-${booking._id}`} className="self-center rounded-lg bg-white p-2">
+            <QRCodeCanvas
+              value={passCode}
+              size={128}
+              bgColor="#ffffff"
+              fgColor="#2f2a24"
+              includeMargin
+            />
+          </div>
+        )}
       </div>
     </>
   );

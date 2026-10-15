@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   Clock3,
   XCircle,
-  QrCode,
   ShieldCheck,
 } from "lucide-react";
 import { fetchMyRegistrations } from "@/api/attendeePortalService";
@@ -78,7 +77,7 @@ const AttendeeProfile = () => {
       <div className="mx-auto max-w-6xl space-y-8">
         {/* Profile Card Header */}
         <div className="relative overflow-hidden rounded-3xl border border-[#eadfc9] bg-[#fffdf9] p-6 shadow-sm sm:p-8">
-          <div className="absolute left-0 top-0 h-2 w-full bg-gradient-to-r from-[#2f2a24] via-[#c49424] to-[#2f2a24]" />
+          <div className="absolute left-0 top-0 h-2 w-full bg-linear-to-r from-[#2f2a24] via-[#c49424] to-[#2f2a24]" />
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
@@ -96,7 +95,7 @@ const AttendeeProfile = () => {
                   <ShieldCheck className="h-5 w-5 text-[#c49424]" />
                 </div>
                 <p className="text-xs text-[#736c62]">{user?.email}</p>
-                <span className="mt-2 inline-block rounded-md bg-[#c49424]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#a8790d]">
+                <span className="mt-2 inline-block rounded-md bg-[#c49424]/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gold-100">
                   {user?.role || "Attendee"}
                 </span>
               </div>
@@ -161,7 +160,7 @@ const AttendeeProfile = () => {
                 >
                   <div className="flex-1 p-5 sm:p-6">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#f0e8d8] pb-3">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#a8790d]">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gold-100">
                         {isExpoTicket ? "Official Expo Pass" : "Event Booking"}
                       </span>
                       <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-[11px] font-bold ${badge.className}`}>
@@ -203,13 +202,13 @@ const AttendeeProfile = () => {
                       <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-xs font-medium text-amber-900">
                         {isExpoTicket
                           ? "Your pass is awaiting admin approval. Once confirmed, the download option will appear."
-                          : "Your request is waiting for the organizer to approve it."}
+                          : "Your request is waiting for the exhibitor to approve it."}
                       </p>
                     )}
 
                     {b.bookingStatus === "confirmed" && !isExpoTicket && (
                       <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-medium text-emerald-800">
-                        The organizer has confirmed your booking for this date.
+                        The exhibitor has confirmed your booking for this date.
                       </p>
                     )}
 
@@ -219,31 +218,13 @@ const AttendeeProfile = () => {
                       </p>
                     )}
 
-                    {isExpoTicket && b.bookingStatus === "confirmed" && b.entryPassId && (
+                    {b.bookingStatus === "confirmed" && (b.passCode || b.entryPassId) && (
                       <div className="mt-4 pt-2">
                         <EntryPass booking={b} user={user} />
                       </div>
                     )}
                   </div>
 
-                  {!isExpoTicket && b.bookingStatus === "confirmed" && b.passCode && (
-                    <>
-                      <div className="relative hidden md:flex items-center justify-center w-0 border-l-2 border-dashed border-[#d9c9a3] bg-[#f8f5ef]">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 h-5 w-5 rounded-full bg-[#f8f5ef] border border-[#eadfc9]" />
-                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-5 w-5 rounded-full bg-[#f8f5ef] border border-[#eadfc9]" />
-                      </div>
-
-                      <div className="relative flex flex-col items-center justify-center bg-[#fdf8ee] p-6 text-center md:w-56 border-t md:border-t-0 border-dashed border-[#d9c9a3]">
-                        <QrCode className="h-6 w-6 text-[#c49424] mb-1" />
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#8a8379]">
-                          Pass Code
-                        </p>
-                        <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[#2f2a24]">
-                          {b.passCode}
-                        </p>
-                      </div>
-                    </>
-                  )}
                 </div>
               );
             })}

@@ -4,6 +4,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Clock3,
   ArrowRight,
   Sparkles,
 } from 'lucide-react'
@@ -15,6 +16,7 @@ import {
   FaYoutube,
 } from 'react-icons/fa6'
 import api from '../../api/api'
+import websiteDefaults from '@/data/websiteDefaults'
 
 const Footer = () => {
   const [settings, setSettings] = useState(null)
@@ -32,54 +34,58 @@ const Footer = () => {
     fetchWebsiteSettings()
   }, [])
 
-  const websiteName = settings?.websiteName || 'EventSphere'
+  const websiteName =
+    settings?.websiteName?.trim() || websiteDefaults.websiteName
 
   const footerDescription =
-    settings?.footer?.description ||
-    'A modern event and expo management platform designed to simplify planning, connect people, and create memorable experiences.'
+    settings?.footer?.description?.trim() ||
+    websiteDefaults.footer.description
 
   const copyright =
-    settings?.footer?.copyright ||
-    '© 2026 EventSphere Management. All rights reserved.'
+    settings?.footer?.copyright?.trim() ||
+    websiteDefaults.footer.copyright
 
   const phone =
-    settings?.contact?.phone || '+92 300 1234567'
+    settings?.contact?.phone?.trim() || websiteDefaults.contact.phone
 
   const email =
-    settings?.contact?.email || 'hello@eventsphere.com'
+    settings?.contact?.email?.trim() || websiteDefaults.contact.email
 
   const address =
-    settings?.contact?.address || 'Karachi, Pakistan'
+    settings?.contact?.address?.trim() || websiteDefaults.contact.address
+  const officeHours =
+    settings?.contact?.officeHours?.trim() ||
+    websiteDefaults.contact.officeHours
 
-  const socialLinks = settings?.socialLinks || {}
+  const socialLinks = settings?.socialLinks || websiteDefaults.socialLinks
 
   const socials = [
     {
       icon: <FaInstagram className="h-5 w-5" />,
       label: 'Instagram',
-      href: socialLinks.instagram || '#',
+      href: socialLinks.instagram?.trim(),
     },
     {
       icon: <FaLinkedinIn className="h-5 w-5" />,
       label: 'LinkedIn',
-      href: socialLinks.linkedin || '#',
+      href: socialLinks.linkedin?.trim(),
     },
     {
       icon: <FaFacebookF className="h-4 w-4" />,
       label: 'Facebook',
-      href: socialLinks.facebook || '#',
+      href: socialLinks.facebook?.trim(),
     },
     {
       icon: <FaXTwitter className="h-4 w-4" />,
       label: 'X',
-      href: socialLinks.twitter || '#',
+      href: socialLinks.twitter?.trim(),
     },
     {
       icon: <FaYoutube className="h-5 w-5" />,
       label: 'YouTube',
-      href: socialLinks.youtube || '#',
+      href: socialLinks.youtube?.trim(),
     },
-  ]
+  ].filter((social) => social.href)
 
   return (
     <footer className="relative bg-[#29251f] px-8 py-16 text-white md:px-16 lg:px-24">
@@ -136,8 +142,8 @@ const Footer = () => {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  target={social.href !== '#' ? '_blank' : undefined}
-                  rel={social.href !== '#' ? 'noopener noreferrer' : undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all duration-300 hover:-translate-y-1 hover:border-[#c49424] hover:bg-[#c49424]/10 hover:text-[#c49424]"
                 >
                   {social.icon}
@@ -308,6 +314,20 @@ const Footer = () => {
 
                   <p className="font-medium text-white/90">
                     {address}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Clock3 className="h-5 w-5 text-[#c49424]" />
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-white/40">
+                    Office Hours
+                  </p>
+
+                  <p className="font-medium text-white/90">
+                    {officeHours}
                   </p>
                 </div>
               </div>

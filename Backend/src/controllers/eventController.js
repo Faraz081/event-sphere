@@ -260,12 +260,12 @@ const rejectEvent = async (req, res) => {
   }
 };
 
-const deleteEvent = async (req, res) => {
+const removeEvent = async (req, res, isAdmin) => {
   try {
     const { id } = req.params;
     const exhibitor = getMyId(req);
 
-    if (!mongoose.isValidObjectId(exhibitor)) {
+    if (!isAdmin && !mongoose.isValidObjectId(exhibitor)) {
       return res.status(401).json({ error: "Please login again" });
     }
 
@@ -273,19 +273,31 @@ const deleteEvent = async (req, res) => {
       return res.status(400).json({ error: "Invalid event ID" });
     }
 
-    const event = await Event.findOneAndDelete({ _id: id, exhibitor });
+    const event = await Event.findOneAndDelete({
+      _id: id,
+      ...(!isAdmin && { exhibitor }),
+    });
 
     if (!event) {
-      return res.status(404).json({ error: "Event not found or not yours" });
+      return res.status(404).json({
+        error: isAdmin ? "Event not found" : "Event not found or not yours",
+      });
     }
 
     await Attendee.updateMany(
-      { event: id, bookingStatus: { $ne: "cancelled" } },
+      { event: id, bookingStatus: { $ne: "cancelled" }, passStatus: { $ne: "scanned" } },
       {
         bookingStatus: "cancelled",
         registrationStatus: "cancelled",
         passStatus: "revoked",
-        decisionNote: "This event was cancelled by the exhibitor",
+        decisionNote: `This event was cancelled by the ${isAdmin ? "administrator" : "exhibitor"}`,
+      }
+    );
+    await Attendee.updateMany(
+      { event: id, bookingStatus: { $ne: "cancelled" }, passStatus: "scanned" },
+      {
+        bookingStatus: "cancelled",
+        decisionNote: "This event was deleted after check-in",
       }
     );
 
@@ -294,6 +306,9 @@ const deleteEvent = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+const deleteEvent = (req, res) => removeEvent(req, res, false);
+const deleteAdminEvent = (req, res) => removeEvent(req, res, true);
 
 const updateEvent = async (req, res) => {
   try {
@@ -396,5 +411,6 @@ export {
   approveEvent,
   rejectEvent,
   deleteEvent,
+  deleteAdminEvent,
   updateEvent,
 };

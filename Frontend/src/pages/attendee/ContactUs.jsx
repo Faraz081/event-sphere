@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 
 import api from '../../api/api'
+import websiteDefaults from '@/data/websiteDefaults'
 
 const ContactUs = () => {
   const [settings, setSettings] = useState(null)
@@ -37,16 +38,16 @@ const ContactUs = () => {
   const contactSettings = settings?.contact || {}
 
   const contactEmail =
-    contactSettings.email || 'info@eventsphere.com'
+    contactSettings.email || websiteDefaults.contact.email
 
   const contactPhone =
-    contactSettings.phone || '+92 300 1234567'
+    contactSettings.phone || websiteDefaults.contact.phone
 
   const contactAddress =
-    contactSettings.address || 'Karachi, Pakistan'
+    contactSettings.address || websiteDefaults.contact.address
 
   const contactOfficeHours =
-    contactSettings.officeHours || 'Mon - Fri, 9 AM - 6 PM'
+    contactSettings.officeHours || websiteDefaults.contact.officeHours
 
   const handleChange = (e) => {
     const { name, value } = e.target

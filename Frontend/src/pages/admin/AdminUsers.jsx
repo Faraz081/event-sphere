@@ -39,7 +39,6 @@ import {
 
 const roleBadgeStyles = {
   admin: "bg-gold/20 text-gold border border-gold/40",
-  organizer: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
   attendee: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   exhibitor: "bg-emerald/20 text-emerald-300 border border-emerald/40",
 };
@@ -77,7 +76,6 @@ const AdminUsers = () => {
   const [stats, setStats] = useState({
     total: 0,
     admins: 0,
-    organizers: 0,
     attendees: 0,
     exhibitors: 0,
     active: 0,
@@ -349,7 +347,6 @@ const AdminUsers = () => {
                 className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
               >
                 <option value="all">All Roles</option>
-                <option value="organizer">Organizer</option>
                 <option value="attendee">Attendee</option>
                 <option value="exhibitor">Exhibitor</option>
               </select>
@@ -828,7 +825,6 @@ const AdminUsers = () => {
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
                     >
-                      <option value="organizer">Organizer</option>
                       <option value="attendee">Attendee</option>
                       <option value="exhibitor">Exhibitor</option>
                     </select>

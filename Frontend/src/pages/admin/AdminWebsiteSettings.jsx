@@ -2,49 +2,52 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import api from "@/api/api";
+import websiteDefaults from "@/data/websiteDefaults";
 
-const defaultSettings = {
-  websiteName: "EventSphere",
-  logo: "",
-  favicon: "",
-  tagline: "",
+const pickSetting = (value, fallback) =>
+  typeof value === "string" && value.trim() ? value.trim() : fallback;
 
-  hero: {
-    title: "",
-    description: "",
-    buttonText: "",
-    image: "",
-  },
-
-  about: {
-    title: "",
-    description: "",
-    image: "",
-  },
-
-  contact: {
-    email: "",
-    phone: "",
-    address: "",
-    officeHours: "",
-  },
-
-  socialLinks: {
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    youtube: "",
-    twitter: "",
-  },
-
-  footer: {
-    description: "",
-    copyright: "",
-  },
-};
+const mergeSettings = (data = {}) => ({
+  ...websiteDefaults,
+  ...data,
+  websiteName: pickSetting(data.websiteName, websiteDefaults.websiteName),
+  logo: pickSetting(data.logo, websiteDefaults.logo),
+  favicon: pickSetting(data.favicon, websiteDefaults.favicon),
+  tagline: pickSetting(data.tagline, websiteDefaults.tagline),
+  hero: Object.fromEntries(
+    Object.entries(websiteDefaults.hero).map(([key, fallback]) => [
+      key,
+      pickSetting(data.hero?.[key], fallback),
+    ])
+  ),
+  about: Object.fromEntries(
+    Object.entries(websiteDefaults.about).map(([key, fallback]) => [
+      key,
+      pickSetting(data.about?.[key], fallback),
+    ])
+  ),
+  contact: Object.fromEntries(
+    Object.entries(websiteDefaults.contact).map(([key, fallback]) => [
+      key,
+      pickSetting(data.contact?.[key], fallback),
+    ])
+  ),
+  socialLinks: Object.fromEntries(
+    Object.entries(websiteDefaults.socialLinks).map(([key, fallback]) => [
+      key,
+      pickSetting(data.socialLinks?.[key], fallback),
+    ])
+  ),
+  footer: Object.fromEntries(
+    Object.entries(websiteDefaults.footer).map(([key, fallback]) => [
+      key,
+      pickSetting(data.footer?.[key], fallback),
+    ])
+  ),
+});
 
 const AdminWebsiteSettings = () => {
-  const [settings, setSettings] = useState(defaultSettings);
+  const [settings, setSettings] = useState(websiteDefaults);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState("");
@@ -60,37 +63,9 @@ const AdminWebsiteSettings = () => {
       const response = await api.get("/api/website-settings");
 
       if (response.data && response.data.settings) {
-        const data = response.data.settings;
-
-        setSettings({
-          ...defaultSettings,
-          ...data,
-
-          hero: {
-            ...defaultSettings.hero,
-            ...(data.hero || {}),
-          },
-
-          about: {
-            ...defaultSettings.about,
-            ...(data.about || {}),
-          },
-
-          contact: {
-            ...defaultSettings.contact,
-            ...(data.contact || {}),
-          },
-
-          socialLinks: {
-            ...defaultSettings.socialLinks,
-            ...(data.socialLinks || {}),
-          },
-
-          footer: {
-            ...defaultSettings.footer,
-            ...(data.footer || {}),
-          },
-        });
+        setSettings(mergeSettings(response.data.settings));
+      } else {
+        setSettings(websiteDefaults);
       }
     } catch (error) {
       console.error("Failed to load website settings:", error);
@@ -128,40 +103,13 @@ const AdminWebsiteSettings = () => {
     try {
       setSaving(true);
 
-      const response = await api.put("/api/website-settings", settings);
+      const settingsToSave = mergeSettings(settings);
+      const response = await api.put("/api/website-settings", settingsToSave);
 
       if (response.data && response.data.settings) {
-        const data = response.data.settings;
-
-        setSettings({
-          ...defaultSettings,
-          ...data,
-
-          hero: {
-            ...defaultSettings.hero,
-            ...(data.hero || {}),
-          },
-
-          about: {
-            ...defaultSettings.about,
-            ...(data.about || {}),
-          },
-
-          contact: {
-            ...defaultSettings.contact,
-            ...(data.contact || {}),
-          },
-
-          socialLinks: {
-            ...defaultSettings.socialLinks,
-            ...(data.socialLinks || {}),
-          },
-
-          footer: {
-            ...defaultSettings.footer,
-            ...(data.footer || {}),
-          },
-        });
+        setSettings(mergeSettings(response.data.settings));
+      } else {
+        setSettings(settingsToSave);
       }
 
       toast.success("Website settings saved successfully");
@@ -268,11 +216,13 @@ const AdminWebsiteSettings = () => {
     try {
       setUploading(fieldType);
 
-      await api.delete("/api/upload/image", {
-        data: {
-          url: currentValue,
-        },
-      });
+      if (!currentValue.startsWith("/")) {
+        await api.delete("/api/upload/image", {
+          data: {
+            url: currentValue,
+          },
+        });
+      }
 
       let updatedSettings;
 
@@ -291,7 +241,7 @@ const AdminWebsiteSettings = () => {
           ...settings,
           hero: {
             ...settings.hero,
-            image: "",
+            image: websiteDefaults.hero.image,
           },
         };
       } else if (fieldType === "about") {
@@ -299,7 +249,7 @@ const AdminWebsiteSettings = () => {
           ...settings,
           about: {
             ...settings.about,
-            image: "",
+            image: websiteDefaults.about.image,
           },
         };
       } else {
@@ -308,7 +258,9 @@ const AdminWebsiteSettings = () => {
 
       setSettings(updatedSettings);
 
-      await api.put("/api/website-settings", updatedSettings);
+      const settingsToSave = mergeSettings(updatedSettings);
+      await api.put("/api/website-settings", settingsToSave);
+      setSettings(settingsToSave);
 
       toast.success("Image deleted successfully");
     } catch (error) {
@@ -354,7 +306,13 @@ const AdminWebsiteSettings = () => {
             <img
               src={currentValue}
               alt={label}
-              className="max-h-48 w-auto max-w-full rounded-lg object-contain"
+              className={
+                fieldType === "logo"
+                  ? "mr-2 h-8 max-h-9 w-auto max-w-30 shrink-0 rounded-md object-contain shadow-[0_1px_3px_rgba(0,0,0,0.3)] md:h-9 md:max-w-40"
+                  : fieldType === "favicon"
+                    ? "h-8 w-8 object-contain"
+                  : "max-h-48 w-auto max-w-full rounded-lg object-contain"
+              }
             />
 
             <button
@@ -647,7 +605,7 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="info@eventsphere.com"
+                  placeholder="hello@eventsphere.com"
                 />
               </div>
 

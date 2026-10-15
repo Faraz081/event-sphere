@@ -83,12 +83,16 @@ export default function BookNow() {
   }, [selectedEventId, formData.eventDate])
 
   const selectedEvent = events.find((ev) => ev._id === selectedEventId)
-  const organizer = selectedEvent?.companyName ?? selectedEvent?.exhibitorName
+  const exhibitorName = selectedEvent?.companyName ?? selectedEvent?.exhibitorName
 
   const handleEventChange = (e) => {
     const id = e.target.value
     setSelectedEventId(id)
-    id ? setSearchParams({ event: id }) : setSearchParams({})
+    if (id) {
+      setSearchParams({ event: id })
+    } else {
+      setSearchParams({})
+    }
     setFormData((prev) => ({ ...prev, eventDate: '' }))
   }
 
@@ -152,7 +156,7 @@ export default function BookNow() {
           Book Your <span className="text-[#c49424]">Event</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
-          Select an event, choose your date and the organizer will confirm your booking.
+          Select an event and choose your date. The exhibitor will review and confirm your booking.
         </p>
       </section>
 
@@ -251,9 +255,9 @@ export default function BookNow() {
                     {selectedEvent.eventType && (
                       <p className="font-semibold text-[#8d681b]">{selectedEvent.eventType}</p>
                     )}
-                    {organizer && (
+                    {exhibitorName && (
                       <p>
-                        Organized by <span className="font-semibold text-[#8d681b]">{organizer}</span>
+                        Hosted by <span className="font-semibold text-[#8d681b]">{exhibitorName}</span>
                       </p>
                     )}
                     {selectedEvent.location && (
@@ -402,7 +406,7 @@ export default function BookNow() {
             )}
 
             <div className="flex flex-col gap-4 border-t border-[#eee5d5] pt-8 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-[#777067]">The organizer will review your request and confirm it.</p>
+              <p className="text-sm text-[#777067]">The exhibitor will review your request and confirm it.</p>
               <button
                 type="submit"
                 disabled={submitting || !user || !isAttendee || dateBooked}
