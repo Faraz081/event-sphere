@@ -8,7 +8,7 @@ import { imageToPngDataUrl } from "@/lib/imageToPngDataUrl";
 
 const EntryPass = ({ booking, user }) => {
   const websiteSettings = useSelector((state) => state.websiteSettings.settings);
-  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const websiteName = websiteSettings?.websiteName?.trim() || "";
   const logo = websiteSettings?.logo?.trim();
   const passCode = booking.passCode || booking.entryPassId;
  const SITE_URL = "https://event-sphere-z3ci-gold.vercel.app";
@@ -32,7 +32,7 @@ const checkInUrl = passCode
       const ticketHeight = 95;
 
       const attendeeName = user?.name || "Valued Guest";
-      const expoName = booking.event?.title || booking.expo?.title || booking.eventName || `${websiteName} Event`;
+      const expoName = booking.event?.title || booking.expo?.title || booking.eventName || "Event";
       const eventDate = booking.eventDate || booking.expo?.date || booking.event?.date;
       const date = eventDate
         ? new Date(eventDate).toLocaleDateString("en-US", {
@@ -70,9 +70,11 @@ const checkInUrl = passCode
           console.warn("Could not add website logo to entry pass PDF:", error);
         }
       }
-      pdf.text(`${websiteName.toUpperCase()} EXCLUSIVE ACCESS`, brandX, 21, {
-        maxWidth: 108,
-      });
+      if (websiteName) {
+        pdf.text(`${websiteName.toUpperCase()} EXCLUSIVE ACCESS`, brandX, 21, {
+          maxWidth: 108,
+        });
+      }
 
       pdf.setTextColor(47, 42, 36);
       pdf.setFont("times", "bold");
@@ -144,7 +146,8 @@ const checkInUrl = passCode
       pdf.text(passCode || "ESP-PASS", 176, 76, { align: "center" });
 
       const safeWebsiteName = websiteName.replace(/[^\w-]+/g, "_").slice(0, 40);
-      pdf.save(`${safeWebsiteName}-Pass-${passCode || "VIP"}.pdf`);
+      const filePrefix = safeWebsiteName ? `${safeWebsiteName}-` : "";
+      pdf.save(`${filePrefix}Pass-${passCode || "VIP"}.pdf`);
       toast.success("Entry pass downloaded");
     } catch (error) {
       console.error("Entry pass download error:", error);
@@ -162,7 +165,9 @@ const checkInUrl = passCode
             ) : (
               <Sparkles size={18} className="text-[#c49424]" />
             )}
-            <span className="truncate text-sm font-bold text-[#2f2a24]">{websiteName}</span>
+            {websiteName && (
+              <span className="truncate text-sm font-bold text-[#2f2a24]">{websiteName}</span>
+            )}
           </div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#8a8379]">Pass code</p>
           <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[#2f2a24]">{passCode || "Not issued"}</p>

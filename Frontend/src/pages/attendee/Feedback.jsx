@@ -98,7 +98,7 @@ const Feedback = () => {
 
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
           Send us a suggestion or report an issue. Your feedback helps us
-          improve the EventSphere platform.
+          improve the service.
         </p>
 
       </section>

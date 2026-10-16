@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import websiteDefaults from "@/data/websiteDefaults";
 import { fetchWebsiteSettings } from "@/store/slices/websiteSettingsSlice";
 
 export default function WebsiteSettingsLoader() {
@@ -18,11 +17,15 @@ export default function WebsiteSettingsLoader() {
       return;
     }
 
-    document.title =
-      settings?.websiteName?.trim() || websiteDefaults.websiteName;
+    document.title = settings?.websiteName?.trim() || "";
 
-    const faviconUrl = settings?.favicon?.trim() || websiteDefaults.favicon;
+    const faviconUrl = settings?.favicon?.trim();
     let favicon = document.querySelector('link[rel="icon"]');
+
+    if (!faviconUrl) {
+      favicon?.remove();
+      return;
+    }
 
     if (!favicon) {
       favicon = document.createElement("link");

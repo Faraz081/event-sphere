@@ -20,6 +20,9 @@ const NewPassword = () => {
   const { email, otp, loading } = useSelector(
     (state) => state.forgotPassword
   );
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings);
+  const websiteName = websiteSettings?.websiteName?.trim() || "";
+  const logo = websiteSettings?.logo?.trim();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,8 +74,12 @@ const NewPassword = () => {
       <div className="w-full max-w-md rounded-[2rem] border border-[#eadfca] bg-white p-8 shadow-xl sm:p-10">
 
         <div className="mb-8 flex items-center justify-center font-serif text-2xl font-semibold text-[#2f2a24]">
-          <Sparkles className="mr-2 h-6 w-6 text-[#c49424]" />
-          Event<span className="text-[#c49424]">Sphere</span>
+          {logo ? (
+            <img src={logo} alt="" className="mr-2 max-h-10 max-w-40 object-contain" />
+          ) : (
+            <Sparkles className="mr-2 h-6 w-6 text-[#c49424]" />
+          )}
+          {websiteName}
         </div>
 
         <div className="text-center">
@@ -85,9 +92,11 @@ const NewPassword = () => {
             New Password
           </h1>
 
-          <p className="mt-3 text-sm leading-6 text-[#5d574f]">
-            Create a new password for your EventSphere account.
-          </p>
+          {websiteName && (
+            <p className="mt-3 text-sm leading-6 text-[#5d574f]">
+              Create a new password for your {websiteName} account.
+            </p>
+          )}
 
         </div>
 

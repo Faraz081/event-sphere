@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { ChevronDown, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X } from "lucide-react";
 import { logout } from "@/store/slices/authSlice";
 import { fetchUnreadCounts } from "@/store/slices/messageSlice";
 import { dashboardNavigation, getRoleHomePath, roleLabels } from "@/layouts/dashboardConfig";
@@ -18,8 +18,7 @@ const DashboardLayout = ({ role, children }) => {
   const { currentUser, user } = useSelector((state) => state.auth);
   const websiteSettings = useSelector((state) => state.websiteSettings.settings);
   const unread = useSelector((state) => state.message.unread);
-  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
-  const logo = websiteSettings?.logo?.trim();
+  const logo = websiteSettings?.logo?.trim() || "";
   const activeUser = currentUser || user;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -59,17 +58,26 @@ const DashboardLayout = ({ role, children }) => {
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
             "transform transition-transform duration-300 ease-out"].join(" ")}>
           <div className="border-b border-border px-6 py-5">
-            <div className="flex items-center gap-3">
-              <button type="button" onClick={handleHomeClick} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-background text-gold" aria-label="Go to dashboard home">
-                <LayoutDashboard size={20} />
-              </button>
-              <div className="flex min-w-0 items-center gap-2">
-                {logo && <img src={logo} alt="" className="max-h-8 max-w-12 shrink-0 object-contain" />}
+            <div className="flex min-w-0 flex-col items-start gap-2">
+              {logo && (
+                <button
+                  type="button"
+                  onClick={handleHomeClick}
+                  className="max-w-full"
+                  aria-label="Go to dashboard home"
+                >
+                  <img
+                    src={logo}
+                    alt=""
+                    className="max-h-10 max-w-56 object-contain object-left"
+                  />
+                </button>
+              )}
+              {role !== "admin" && (
                 <div className="min-w-0">
-                <h1 className="max-w-44 truncate font-display text-2xl font-bold text-gold">{websiteName}</h1>
-                <p className="text-sm text-muted">{roleLabels[role]} Portal</p>
+                  <p className="text-sm text-muted">{roleLabels[role]} Portal</p>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 

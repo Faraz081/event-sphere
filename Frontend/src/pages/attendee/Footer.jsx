@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import {
   Phone,
   Mail,
@@ -15,49 +16,19 @@ import {
   FaXTwitter,
   FaYoutube,
 } from 'react-icons/fa6'
-import api from '../../api/api'
-import websiteDefaults from '@/data/websiteDefaults'
 
 const Footer = () => {
-  const [settings, setSettings] = useState(null)
+  const settings = useSelector((state) => state.websiteSettings.settings)
 
-  useEffect(() => {
-    const fetchWebsiteSettings = async () => {
-      try {
-        const response = await api.get('/api/website-settings')
-        setSettings(response.data.settings)
-      } catch (error) {
-        console.error('Failed to load website settings:', error)
-      }
-    }
-
-    fetchWebsiteSettings()
-  }, [])
-
-  const websiteName =
-    settings?.websiteName?.trim() || websiteDefaults.websiteName
-
-  const footerDescription =
-    settings?.footer?.description?.trim() ||
-    websiteDefaults.footer.description
-
-  const copyright =
-    settings?.footer?.copyright?.trim() ||
-    websiteDefaults.footer.copyright
-
-  const phone =
-    settings?.contact?.phone?.trim() || websiteDefaults.contact.phone
-
-  const email =
-    settings?.contact?.email?.trim() || websiteDefaults.contact.email
-
-  const address =
-    settings?.contact?.address?.trim() || websiteDefaults.contact.address
-  const officeHours =
-    settings?.contact?.officeHours?.trim() ||
-    websiteDefaults.contact.officeHours
-
-  const socialLinks = settings?.socialLinks || websiteDefaults.socialLinks
+  const websiteName = settings?.websiteName?.trim() || ''
+  const logo = settings?.logo?.trim() || ''
+  const footerDescription = settings?.footer?.description?.trim() || ''
+  const copyright = settings?.footer?.copyright?.trim() || ''
+  const phone = settings?.contact?.phone?.trim() || ''
+  const email = settings?.contact?.email?.trim() || ''
+  const address = settings?.contact?.address?.trim() || ''
+  const officeHours = settings?.contact?.officeHours?.trim() || ''
+  const socialLinks = settings?.socialLinks || {}
 
   const socials = [
     {
@@ -97,15 +68,21 @@ const Footer = () => {
 
             <Link
               to="/"
-              className="inline-flex items-center font-serif text-2xl font-medium tracking-wider text-white transition-opacity hover:opacity-80"
+              className="inline-flex items-center gap-2 font-serif text-2xl font-medium tracking-wider text-white transition-opacity hover:opacity-80"
             >
-              <Sparkles className="mr-2 h-6 w-6 text-[#c49424]" />
+              {logo ? (
+                <img src={logo} alt="" className="max-h-8 max-w-32 object-contain" />
+              ) : (
+                <Sparkles className="h-6 w-6 text-[#c49424]" />
+              )}
               {websiteName}
             </Link>
 
-            <p className="mt-4 max-w-md text-sm leading-6 text-white/60">
-              {footerDescription}
-            </p>
+            {footerDescription && (
+              <p className="mt-4 max-w-md text-sm leading-6 text-white/60">
+                {footerDescription}
+              </p>
+            )}
 
             <div className="mt-6 max-w-md">
               <p className="text-xs font-semibold uppercase tracking-wider text-white/80">
@@ -273,9 +250,10 @@ const Footer = () => {
               Contact Us
             </h3>
 
+            {(phone || email || address || officeHours) && (
             <div className="mt-5 space-y-5 text-sm text-white/70">
 
-              <div className="flex items-center gap-3">
+              {phone && <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-[#c49424]" />
 
                 <div>
@@ -287,9 +265,9 @@ const Footer = () => {
                     {phone}
                   </p>
                 </div>
-              </div>
+              </div>}
 
-              <div className="flex items-center gap-3">
+              {email && <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-[#c49424]" />
 
                 <div>
@@ -301,9 +279,9 @@ const Footer = () => {
                     {email}
                   </p>
                 </div>
-              </div>
+              </div>}
 
-              <div className="flex items-center gap-3">
+              {address && <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-[#c49424]" />
 
                 <div>
@@ -315,9 +293,9 @@ const Footer = () => {
                     {address}
                   </p>
                 </div>
-              </div>
+              </div>}
 
-              <div className="flex items-center gap-3">
+              {officeHours && <div className="flex items-center gap-3">
                 <Clock3 className="h-5 w-5 text-[#c49424]" />
 
                 <div>
@@ -329,9 +307,10 @@ const Footer = () => {
                     {officeHours}
                   </p>
                 </div>
-              </div>
+              </div>}
 
             </div>
+            )}
 
             <Link
               to="/book-now"
@@ -347,7 +326,7 @@ const Footer = () => {
       
         <div className="flex flex-col gap-4 pt-8 text-sm text-white/40 md:flex-row md:items-center md:justify-between">
 
-          <p>{copyright}</p>
+          {copyright && <p>{copyright}</p>}
 
           <div className="flex gap-6">
 

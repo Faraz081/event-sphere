@@ -31,7 +31,14 @@ const websiteSettingsSlice = createSlice({
     error: null,
     loaded: false,
   },
-  reducers: {},
+  reducers: {
+    replaceWebsiteSettings: (state, action) => {
+      state.settings = action.payload;
+      state.loaded = true;
+      state.loading = false;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchWebsiteSettings.pending, (state) => {
@@ -50,4 +57,5 @@ const websiteSettingsSlice = createSlice({
   },
 });
 
+export const { replaceWebsiteSettings } = websiteSettingsSlice.actions;
 export default websiteSettingsSlice.reducer;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import {
   ArrowUpRight,
   ArrowRight,
@@ -18,7 +19,6 @@ import api, { API_BASE_URL } from '../../api/api'
 import { fetchPublicExpos } from '@/api/publicService'
 import BookmarkButton from '@/components/shared/BookmarkButton'
 import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
-import websiteDefaults from '@/data/websiteDefaults'
 
 const getImage = (banner) => {
   if (!banner) return gallery1
@@ -45,7 +45,8 @@ const getBadge = (iso) => {
 
 const Home = () => {
   const [openFaq, setOpenFaq] = useState(null)
-  const [websiteSettings, setWebsiteSettings] = useState(null)
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings)
+  const websiteName = websiteSettings?.websiteName?.trim() || ""
   const [expos, setExpos] = useState([])
   const [exposLoading, setExposLoading] = useState(true)
   const [events, setEvents] = useState([])
@@ -81,48 +82,29 @@ const [eventsLoading, setEventsLoading] = useState(true)
   fetchEvents()
 }, [])
 
-  useEffect(() => {
-    const fetchWebsiteSettings = async () => {
-      try {
-        const response = await api.get('/api/website-settings')
-        setWebsiteSettings(response.data?.settings || null)
-      } catch (error) {
-        console.error('Failed to load website settings:', error)
-      }
-    }
-
-    fetchWebsiteSettings()
-  }, [])
-
-  const mainBannerImage =
-    websiteSettings?.hero?.image?.trim() || websiteDefaults.hero.image
-  const mainBannerTitle =
-    websiteSettings?.hero?.title?.trim() || websiteDefaults.hero.title
-  const mainBannerDescription =
-    websiteSettings?.hero?.description?.trim() ||
-    websiteDefaults.hero.description
-  const mainBannerButtonText =
-    websiteSettings?.hero?.buttonText?.trim() || websiteDefaults.hero.buttonText
-  const tagline =
-    websiteSettings?.tagline?.trim() || websiteDefaults.tagline
-  const aboutTitle =
-    websiteSettings?.about?.title?.trim() || websiteDefaults.about.title
-  const aboutDescription =
-    websiteSettings?.about?.description?.trim() ||
-    websiteDefaults.about.description
-  const aboutSectionImage =
-    websiteSettings?.about?.image?.trim() || websiteDefaults.about.image
+  const mainBannerImage = websiteSettings?.hero?.image?.trim() || ""
+  const mainBannerTitle = websiteSettings?.hero?.title?.trim() || ""
+  const mainBannerDescription = websiteSettings?.hero?.description?.trim() || ""
+  const mainBannerButtonText = websiteSettings?.hero?.buttonText?.trim() || ""
+  const tagline = websiteSettings?.tagline?.trim() || ""
+  const aboutTitle = websiteSettings?.about?.title?.trim() || ""
+  const aboutDescription = websiteSettings?.about?.description?.trim() || ""
+  const aboutSectionImage = websiteSettings?.about?.image?.trim() || ""
 
   const faqs = [
     {
       question: 'How do I register as an exhibitor?',
       answer:
-        'You can register as an exhibitor by creating an account and submitting your exhibitor details through the EventSphere platform.',
+        websiteName
+          ? `You can register as an exhibitor by creating an account and submitting your exhibitor details through the ${websiteName} platform.`
+          : 'You can register as an exhibitor by creating an account and submitting your exhibitor details through the platform.',
     },
     {
       question: 'Can I attend multiple events with one account?',
       answer:
-        'Yes. One EventSphere account can be used to register for and manage participation in multiple events.',
+        websiteName
+          ? `Yes. One ${websiteName} account can be used to register for and manage participation in multiple events.`
+          : 'Yes. One account can be used to register for and manage participation in multiple events.',
     },
     {
       question: 'How does booth selection work for exhibitors?',
@@ -143,33 +125,41 @@ const [eventsLoading, setEventsLoading] = useState(true)
       <section className="relative min-h-screen overflow-hidden pt-28">
 
         
-        <img
-          src={mainBannerImage}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        {mainBannerImage && (
+          <img
+            src={mainBannerImage}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
 
         
         <div className="absolute inset-0 bg-[#f8f5ef]/80" />
 
         <div className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center px-6 lg:px-10">
 
-          <div className="grid w-full items-center gap-12 lg:grid-cols-2">
+          <div className={`grid w-full items-center gap-12 ${mainBannerImage ? "lg:grid-cols-2" : ""}`}>
 
             
             <div className="max-w-2xl">
 
-              <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-                {tagline}
-              </p>
+              {tagline && (
+                <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
+                  {tagline}
+                </p>
+              )}
 
-              <h1 className="whitespace-pre-line font-serif text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-                {mainBannerTitle}
-              </h1>
+              {mainBannerTitle && (
+                <h1 className="whitespace-pre-line font-serif text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+                  {mainBannerTitle}
+                </h1>
+              )}
 
-              <p className="mt-7 max-w-xl text-base leading-7 text-[#5d574f] sm:text-lg">
-                {mainBannerDescription}
-              </p>
+              {mainBannerDescription && (
+                <p className="mt-7 max-w-xl text-base leading-7 text-[#5d574f] sm:text-lg">
+                  {mainBannerDescription}
+                </p>
+              )}
 
               <div className="mt-8 flex flex-wrap gap-4">
 
@@ -180,33 +170,33 @@ const [eventsLoading, setEventsLoading] = useState(true)
                   Explore Events
                 </Link>
 
-                <Link
-                  to="/book-now"
-                  className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-                >
-                  {mainBannerButtonText}
-                </Link>
+                {mainBannerButtonText && (
+                  <Link
+                    to="/book-now"
+                    className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
+                  >
+                    {mainBannerButtonText}
+                  </Link>
+                )}
 
               </div>
 
             </div>
 
             
-            <div className="relative flex justify-center lg:justify-end">
+            {mainBannerImage && (
+              <div className="relative flex justify-center lg:justify-end">
+                <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-[#c49424]/25 blur-2xl" />
 
-              <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-[#c49424]/25 blur-2xl" />
-
-              <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] border border-white/60 shadow-2xl">
-
-                <img
-                  src={mainBannerImage}
-                  alt="Elegant event venue"
-                  className="h-full w-full object-cover"
-                />
-
+                <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] border border-white/60 shadow-2xl">
+                  <img
+                    src={mainBannerImage}
+                    alt="Elegant event venue"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
               </div>
-
-            </div>
+            )}
 
           </div>
 
@@ -224,23 +214,23 @@ const [eventsLoading, setEventsLoading] = useState(true)
           
           <div>
 
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-              About EventSphere
-            </p>
+            {websiteName && (
+              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
+                About {websiteName}
+              </p>
+            )}
 
-            <h2 className="font-serif whitespace-pre-line text-4xl font-bold leading-tight sm:text-5xl">
-              {aboutTitle}
-            </h2>
+            {aboutTitle && (
+              <h2 className="font-serif whitespace-pre-line text-4xl font-bold leading-tight sm:text-5xl">
+                {aboutTitle}
+              </h2>
+            )}
 
-            <p className="mt-6 leading-7 text-[#5d574f]">
-              {aboutDescription}
-            </p>
-
-            <p className="mt-4 leading-7 text-[#5d574f]">
-              Whether it is a corporate expo, a wedding celebration or a
-              special gathering, EventSphere helps bring every important
-              part of an event together.
-            </p>
+            {aboutDescription && (
+              <p className="mt-6 leading-7 text-[#5d574f]">
+                {aboutDescription}
+              </p>
+            )}
 
             <Link
               to="/about-platform"
@@ -253,13 +243,15 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
 
           <div className="space-y-5">
-            <div className="relative h-64 overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-lg sm:h-80">
-              <img
-                src={aboutSectionImage}
-                alt="EventSphere event management"
-                className="h-full w-full object-cover"
-              />
-            </div>
+            {aboutSectionImage && (
+              <div className="relative h-64 overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-lg sm:h-80">
+                <img
+                  src={aboutSectionImage}
+                  alt={websiteName ? `${websiteName} event management` : ""}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4 rounded-[2rem] bg-white p-5 shadow-lg sm:gap-5 sm:p-8">
               {[
@@ -590,8 +582,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl text-[#5d574f]">
-              Real experiences from clients who trusted EventSphere
-              with their special events.
+              Real experiences from clients who trusted us with their special events.
             </p>
 
           </div>
@@ -685,7 +676,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
                 </div>
 
                 <p className="mt-4 leading-7 text-[#5d574f]">
-                  EventSphere made our wedding management much easier.
+                  Our team made our wedding management much easier.
                   The team handled everything professionally and kept
                   the entire event well organized.
                 </p>
@@ -849,7 +840,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
                 </div>
 
                 <p className="mt-4 leading-7 text-[#5d574f]">
-                  EventSphere helped us manage our business expo
+                  The team helped us manage our business expo
                   efficiently. The organization and communication
                   throughout the event were excellent.
                 </p>
@@ -890,7 +881,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
                 </div>
 
                 <p className="mt-4 leading-7 text-[#5d574f]">
-                  EventSphere helped us manage our business expo
+                  The team helped us manage our business expo
                   efficiently. The organization and communication
                   throughout the event were excellent.
                 </p>
@@ -931,7 +922,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
                 </div>
 
                 <p className="mt-4 leading-7 text-[#5d574f]">
-                  EventSphere helped us manage our business expo
+                  The team helped us manage our business expo
                   efficiently. The organization and communication
                   throughout the event were excellent.
                 </p>
@@ -972,7 +963,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
                 </div>
 
                 <p className="mt-4 leading-7 text-[#5d574f]">
-                  We had a wonderful experience with EventSphere.
+                  We had a wonderful experience with the team.
                   Their team managed every detail carefully and made
                   our mehndi event memorable.
                 </p>

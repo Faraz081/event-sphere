@@ -2,58 +2,39 @@ import weddingEventImage from '../../assets/event-gallery/wedding-1.jpg'
 import corporateEventImage from '../../assets/event-gallery/corporate-1.jpg'
 import birthdayEventImage from '../../assets/event-gallery/birthday-1.jpg'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Target, Eye, CalendarCheck, Users, Diamond, Headset, ChevronDown  } from 'lucide-react'
-import api from '../../api/api'
-import websiteDefaults from '@/data/websiteDefaults'
 
 export default function AboutPlatform() {
-  const [settings, setSettings] = useState(null)
+  const settings = useSelector((state) => state.websiteSettings.settings)
   const [openFaq, setOpenFaq] = useState(null)
 
-  useEffect(() => {
-    const fetchWebsiteSettings = async () => {
-      try {
-        const response = await api.get('/api/website-settings')
-        setSettings(response.data.settings)
-      } catch (error) {
-        console.error('Failed to load website settings:', error)
-      }
-    }
-
-    fetchWebsiteSettings()
-  }, [])
-
+  const websiteName = settings?.websiteName?.trim() || ''
   const aboutSettings = settings?.about || {}
 
-  const aboutTitle =
-    aboutSettings.title?.trim() || websiteDefaults.about.title
-
-  const aboutDescription =
-    aboutSettings.description?.trim() ||
-    websiteDefaults.about.description
-
-  const aboutImage =
-    aboutSettings.image?.trim() || websiteDefaults.about.image
+  const aboutTitle = aboutSettings.title?.trim() || ''
+  const aboutDescription = aboutSettings.description?.trim() || ''
+  const aboutImage = aboutSettings.image?.trim() || ''
 
   const teamMembers = [
     {
       name: 'Deepak Kumar',
       role: 'Founder & Manager',
       description:
-        'I am the Founder & Manager at EventSphere. We are always here for providing man power services in all types of events.',
+        'I am the Founder & Manager. We are always here to provide event services.',
     },
     {
       name: 'Shahid Raza',
       role: 'Online Booking Manager',
       description:
-        'I am an Online Booking Manager at EventSphere, I solve the problems of our clients related to bookings.',
+        'I am an Online Booking Manager who solves client questions related to bookings.',
     },
     {
       name: 'Rohit Raj',
       role: 'Creative Manager',
       description:
-        'I am a creative manager at EventSphere, where I lead talented design teams and translate brand visions into immersive event experiences that captivate thousands of attendees.',
+        'I am a creative manager who leads design teams and translates brand visions into immersive event experiences.',
     },
     
     {
@@ -75,29 +56,34 @@ export default function AboutPlatform() {
     <main className="min-h-screen space-y-24 bg-[#fffdf9] px-6 pt-48 pb-24 lg:px-10">
 
       <section className="mx-auto max-w-7xl">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className={`grid items-center gap-12 ${aboutImage ? 'lg:grid-cols-2' : ''}`}>
 
-          <div className="group h-72 overflow-hidden rounded-[2rem] bg-[#f8f5ef] shadow-lg sm:h-96">
-            <img
-              src={aboutImage}
-              alt="EventSphere event management platform"        
-              className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-
-            />
-          </div>
+          {aboutImage && (
+            <div className="group h-72 overflow-hidden rounded-[2rem] bg-[#f8f5ef] shadow-lg sm:h-96">
+              <img
+                src={aboutImage}
+                alt={websiteName ? `${websiteName} event management platform` : ''}
+                className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+              />
+            </div>
+          )}
 
           <div>
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
               Who We Are
             </p>
 
-            <h1 className="font-serif text-4xl font-bold leading-tight text-[#2f2a24] sm:text-5xl">
-              {aboutTitle}
-            </h1>
+            {aboutTitle && (
+              <h1 className="font-serif text-4xl font-bold leading-tight text-[#2f2a24] sm:text-5xl">
+                {aboutTitle}
+              </h1>
+            )}
 
-            <p className="mt-6 leading-7 text-[#5d574f]">
-              {aboutDescription}
-            </p>
+            {aboutDescription && (
+              <p className="mt-6 leading-7 text-[#5d574f]">
+                {aboutDescription}
+              </p>
+            )}
 
           </div>
 
@@ -146,7 +132,7 @@ export default function AboutPlatform() {
         <div className="text-center mb-12">
 
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#2f2a24]">
-            Why Choose <span className="text-[#c49424]">EventSphere?</span>
+            Why Choose Us?
           </h2>
 
           <p className="mt-3 text-[#5d574f] max-w-2xl mx-auto">
@@ -349,8 +335,8 @@ export default function AboutPlatform() {
           </h3>
 
           <p className="mx-auto mt-4 max-w-xl leading-7 text-white/75">
-            Bring your ideas to EventSphere and take the next step toward
-            a well-organized, unforgettable event.
+            Bring your ideas and take the next step toward a well-organized,
+            unforgettable event.
           </p>
 
           <a
@@ -418,21 +404,21 @@ export default function AboutPlatform() {
             </h2>
 
             <p className="mt-3 text-[#5d574f]">
-              Everything you need to know about EventSphere.
+              Everything you need to know about event planning.
             </p>
           </div>
 
           <div className="mx-auto mt-12 max-w-4xl space-y-3">
             {[
               {
-                question: 'What is EventSphere?',
+                question: 'What is this platform?',
                 answer:
-                  'EventSphere is an event and expo management platform designed to help event teams manage planning, exhibitors, attendees and event details in one place.',
+                  'This is an event and expo management platform designed to help event teams manage planning, exhibitors, attendees and event details in one place.',
               },
               {
                 question: 'What types of events can I manage?',
                 answer:
-                  'You can use EventSphere for business expos, corporate networking events, weddings, celebrations and other special gatherings.',
+                  'You can use this platform for business expos, corporate networking events, weddings, celebrations and other special gatherings.',
               },
               {
                 question: 'How can I book an event?',
@@ -445,7 +431,7 @@ export default function AboutPlatform() {
                   'Exhibitors can explore event opportunities and, when the relevant features are available, register their company and manage their participation.',
               },
               {
-                question: 'How can I contact EventSphere?',
+                question: 'How can I get in touch?',
                 answer:
                   'Visit our Contact page to send us your questions or request assistance with your event.',
               },

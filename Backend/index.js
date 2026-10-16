@@ -22,6 +22,7 @@ import attendeeSelfRoute from "./src/routes/attendeeSelfRoute.js";
 import feedbackRoute from "./src/routes/feedbackRoute.js";
 import adminTicketRoute from "./src/routes/adminTicketRoute.js";
 import adminEventRoute from "./src/routes/adminEventRoute.js";
+import contactRoute from "./src/routes/contactRoute.js";
 import ensureAdminExists from "./src/controllers/authController.js";
 
 const app = express();
@@ -128,6 +129,7 @@ app.use("/api/exhibitor-profile", router);
 app.use("/api/public", publicRoute);
 app.use("/api/attendee-portal", attendeeSelfRoute);
 app.use("/api/feedback", feedbackRoute);
+app.use("/api/contact", contactRoute);
 app.use("/api/admin/tickets", adminTicketRoute);
 app.use("/api/admin/events", adminEventRoute);
 

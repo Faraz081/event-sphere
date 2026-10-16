@@ -37,6 +37,7 @@ const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const ExhibitorEvents = lazy(() => import("./pages/exhibitor/ExhibitorEvents"));
 const ExpoDetail = lazy(() => import("./pages/attendee/ExpoDetail"));
 const AdminFeedback = lazy(() => import("./pages/admin/AdminFeedback"));
+const AdminContactMessages = lazy(() => import("./pages/admin/AdminContactMessages"));
 const AdminTickets = lazy(() => import("./pages/admin/AdminTickets"));
 const AttendeeMessages = lazy(() => import("./pages/attendee/AttendeeMessages"));
 const AdminEvents = lazy(() => import("./pages/admin/AdminEvents"));
@@ -113,6 +114,7 @@ function App() {
             <Route path="/admin/website-settings" element={<AdminWebsiteSettings />} />
             <Route path="/admin/messages" element={<AdminMessages />} />
             <Route path="/admin/feedback" element={<AdminFeedback />}/>
+            <Route path="/admin/contact-messages" element={<AdminContactMessages />} />
             <Route path="/admin/tickets" element={<AdminTickets />} />
             <Route path="/admin/events" element={<AdminEvents />} />
           </Route>

@@ -2,17 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import heroImage from "@/assets/hero.jpg";
 
 const AuthLayout = ({ title, subtitle, children }) => {
   const websiteSettings = useSelector((state) => state.websiteSettings.settings);
-  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const websiteName = websiteSettings?.websiteName?.trim() || "";
   const logo = websiteSettings?.logo?.trim();
+  const heroImage = websiteSettings?.hero?.image?.trim();
 
   return (
     <div className="auth-theme min-h-screen lg:grid lg:grid-cols-[0.95fr_1.05fr]">
       <aside className="relative hidden min-h-screen overflow-hidden bg-[#29251f] bg-cover bg-center lg:block"
-        style={{ backgroundImage: `url(${heroImage})` }}>
+        style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}>
           
         <div className="absolute inset-0 bg-linear-to-t from-[#211a12]/90 via-[#211a12]/35 to-[#211a12]/10" />
         <div className="relative flex min-h-screen flex-col justify-between p-12 xl:p-16">
@@ -24,7 +24,7 @@ const AuthLayout = ({ title, subtitle, children }) => {
                 <Sparkles size={20} />
               </span>
             )}
-            <span className="font-display text-2xl font-semibold">{websiteName}</span>
+            {websiteName && <span className="font-display text-2xl font-semibold">{websiteName}</span>}
           </Link>
 
           <div className="max-w-xl pb-5 text-white">
@@ -44,7 +44,11 @@ const AuthLayout = ({ title, subtitle, children }) => {
             </div>
           </div>
 
-          <p className="text-xs tracking-wide text-white/60">EVENTSPHERE · EVENT MANAGEMENT</p>
+          {websiteName && (
+            <p className="text-xs tracking-wide text-white/60">
+              {websiteName.toUpperCase()} · EVENT MANAGEMENT
+            </p>
+          )}
         </div>
       </aside>
 
@@ -66,9 +70,11 @@ const AuthLayout = ({ title, subtitle, children }) => {
 
         <div className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center py-10">
           <div className="mb-8">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-gold">
-              Welcome to {websiteName}
-            </p>
+            {websiteName && (
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-gold">
+                Welcome to {websiteName}
+              </p>
+            )}
             <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               {title}
             </h1>

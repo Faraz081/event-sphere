@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { toast } from 'sonner'
+import { submitContactMessage } from '@/api/contactService'
 import {
   Mail,
   Phone,
@@ -8,11 +11,8 @@ import {
   MessageCircle,
 } from 'lucide-react'
 
-import api from '../../api/api'
-import websiteDefaults from '@/data/websiteDefaults'
-
 const ContactUs = () => {
-  const [settings, setSettings] = useState(null)
+  const settings = useSelector((state) => state.websiteSettings.settings)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,33 +21,14 @@ const ContactUs = () => {
     subject: '',
     message: '',
   })
-
-  useEffect(() => {
-    const fetchWebsiteSettings = async () => {
-      try {
-        const response = await api.get('/api/website-settings')
-        setSettings(response.data.settings)
-      } catch (error) {
-        console.error('Failed to load website settings:', error)
-      }
-    }
-
-    fetchWebsiteSettings()
-  }, [])
+  const [submitting, setSubmitting] = useState(false)
 
   const contactSettings = settings?.contact || {}
 
-  const contactEmail =
-    contactSettings.email || websiteDefaults.contact.email
-
-  const contactPhone =
-    contactSettings.phone || websiteDefaults.contact.phone
-
-  const contactAddress =
-    contactSettings.address || websiteDefaults.contact.address
-
-  const contactOfficeHours =
-    contactSettings.officeHours || websiteDefaults.contact.officeHours
+  const contactEmail = contactSettings.email?.trim() || ''
+  const contactPhone = contactSettings.phone?.trim() || ''
+  const contactAddress = contactSettings.address?.trim() || ''
+  const contactOfficeHours = contactSettings.officeHours?.trim() || ''
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -58,20 +39,22 @@ const ContactUs = () => {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-
-    console.log('Contact Form:', formData)
-
-    alert('Your message has been submitted successfully!')
-
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-    })
+    try {
+      setSubmitting(true)
+      const response = await submitContactMessage(formData)
+      toast.success(response.message || 'Your message has been submitted successfully')
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+    } catch (error) {
+      toast.error(
+        error.response?.data?.error ||
+          error.response?.data?.msg ||
+          'Could not submit your message'
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -92,8 +75,8 @@ const ContactUs = () => {
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
-          Have a question, event idea or need help with EventSphere?
-          Send us a message and our team will get back to you.
+          Have a question or event idea? Send us a message and our team will
+          get back to you.
         </p>
 
       </section>
@@ -103,8 +86,7 @@ const ContactUs = () => {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 
-        
-          <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
+          {contactEmail && <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
               <Mail className="h-6 w-6 text-[#c49424]" />
@@ -118,10 +100,9 @@ const ContactUs = () => {
               {contactEmail}
             </p>
 
-          </div>
+          </div>}
 
-          
-          <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
+          {contactPhone && <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
               <Phone className="h-6 w-6 text-[#c49424]" />
@@ -135,9 +116,9 @@ const ContactUs = () => {
               {contactPhone}
             </p>
 
-          </div>
+          </div>}
 
-          <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
+          {contactAddress && <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
               <MapPin className="h-6 w-6 text-[#c49424]" />
@@ -151,10 +132,9 @@ const ContactUs = () => {
               {contactAddress}
             </p>
 
-          </div>
+          </div>}
 
-         
-          <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
+          {contactOfficeHours && <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
               <Clock3 className="h-6 w-6 text-[#c49424]" />
@@ -168,7 +148,7 @@ const ContactUs = () => {
               {contactOfficeHours}
             </p>
 
-          </div>
+          </div>}
 
         </div>
 
@@ -250,7 +230,6 @@ const ContactUs = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="Your phone"
-                    required
                     className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
                   />
                 </div>
@@ -269,7 +248,6 @@ const ContactUs = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   placeholder="What is this about?"
-                  required
                   className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
                 />
               </div>
@@ -294,9 +272,10 @@ const ContactUs = () => {
               
               <button
                 type="submit"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg"
+                disabled={submitting}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Send Message
+                {submitting ? 'Sending...' : 'Send Message'}
                 <Send className="h-4 w-4" />
               </button>
 
@@ -305,7 +284,7 @@ const ContactUs = () => {
           </div>
 
       
-          <div className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-xl">
+          {contactAddress && <div className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-xl">
 
             <div className="p-7 sm:p-10">
 
@@ -318,8 +297,7 @@ const ContactUs = () => {
               </h2>
 
               <p className="mt-3 leading-7 text-[#5d574f]">
-                Visit our EventSphere management office or contact
-                us online for more information.
+                Visit us at {contactAddress} or contact us online for more information.
               </p>
 
             </div>
@@ -327,16 +305,15 @@ const ContactUs = () => {
             <div className="h-[450px] w-full">
 
               <iframe
-                title="EventSphere Location"
-                src="https://www.google.com/maps?q=Karachi,Pakistan&output=embed"
+                title="Location"
+                src={`https://www.google.com/maps?q=${encodeURIComponent(contactAddress)}&output=embed`}
                 className="h-full w-full border-0"
                 loading="lazy"
                 allowFullScreen
               />
 
             </div>
-
-          </div>
+          </div>}
 
         </div>
 
@@ -352,8 +329,7 @@ const ContactUs = () => {
           </h2>
 
           <p className="mx-auto mt-4 max-w-xl leading-7 text-white/85">
-            Tell us about your event and let EventSphere help
-            you turn your idea into a successful experience.
+            Tell us about your event and turn your idea into a successful experience.
           </p>
 
           <a

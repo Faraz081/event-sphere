@@ -51,7 +51,7 @@ const RegisterPage = () => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
   const websiteSettings = useSelector((state) => state.websiteSettings.settings);
-  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const websiteName = websiteSettings?.websiteName?.trim() || "";
   const logo = websiteSettings?.logo?.trim();
 
   const handleChange = (e) => {
@@ -175,7 +175,7 @@ const RegisterPage = () => {
             </div>
 
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-              Join {websiteName}
+              {websiteName && `Join ${websiteName}`}
             </p>
 
             <h1 className="font-serif text-4xl font-bold leading-tight text-[#2f2a24] sm:text-5xl">
@@ -186,10 +186,12 @@ const RegisterPage = () => {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-md leading-7 text-[#5d574f]">
-              Join {websiteName} and make your event planning experience
-              simpler, smarter and more organized.
-            </p>
+            {websiteName && (
+              <p className="mt-6 max-w-md leading-7 text-[#5d574f]">
+                Join {websiteName} and make your event planning experience
+                simpler, smarter and more organized.
+              </p>
+            )}
 
             <div className="mt-8 space-y-4 text-sm text-[#5d574f]">
               <div className="flex items-center gap-3">
@@ -227,9 +229,11 @@ const RegisterPage = () => {
               Create Account
             </h2>
 
-            <p className="mt-2 text-sm text-[#5d574f]">
-              Sign up to get started with {websiteName}
-            </p>
+            {websiteName && (
+              <p className="mt-2 text-sm text-[#5d574f]">
+                Sign up to get started with {websiteName}
+              </p>
+            )}
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>

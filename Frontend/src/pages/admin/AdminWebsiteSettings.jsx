@@ -1,71 +1,111 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import api from "@/api/api";
-import websiteDefaults from "@/data/websiteDefaults";
+import { replaceWebsiteSettings } from "@/store/slices/websiteSettingsSlice";
 
-const pickSetting = (value, fallback) =>
-  typeof value === "string" && value.trim() ? value.trim() : fallback;
+const emptySettings = {
+  websiteName: "",
+  logo: "",
+  favicon: "",
+  tagline: "",
+  hero: {
+    title: "",
+    description: "",
+    buttonText: "",
+    image: "",
+  },
+  about: {
+    title: "",
+    description: "",
+    image: "",
+  },
+  contact: {
+    email: "",
+    phone: "",
+    address: "",
+    officeHours: "",
+  },
+  socialLinks: {
+    facebook: "",
+    instagram: "",
+    linkedin: "",
+    youtube: "",
+    twitter: "",
+  },
+  footer: {
+    description: "",
+    copyright: "",
+  },
+};
 
-const mergeSettings = (data = {}) => ({
-  ...websiteDefaults,
-  ...data,
-  websiteName: pickSetting(data.websiteName, websiteDefaults.websiteName),
-  logo: pickSetting(data.logo, websiteDefaults.logo),
-  favicon: pickSetting(data.favicon, websiteDefaults.favicon),
-  tagline: pickSetting(data.tagline, websiteDefaults.tagline),
-  hero: Object.fromEntries(
-    Object.entries(websiteDefaults.hero).map(([key, fallback]) => [
-      key,
-      pickSetting(data.hero?.[key], fallback),
-    ])
-  ),
-  about: Object.fromEntries(
-    Object.entries(websiteDefaults.about).map(([key, fallback]) => [
-      key,
-      pickSetting(data.about?.[key], fallback),
-    ])
-  ),
-  contact: Object.fromEntries(
-    Object.entries(websiteDefaults.contact).map(([key, fallback]) => [
-      key,
-      pickSetting(data.contact?.[key], fallback),
-    ])
-  ),
-  socialLinks: Object.fromEntries(
-    Object.entries(websiteDefaults.socialLinks).map(([key, fallback]) => [
-      key,
-      pickSetting(data.socialLinks?.[key], fallback),
-    ])
-  ),
-  footer: Object.fromEntries(
-    Object.entries(websiteDefaults.footer).map(([key, fallback]) => [
-      key,
-      pickSetting(data.footer?.[key], fallback),
-    ])
-  ),
+const normalizeSettings = (data = {}) => ({
+  websiteName: data.websiteName ?? "",
+  logo: data.logo ?? "",
+  favicon: data.favicon ?? "",
+  tagline: data.tagline ?? "",
+  hero: {
+    title: data.hero?.title ?? "",
+    description: data.hero?.description ?? "",
+    buttonText: data.hero?.buttonText ?? "",
+    image: data.hero?.image ?? "",
+  },
+  about: {
+    title: data.about?.title ?? "",
+    description: data.about?.description ?? "",
+    image: data.about?.image ?? "",
+  },
+  contact: {
+    email: data.contact?.email ?? "",
+    phone: data.contact?.phone ?? "",
+    address: data.contact?.address ?? "",
+    officeHours: data.contact?.officeHours ?? "",
+  },
+  socialLinks: {
+    facebook: data.socialLinks?.facebook ?? "",
+    instagram: data.socialLinks?.instagram ?? "",
+    linkedin: data.socialLinks?.linkedin ?? "",
+    youtube: data.socialLinks?.youtube ?? "",
+    twitter: data.socialLinks?.twitter ?? "",
+  },
+  footer: {
+    description: data.footer?.description ?? "",
+    copyright: data.footer?.copyright ?? "",
+  },
+});
+
+const getSettingsPayload = (settings) => ({
+  websiteName: settings.websiteName,
+  logo: settings.logo,
+  favicon: settings.favicon,
+  tagline: settings.tagline,
+  hero: settings.hero,
+  about: settings.about,
+  contact: settings.contact,
+  socialLinks: settings.socialLinks,
+  footer: settings.footer,
 });
 
 const AdminWebsiteSettings = () => {
-  const [settings, setSettings] = useState(websiteDefaults);
+  const dispatch = useDispatch();
+  const [settings, setSettings] = useState(emptySettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState("");
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async () => {
     try {
       setLoading(true);
 
       const response = await api.get("/api/website-settings");
 
       if (response.data && response.data.settings) {
-        setSettings(mergeSettings(response.data.settings));
+        const savedSettings = normalizeSettings(response.data.settings);
+        setSettings(savedSettings);
+        dispatch(replaceWebsiteSettings(savedSettings));
       } else {
-        setSettings(websiteDefaults);
+        setSettings(emptySettings);
       }
     } catch (error) {
       console.error("Failed to load website settings:", error);
@@ -78,7 +118,11 @@ const AdminWebsiteSettings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   const updateRootField = (field, value) => {
     setSettings((previous) => ({
@@ -103,15 +147,16 @@ const AdminWebsiteSettings = () => {
     try {
       setSaving(true);
 
-      const settingsToSave = mergeSettings(settings);
+      const settingsToSave = getSettingsPayload(settings);
       const response = await api.put("/api/website-settings", settingsToSave);
 
-      if (response.data && response.data.settings) {
-        setSettings(mergeSettings(response.data.settings));
-      } else {
-        setSettings(settingsToSave);
+      if (!response.data?.settings) {
+        throw new Error("Updated website settings were not returned by the server");
       }
 
+      const savedSettings = normalizeSettings(response.data.settings);
+      setSettings(savedSettings);
+      dispatch(replaceWebsiteSettings(savedSettings));
       toast.success("Website settings saved successfully");
     } catch (error) {
       console.error("Failed to save website settings:", error);
@@ -241,7 +286,7 @@ const AdminWebsiteSettings = () => {
           ...settings,
           hero: {
             ...settings.hero,
-            image: websiteDefaults.hero.image,
+            image: "",
           },
         };
       } else if (fieldType === "about") {
@@ -249,7 +294,7 @@ const AdminWebsiteSettings = () => {
           ...settings,
           about: {
             ...settings.about,
-            image: websiteDefaults.about.image,
+            image: "",
           },
         };
       } else {
@@ -258,9 +303,14 @@ const AdminWebsiteSettings = () => {
 
       setSettings(updatedSettings);
 
-      const settingsToSave = mergeSettings(updatedSettings);
-      await api.put("/api/website-settings", settingsToSave);
-      setSettings(settingsToSave);
+      const settingsToSave = getSettingsPayload(updatedSettings);
+      const response = await api.put("/api/website-settings", settingsToSave);
+      if (!response.data?.settings) {
+        throw new Error("Updated website settings were not returned by the server");
+      }
+      const savedSettings = normalizeSettings(response.data.settings);
+      setSettings(savedSettings);
+      dispatch(replaceWebsiteSettings(savedSettings));
 
       toast.success("Image deleted successfully");
     } catch (error) {
@@ -390,7 +440,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="EventSphere"
                 />
               </div>
 
@@ -409,7 +458,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Your event management platform"
                 />
               </div>
 
@@ -459,7 +507,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Create unforgettable events"
                 />
               </div>
 
@@ -479,7 +526,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Write your main banner description..."
                 />
               </div>
 
@@ -499,7 +545,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Book Now"
                 />
               </div>
 
@@ -541,7 +586,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="About EventSphere"
                 />
               </div>
 
@@ -561,7 +605,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Write your About section description..."
                 />
               </div>
 
@@ -603,7 +646,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="hello@eventsphere.com"
                 />
               </div>
 
@@ -623,7 +665,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="+92 300 1234567"
                 />
               </div>
 
@@ -643,7 +684,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Karachi, Pakistan"
                 />
               </div>
 
@@ -663,7 +703,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Monday - Friday, 9:00 AM - 6:00 PM"
                 />
               </div>
             </div>
@@ -697,7 +736,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="https://facebook.com/..."
                 />
               </div>
 
@@ -717,7 +755,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="https://instagram.com/..."
                 />
               </div>
 
@@ -737,7 +774,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="https://linkedin.com/..."
                 />
               </div>
 
@@ -757,7 +793,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="https://youtube.com/..."
                 />
               </div>
 
@@ -777,7 +812,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="https://x.com/..."
                 />
               </div>
             </div>
@@ -811,7 +845,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="Footer description..."
                 />
               </div>
 
@@ -831,7 +864,6 @@ const AdminWebsiteSettings = () => {
                     )
                   }
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold"
-                  placeholder="© 2026 EventSphere. All rights reserved."
                 />
               </div>
             </div>

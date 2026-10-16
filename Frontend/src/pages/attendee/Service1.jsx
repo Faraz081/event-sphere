@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 import servicesImage from '../../assets/service-gallery/service.jpg'
 import eventPlanningImage from '../../assets/service-gallery/event-planning.jpg'
@@ -12,6 +13,8 @@ import graduationevent from '../../assets/service-gallery/graduation-event.jpg'
 import { ArrowUpRight,} from 'lucide-react'
 
 const Service1 = () => {
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings)
+  const websiteName = websiteSettings?.websiteName?.trim() || ''
   const services = [
     {
       image: eventPlanningImage,
@@ -76,11 +79,13 @@ const Service1 = () => {
                 </span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-base leading-7 text-[#5d574f]">
-                EventSphere brings event planning, exhibitor management,
-                attendee coordination and event analytics together in one
-                simple platform.
-              </p>
+              {websiteName && (
+                <p className="mt-6 max-w-xl text-base leading-7 text-[#5d574f]">
+                  {websiteName} brings event planning, exhibitor management,
+                  attendee coordination and event analytics together in one
+                  simple platform.
+                </p>
+              )}
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <span className="rounded-full border border-[#c49424]/30 bg-[#c49424]/10 px-4 py-2 text-sm text-[#9a721c]">

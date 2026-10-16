@@ -40,7 +40,7 @@ const drawBarRow = (doc, label, value, max, x, y, maxWidth) => {
 export const generateExpoReport = async (payload, branding = {}) => {
   const report = payload?.report || payload;
   const expo = report.expo || {};
-  const websiteName = branding.websiteName?.trim() || "EventSphere";
+  const websiteName = branding.websiteName?.trim() || "";
   const attendees = report.attendees || {};
   const booths = report.booths || {};
   const sessions = Array.isArray(report.sessions) ? report.sessions : [];
@@ -64,11 +64,15 @@ export const generateExpoReport = async (payload, branding = {}) => {
       console.warn("Could not add website logo to expo report:", error);
     }
   }
-  const headingLines = doc.splitTextToSize(
-    `${websiteName} — Expo Report`,
-    pageW - headingX - 14
-  );
-  doc.text(headingLines[0], headingX, 12);
+  if (websiteName) {
+    const headingLines = doc.splitTextToSize(
+      `${websiteName} — Expo Report`,
+      pageW - headingX - 14
+    );
+    doc.text(headingLines[0], headingX, 12);
+  } else if (headingX > 14) {
+    headingX = 14;
+  }
   doc.setFontSize(10);
   doc.setTextColor(255, 255, 255);
   doc.text(expo.title || "Untitled Expo", 14, 20);

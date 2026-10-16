@@ -17,7 +17,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.auth);
   const websiteSettings = useSelector((state) => state.websiteSettings.settings);
-  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const websiteName = websiteSettings?.websiteName?.trim() || "";
   const logo = websiteSettings?.logo?.trim();
 
   const handleInputChange = (event) => {
@@ -70,7 +70,7 @@ const LoginPage = () => {
             Welcome Back
             <br />
             <span className="text-[#c49424]">
-              Welcome to {websiteName}
+              {websiteName && `Welcome to ${websiteName}`}
             </span>
           </h1>
 

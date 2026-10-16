@@ -195,8 +195,7 @@ const OngoingEvents = () => {
             Don't Miss Your Next Event
           </h2>
           <p className="mx-auto mt-4 max-w-xl leading-7 text-[#5d574f]">
-            Reserve your place today and enjoy a well-organized event experience
-            with EventSphere.
+            Reserve your place today and enjoy a well-organized event experience.
           </p>
         </div>
       </section>

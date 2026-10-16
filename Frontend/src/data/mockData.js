@@ -250,7 +250,7 @@ export const mockTestimonials = [
     id: 1,
     name: "Ahmed Raza",
     role: "Exhibitor, Tech Innovation Expo",
-    quote: "EventSphere made booth booking effortless. We tracked visitor traffic in real time and it completely changed how we planned our next expo.",
+    quote: "The platform made booth booking effortless. We tracked visitor traffic in real time and it completely changed how we planned our next expo.",
   },
   {
     id: 2,
@@ -262,7 +262,7 @@ export const mockTestimonials = [
     id: 3,
     name: "Bilal Sheikh",
     role: "Admin, HealthTech Expo",
-    quote: "Managing hundreds of exhibitor applications used to take weeks. With EventSphere's dashboard, we approved and assigned booths in a single afternoon.",
+    quote: "Managing hundreds of exhibitor applications used to take weeks. With the dashboard, we approved and assigned booths in a single afternoon.",
   },
 ];
 
@@ -275,7 +275,7 @@ export const mockFAQs = [
   {
     id: 2,
     question: "Can I attend multiple events with one account?",
-    answer: "Yes. Your EventSphere account works across all events on the platform — you can browse, register, and bookmark sessions for any expo, conference, or concert.",
+    answer: "Yes. Your account works across all events on the platform — you can browse, register, and bookmark sessions for any expo, conference, or concert.",
   },
   {
     id: 3,

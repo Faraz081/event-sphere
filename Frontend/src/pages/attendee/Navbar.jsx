@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { LogOut, Menu, X } from 'lucide-react'
-import api from '../../api/api'
+import { LogOut, Menu, Sparkles, X } from 'lucide-react'
 import { logout } from '@/store/slices/authSlice'
 import { fetchUnreadCounts } from '@/store/slices/messageSlice'
 import { clearNotifications } from '@/store/slices/notificationSlice'
 import { clearBookmarks } from '@/store/slices/bookmarkSlice'
 import NotificationBell from '@/components/shared/NotificationBell'
-import websiteDefaults from '@/data/websiteDefaults'
-import defaultLogoImg from '@/assets/Logo.jpg'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [settings, setSettings] = useState(null)
   const { user } = useSelector((state) => state.auth)
+  const settings = useSelector((state) => state.websiteSettings.settings)
   const { unread } = useSelector((state) => state.message)
   const isAttendee = user?.role === 'attendee'
   const isGuest = !user
@@ -34,19 +31,6 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    const fetchWebsiteSettings = async () => {
-      try {
-        const response = await api.get('/api/website-settings')
-        setSettings(response.data.settings)
-      } catch (error) {
-        console.error('Failed to load website settings:', error)
-      }
-    }
-
-    fetchWebsiteSettings()
-  }, [])
-
-  useEffect(() => {
     if (!isAttendee) return
 
     dispatch(fetchUnreadCounts())
@@ -58,8 +42,8 @@ const Navbar = () => {
     return () => clearInterval(interval)
   }, [dispatch, isAttendee])
 
-  const websiteName = settings?.websiteName?.trim() || websiteDefaults.websiteName
-  const logo = settings?.logo?.trim() || defaultLogoImg || websiteDefaults.logo
+  const websiteName = settings?.websiteName?.trim() || ''
+  const logo = settings?.logo?.trim() || ''
 
   const scrollToSection = (id) => {
     setMenuOpen(false)
@@ -90,11 +74,20 @@ const Navbar = () => {
           onClick={goHome}
           className="inline-flex min-w-0 shrink-0 items-center transition-transform duration-200 hover:scale-[1.03]"
         >
-          <img
-            src={logo}
-            alt={websiteName}
-            className="h-12 sm:h-16 w-auto max-w-[160px] sm:max-w-[220px] rounded-xl object-contain drop-shadow-sm"
-          />
+          {logo ? (
+            <img
+              src={logo}
+              alt={websiteName}
+              className="h-12 sm:h-16 w-auto max-w-[160px] sm:max-w-[220px] rounded-xl object-contain drop-shadow-sm"
+            />
+          ) : (
+            <Sparkles aria-hidden="true" className="h-7 w-7 text-[#c49424]" />
+          )}
+          {websiteName && (
+            <span className="ml-2 max-w-40 truncate font-semibold text-[#2f2a24]">
+              {websiteName}
+            </span>
+          )}
         </Link>
 
         <div className="hidden items-center gap-6 lg:flex whitespace-nowrap">
