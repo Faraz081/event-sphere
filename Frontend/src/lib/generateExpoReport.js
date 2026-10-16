@@ -1,5 +1,6 @@
 import {jsPDF} from "jspdf"
 import autoTable from "jspdf-autotable"
+import { imageToPngDataUrl } from "@/lib/imageToPngDataUrl";
 
 const formatDate = (value) => {
   if (!value) return "—";
@@ -36,9 +37,10 @@ const drawBarRow = (doc, label, value, max, x, y, maxWidth) => {
   return y + 12;
 };
 
-export const generateExpoReport = (payload) => {
+export const generateExpoReport = async (payload, branding = {}) => {
   const report = payload?.report || payload;
   const expo = report.expo || {};
+  const websiteName = branding.websiteName?.trim() || "EventSphere";
   const attendees = report.attendees || {};
   const booths = report.booths || {};
   const sessions = Array.isArray(report.sessions) ? report.sessions : [];
@@ -52,7 +54,21 @@ export const generateExpoReport = (payload) => {
   doc.rect(0, 0, pageW, 28, "F");
   doc.setTextColor(227, 185, 74);
   doc.setFontSize(16);
-  doc.text("EventSphere — Expo Report", 14, 12);
+  let headingX = 14;
+  if (branding.logo?.trim()) {
+    try {
+      const logoData = await imageToPngDataUrl(branding.logo.trim());
+      doc.addImage(logoData, "PNG", 14, 7, 12, 14, undefined, "FAST");
+      headingX = 30;
+    } catch (error) {
+      console.warn("Could not add website logo to expo report:", error);
+    }
+  }
+  const headingLines = doc.splitTextToSize(
+    `${websiteName} — Expo Report`,
+    pageW - headingX - 14
+  );
+  doc.text(headingLines[0], headingX, 12);
   doc.setFontSize(10);
   doc.setTextColor(255, 255, 255);
   doc.text(expo.title || "Untitled Expo", 14, 20);

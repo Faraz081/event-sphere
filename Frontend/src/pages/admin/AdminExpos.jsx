@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useSelector } from "react-redux";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import {
   AlertDialog,
@@ -80,6 +81,7 @@ const initialFormState = {
 };
 
 const AdminExpos = () => {
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings);
   const [expos, setExpos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -298,7 +300,10 @@ const AdminExpos = () => {
     setReportLoadingId(expo._id);
     try {
       const data = await fetchExpoReport(expo._id);
-      generateExpoReport(data);
+      await generateExpoReport(data, {
+        websiteName: websiteSettings?.websiteName,
+        logo: websiteSettings?.logo,
+      });
       toast.success("Report downloaded");
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to generate report");

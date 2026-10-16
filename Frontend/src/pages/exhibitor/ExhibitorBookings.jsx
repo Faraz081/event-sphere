@@ -117,8 +117,16 @@ const ExhibitorBookings = () => {
                     {r.user?.email}{r.user?.phone ? ` · ${r.user.phone}` : ""}
                   </p>
                   <p className="mt-1 text-sm text-muted">
-                    Event: <span className="text-foreground">{r.event?.title || r.eventName || "Event"}</span>
+                    {r.isCustomEvent ? "Custom event: " : "Event: "}
+                    <span className="text-foreground">{r.customEventName || r.event?.title || r.eventName || "Event"}</span>
                   </p>
+                  {r.customEventImage && (
+                    <img
+                      src={r.customEventImage}
+                      alt={r.customEventName || "Custom event"}
+                      className="mt-2 h-24 w-full max-w-xs rounded-lg object-cover"
+                    />
+                  )}
                   <p className="text-xs text-muted">Requested {new Date(r.createdAt).toLocaleDateString()}</p>
 
                   {r.eventDate && (

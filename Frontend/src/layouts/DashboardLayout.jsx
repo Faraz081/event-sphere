@@ -16,7 +16,10 @@ const DashboardLayout = ({ role, children }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { currentUser, user } = useSelector((state) => state.auth);
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings);
   const unread = useSelector((state) => state.message.unread);
+  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const logo = websiteSettings?.logo?.trim();
   const activeUser = currentUser || user;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -60,9 +63,12 @@ const DashboardLayout = ({ role, children }) => {
               <button type="button" onClick={handleHomeClick} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-background text-gold" aria-label="Go to dashboard home">
                 <LayoutDashboard size={20} />
               </button>
-              <div>
-                <h1 className="font-display text-2xl font-bold text-gold">EventSphere</h1>
+              <div className="flex min-w-0 items-center gap-2">
+                {logo && <img src={logo} alt="" className="max-h-8 max-w-12 shrink-0 object-contain" />}
+                <div className="min-w-0">
+                <h1 className="max-w-44 truncate font-display text-2xl font-bold text-gold">{websiteName}</h1>
                 <p className="text-sm text-muted">{roleLabels[role]} Portal</p>
+                </div>
               </div>
             </div>
           </div>

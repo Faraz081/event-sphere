@@ -24,6 +24,12 @@ export default function BookNow() {
   const [eventsLoading, setEventsLoading] = useState(true)
   const [selectedEventId, setSelectedEventId] = useState(searchParams.get('event') ?? '')
   const [formData, setFormData] = useState(emptyForm)
+  const [customEventName, setCustomEventName] = useState('')
+  const [customEventImage, setCustomEventImage] = useState('')
+  const [exhibitors, setExhibitors] = useState([])
+  const [exhibitorsLoading, setExhibitorsLoading] = useState(false)
+  const [selectedExhibitorId, setSelectedExhibitorId] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [feedback, setFeedback] = useState(null)
   const [stalls, setStalls] = useState([])
@@ -59,7 +65,7 @@ export default function BookNow() {
     setSelectedStalls([])
     setDateBooked(false)
 
-    if (!selectedEventId) {
+    if (!selectedEventId || selectedEventId === 'custom') {
       setStalls([])
       return
     }
@@ -82,6 +88,32 @@ export default function BookNow() {
     loadStalls()
   }, [selectedEventId, formData.eventDate])
 
+  const isCustomEvent = selectedEventId === 'custom'
+  useEffect(() => {
+    if (!isCustomEvent) {
+      setSelectedExhibitorId('')
+      return
+    }
+
+    const loadExhibitors = async () => {
+      setExhibitorsLoading(true)
+      try {
+        const response = await api.get('/api/public/exhibitors')
+        setExhibitors(response.data?.exhibitors ?? [])
+      } catch (error) {
+        console.error('Failed to load exhibitors:', error)
+        setFeedback({
+          type: 'error',
+          text: error.response?.data?.error || 'Could not load exhibitors.',
+        })
+      } finally {
+        setExhibitorsLoading(false)
+      }
+    }
+
+    loadExhibitors()
+  }, [isCustomEvent])
+
   const selectedEvent = events.find((ev) => ev._id === selectedEventId)
   const exhibitorName = selectedEvent?.companyName ?? selectedEvent?.exhibitorName
   const stallTotal = stalls
@@ -101,6 +133,45 @@ export default function BookNow() {
     setFormData((prev) => ({ ...prev, eventDate: '' }))
   }
 
+  const handleCustomEventImageChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setFeedback({ type: 'error', text: 'Please select an image file.' })
+      e.target.value = ''
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setFeedback({ type: 'error', text: 'The image must be 10MB or smaller.' })
+      e.target.value = ''
+      return
+    }
+
+    setFeedback(null)
+    setUploadingImage(true)
+    try {
+      const imageData = new FormData()
+      imageData.append('image', file)
+      const response = await api.post('/api/upload/image', imageData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      const imageUrl = response.data?.image?.url
+      if (!imageUrl) {
+        throw new Error('Image upload did not return an image URL.')
+      }
+      setCustomEventImage(imageUrl)
+    } catch (error) {
+      setFeedback({
+        type: 'error',
+        text: error.response?.data?.msg || error.message || 'Could not upload the image.',
+      })
+      e.target.value = ''
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -117,22 +188,32 @@ export default function BookNow() {
       setFeedback({ type: 'error', text: 'Please login to book an event.' })
       return
     }
-    if (dateBooked) {
+    if (!isCustomEvent && dateBooked) {
       setFeedback({ type: 'error', text: 'This event is already booked for that date. Please choose another date.' })
       return
     }
-    if (stalls.length && !selectedStalls.length) {
-      setFeedback({ type: 'error', text: 'Please select at least one stall.' })
+    if (isCustomEvent && !customEventName.trim()) {
+      setFeedback({ type: 'error', text: 'Please enter a custom event name.' })
       return
     }
-
+    if (isCustomEvent && !selectedExhibitorId) {
+      setFeedback({ type: 'error', text: 'Please select an exhibitor.' })
+      return
+    }
     try {
       setSubmitting(true)
       const response = await api.post('/api/attendee-portal/book', {
-        event: selectedEventId,
+        ...(isCustomEvent
+          ? {
+              isCustomEvent: true,
+              customEventName: customEventName.trim(),
+              customEventImage,
+              exhibitor: selectedExhibitorId,
+            }
+          : { event: selectedEventId }),
         eventDate: formData.eventDate,
         guests: Number(formData.guests),
-        stalls: selectedStalls,
+        ...(!isCustomEvent ? { stalls: selectedStalls } : {}),
         name: formData.name,
         phone: formData.phone,
         message: formData.message,
@@ -143,6 +224,9 @@ export default function BookNow() {
       })
   setFormData({ ...emptyForm, name: user?.name ?? '', phone: user?.phone ?? '' })
       setSelectedStalls([])
+      setCustomEventName('')
+      setCustomEventImage('')
+      setSelectedExhibitorId('')
     } catch (error) {
       setFeedback({
         type: 'error',
@@ -161,7 +245,9 @@ export default function BookNow() {
           Book Your <span className="text-[#c49424]">Event</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
-          Select an event and choose your date. The exhibitor will review and confirm your booking.
+          {isCustomEvent
+            ? 'Describe your custom event and choose your preferred date. Your selected exhibitor will review your request.'
+            : 'Select an event and choose your date. The exhibitor will review and confirm your booking.'}
         </p>
       </section>
 
@@ -218,6 +304,7 @@ export default function BookNow() {
                         {ev.title ?? ev.name}
                       </option>
                     ))}
+                    <option value="custom">Custom event</option>
                   </select>
                 </div>
 
@@ -238,7 +325,7 @@ export default function BookNow() {
                 </div>
               </div>
 
-              {dateBooked && (
+              {dateBooked && !isCustomEvent && (
                 <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                   This event is already booked for that date. Please choose another date.
                 </p>
@@ -275,9 +362,70 @@ export default function BookNow() {
                 </div>
               )}
 
-              {selectedEventId && !dateBooked && (
+              {isCustomEvent && (
+                <div className="mt-5 grid gap-5 md:grid-cols-2">
+                  <div>
+                    <label htmlFor="custom-event-exhibitor" className="mb-2 block text-sm font-medium text-[#4d473f]">
+                      Select Exhibitor
+                    </label>
+                    <select
+                      id="custom-event-exhibitor"
+                      value={selectedExhibitorId}
+                      onChange={(e) => setSelectedExhibitorId(e.target.value)}
+                      required
+                      disabled={exhibitorsLoading}
+                      className={`w-full rounded-xl px-4 py-3.5 ${fieldCls}`}
+                    >
+                      <option value="">
+                        {exhibitorsLoading ? 'Loading exhibitors...' : 'Select an exhibitor'}
+                      </option>
+                      {exhibitors.map((exhibitor) => (
+                        <option key={exhibitor._id} value={exhibitor._id}>
+                          {exhibitor.companyName || exhibitor.name}
+                        </option>
+                      ))}
+                    </select>
+                      {!exhibitorsLoading && exhibitors.length === 0 && (
+                        <p className="mt-2 text-xs text-red-600">No exhibitors are available right now.</p>
+                      )}
+                    </div>
+                  <div>
+                    <label htmlFor="custom-event-name" className="mb-2 block text-sm font-medium text-[#4d473f]">
+                      Custom event name
+                    </label>
+                    <input
+                      id="custom-event-name"
+                      type="text"
+                      value={customEventName}
+                      onChange={(e) => setCustomEventName(e.target.value)}
+                      maxLength={200}
+                      required
+                      className={`w-full rounded-xl px-4 py-3.5 ${fieldCls}`}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="custom-event-image" className="mb-2 block text-sm font-medium text-[#4d473f]">
+                      Event image (optional)
+                    </label>
+                    <input
+                      id="custom-event-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCustomEventImageChange}
+                      disabled={uploadingImage}
+                      className={`w-full rounded-xl px-4 py-3 ${fieldCls}`}
+                    />
+                    {uploadingImage && <p className="mt-2 text-xs text-[#777067]">Uploading image...</p>}
+                    {customEventImage && (
+                      <img src={customEventImage} alt="Custom event" className="mt-3 h-24 rounded-lg object-cover" />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {selectedEventId && !isCustomEvent && !dateBooked && (
                 <div className="mt-5">
-                  <label className="mb-2 block text-sm font-medium text-[#4d473f]">Select Stalls</label>
+                  <label className="mb-2 block text-sm font-medium text-[#4d473f]">Select Stalls (optional)</label>
 
                   {!formData.eventDate ? (
                     <p className="text-sm text-[#8a8379]">Choose a date to see the stalls.</p>
@@ -422,10 +570,10 @@ export default function BookNow() {
               <p className="text-sm text-[#777067]">The exhibitor will review your request and confirm it.</p>
               <button
                 type="submit"
-                disabled={submitting || !user || !isAttendee || dateBooked}
+                disabled={submitting || uploadingImage || !user || !isAttendee || (!isCustomEvent && dateBooked)}
                 className="rounded-xl bg-[#b48620] px-8 py-3.5 font-semibold text-white shadow-md transition hover:bg-[#967019] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {submitting ? 'Sending...' : 'Submit Booking'}
+                {uploadingImage ? 'Uploading image...' : submitting ? 'Sending...' : 'Submit Booking'}
               </button>
             </div>
           </form>

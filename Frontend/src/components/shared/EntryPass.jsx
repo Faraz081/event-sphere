@@ -1,15 +1,20 @@
 import React from "react";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
+import { Download, Sparkles } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import jsPDF from "jspdf";
+import { useSelector } from "react-redux";
+import { imageToPngDataUrl } from "@/lib/imageToPngDataUrl";
 
 const EntryPass = ({ booking, user }) => {
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings);
+  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const logo = websiteSettings?.logo?.trim();
   const passCode = booking.passCode || booking.entryPassId;
   const isCheckedIn = booking.passStatus === "scanned";
   const isRevoked = booking.passStatus === "revoked" || booking.bookingStatus === "cancelled";
 
-  const handleDownloadPass = () => {
+  const handleDownloadPass = async () => {
     try {
       const qrCanvas = document.querySelector(`#entry-pass-${booking._id} canvas`);
 
@@ -23,7 +28,7 @@ const EntryPass = ({ booking, user }) => {
       const ticketHeight = 95;
 
       const attendeeName = user?.name || "Valued Guest";
-      const expoName = booking.event?.title || booking.expo?.title || booking.eventName || "EventSphere Expo";
+      const expoName = booking.event?.title || booking.expo?.title || booking.eventName || `${websiteName} Event`;
       const eventDate = booking.eventDate || booking.expo?.date || booking.event?.date;
       const date = eventDate
         ? new Date(eventDate).toLocaleDateString("en-US", {
@@ -51,7 +56,19 @@ const EntryPass = ({ booking, user }) => {
       pdf.setTextColor(255, 255, 255);
       pdf.setFont("times", "bold");
       pdf.setFontSize(10);
-      pdf.text("EVENTSPHERE EXCLUSIVE ACCESS", 14, 21);
+      let brandX = 14;
+      if (logo) {
+        try {
+          const logoData = await imageToPngDataUrl(logo);
+          pdf.addImage(logoData, "PNG", 14, 12, 12, 10, undefined, "FAST");
+          brandX = 30;
+        } catch (error) {
+          console.warn("Could not add website logo to entry pass PDF:", error);
+        }
+      }
+      pdf.text(`${websiteName.toUpperCase()} EXCLUSIVE ACCESS`, brandX, 21, {
+        maxWidth: 108,
+      });
 
       pdf.setTextColor(47, 42, 36);
       pdf.setFont("times", "bold");
@@ -122,7 +139,8 @@ const EntryPass = ({ booking, user }) => {
       pdf.setFontSize(7);
       pdf.text(passCode || "ESP-PASS", 176, 76, { align: "center" });
 
-      pdf.save(`EventSphere-Pass-${passCode || "VIP"}.pdf`);
+      const safeWebsiteName = websiteName.replace(/[^\w-]+/g, "_").slice(0, 40);
+      pdf.save(`${safeWebsiteName}-Pass-${passCode || "VIP"}.pdf`);
       toast.success("Entry pass downloaded");
     } catch (error) {
       console.error("Entry pass download error:", error);
@@ -134,6 +152,14 @@ const EntryPass = ({ booking, user }) => {
     <>
       <div className="mt-5 flex flex-col gap-4 rounded-xl border border-[#eadfc9] bg-[#fdf8ee] p-4 sm:flex-row sm:items-center">
         <div className="flex-1">
+          <div className="mb-3 flex items-center gap-2">
+            {logo ? (
+              <img src={logo} alt="" className="max-h-8 max-w-28 object-contain" />
+            ) : (
+              <Sparkles size={18} className="text-[#c49424]" />
+            )}
+            <span className="truncate text-sm font-bold text-[#2f2a24]">{websiteName}</span>
+          </div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#8a8379]">Pass code</p>
           <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[#2f2a24]">{passCode || "Not issued"}</p>
           {isCheckedIn ? (

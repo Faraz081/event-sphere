@@ -216,6 +216,18 @@ export const getPublicExhibitorProfile = async (req, res) => {
   }
 };
 
+export const getPublicExhibitorList = async (req, res) => {
+  try {
+    const exhibitors = await User.find({ role: "exhibitor" })
+      .select("name companyName email status exhibitorStatus")
+      .sort({ companyName: 1, name: 1 });
+
+    return res.status(200).json({ exhibitors });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 export const getPublicEventStalls = async (req, res) => {
   try {

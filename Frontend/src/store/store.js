@@ -7,6 +7,7 @@ import messageReducer from "@/store/slices/messageSlice";
 import ticketReducer from "./slices/ticketSlice";
 import bookmarkReducer from "@/store/slices/bookmarkSlice";
 import notificationReducer from "@/store/slices/notificationSlice";
+import websiteSettingsReducer from "@/store/slices/websiteSettingsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     message: messageReducer,
     tickets: ticketReducer,
     bookmark: bookmarkReducer,
-    notification: notificationReducer
+    notification: notificationReducer,
+    websiteSettings: websiteSettingsReducer,
   },
 });

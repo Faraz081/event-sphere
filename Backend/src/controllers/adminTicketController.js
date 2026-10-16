@@ -11,7 +11,7 @@ const populateTicket = [
 
 export const getExpoTicketRequests = async (req, res) => {
   try {
-    const filter = {};
+    const filter = { isCustomEvent: { $ne: true } };
 
     if (req.query.status) filter.bookingStatus = req.query.status;
     if (req.query.userId && mongoose.isValidObjectId(req.query.userId)) {
@@ -25,8 +25,6 @@ export const getExpoTicketRequests = async (req, res) => {
       filter.event = null;
     } else if (req.query.type === "event") {
       filter.event = { $ne: null };
-    } else if (req.query.type === "custom") {
-      filter.isCustomEvent = true;
     }
 
     if (req.query.search && req.query.search.trim()) {
@@ -78,7 +76,12 @@ export const approveExpoTicket = async (req, res) => {
     if (!passCode) return res.status(503).json({ error: "Could not generate entry pass. Please try again" });
 
     const ticket = await Attendee.findOneAndUpdate(
-      { _id: id, bookingStatus: "pending", passStatus: { $ne: "scanned" } },
+      {
+        _id: id,
+        isCustomEvent: { $ne: true },
+        bookingStatus: "pending",
+        passStatus: { $ne: "scanned" },
+      },
       {
         $set: {
           bookingStatus: "confirmed",
@@ -127,7 +130,7 @@ export const rejectExpoTicket = async (req, res) => {
     if (!note) return res.status(400).json({ error: "Please add a reason for rejection" });
 
     const ticket = await Attendee.findOneAndUpdate(
-      { _id: id, bookingStatus: "pending" },
+      { _id: id, isCustomEvent: { $ne: true }, bookingStatus: "pending" },
       {
         $set: {
           bookingStatus: "cancelled",
@@ -174,6 +177,7 @@ export const cancelExpoTicket = async (req, res) => {
     const ticket = await Attendee.findOneAndUpdate(
       {
         _id: id,
+        isCustomEvent: { $ne: true },
         bookingStatus: { $in: ["pending", "confirmed"] },
         passStatus: { $ne: "scanned" },
       },

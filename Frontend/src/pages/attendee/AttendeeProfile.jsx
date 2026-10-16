@@ -146,7 +146,7 @@ const AttendeeProfile = () => {
               const badge = bookingBadge[b.bookingStatus] ?? bookingBadge.pending;
               const BadgeIcon = badge.icon;
               const isExpoTicket = !b.event && !!b.expo;
-              const title = b.event?.title ?? b.eventName ?? b.expo?.title ?? "Booking";
+              const title = b.customEventName ?? b.event?.title ?? b.eventName ?? b.expo?.title ?? "Booking";
               const date = b.event?.date ?? b.eventDate ?? b.expo?.date;
               const expoTitle = b.event?.expo?.title ?? b.expo?.title;
               const location = b.event?.location ?? b.expo?.location;
@@ -168,12 +168,27 @@ const AttendeeProfile = () => {
                     </div>
 
                     <div className="mt-3">
+                      {b.customEventImage && (
+                        <img
+                          src={b.customEventImage}
+                          alt={title}
+                          className="mb-3 h-32 w-full rounded-xl object-cover sm:max-w-xs"
+                        />
+                      )}
                       <h3 className="font-serif text-xl font-bold text-[#2f2a24]">
                         {title}
                       </h3>
                       {expoTitle && title !== expoTitle && (
                         <p className="text-xs text-[#736c62] mt-0.5">
                           Expo: <span className="font-semibold text-[#2f2a24]">{expoTitle}</span>
+                        </p>
+                      )}
+                      {b.isCustomEvent && b.exhibitor && (
+                        <p className="mt-1 text-xs text-[#736c62]">
+                          Requested from{" "}
+                          <span className="font-semibold text-[#2f2a24]">
+                            {b.exhibitor.companyName || b.exhibitor.name}
+                          </span>
                         </p>
                       )}
                       {!isExpoTicket && b.contactName && (
@@ -200,13 +215,17 @@ const AttendeeProfile = () => {
                       <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-xs font-medium text-amber-900">
                         {isExpoTicket
                           ? "Your pass is awaiting admin approval. Once confirmed, the download option will appear."
-                          : "Your request is waiting for the exhibitor to approve it."}
+                          : b.isCustomEvent
+                            ? "Your custom event request is waiting for the exhibitor to approve it."
+                            : "Your request is waiting for the exhibitor to approve it."}
                       </p>
                     )}
 
                     {b.bookingStatus === "confirmed" && !isExpoTicket && (
                       <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-medium text-emerald-800">
-                        The exhibitor has confirmed your booking for this date.
+                        {b.isCustomEvent
+                          ? "The exhibitor has approved your custom event request."
+                          : "The exhibitor has confirmed your booking for this date."}
                       </p>
                     )}
 

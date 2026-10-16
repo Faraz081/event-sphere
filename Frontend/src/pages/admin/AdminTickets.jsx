@@ -34,6 +34,7 @@ const statusLabel = {
 };
 
 const getTicketTitle = (ticket) => {
+  if (ticket.customEventName) return ticket.customEventName;
   if (ticket.event?.title) return ticket.event.title;
   if (ticket.eventName) return ticket.eventName;
   if (ticket.expo?.title) return ticket.expo.title;
@@ -41,6 +42,7 @@ const getTicketTitle = (ticket) => {
 };
 
 const getTicketKind = (ticket) => {
+  if (ticket.isCustomEvent) return "Custom Event Request";
   if (ticket.event || ticket.eventName) return "Event Ticket";
   return ticket.ticketType || "Expo Entry Pass";
 };
@@ -116,6 +118,14 @@ const TicketCard = ({ ticket }) => {
             {getTicketTitle(ticket)}
           </h3>
 
+          {ticket.customEventImage && (
+            <img
+              src={ticket.customEventImage}
+              alt={getTicketTitle(ticket)}
+              className="mt-3 h-32 w-full max-w-xs rounded-xl object-cover"
+            />
+          )}
+
           {ticket.expo?.title && (ticket.event || ticket.eventName) && (
             <p className="mt-1 text-xs text-muted">Expo: {ticket.expo.title}</p>
           )}
@@ -150,7 +160,26 @@ const TicketCard = ({ ticket }) => {
             {new Date(ticket.expo.date).toLocaleDateString()}
           </span>
         )}
+        {ticket.eventDate && (
+          <span className="inline-flex items-center gap-1.5 text-muted">
+            <CalendarDays size={14} />{" "}
+            {new Date(ticket.eventDate).toLocaleDateString()}
+          </span>
+        )}
+        {ticket.guests && (
+          <span className="inline-flex items-center gap-1.5 text-muted">
+            {ticket.guests} guests
+          </span>
+        )}
       </div>
+
+      {(ticket.contactName || ticket.contactPhone || ticket.notes) && (
+        <div className="mt-3 space-y-1 text-sm text-muted">
+          {ticket.contactName && <p>Booked for {ticket.contactName}</p>}
+          {ticket.contactPhone && <p>Booking contact: {ticket.contactPhone}</p>}
+          {ticket.notes && <p>Details: {ticket.notes}</p>}
+        </div>
+      )}
 
       {(ticket.passCode || ticket.entryPassId) && (
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3">

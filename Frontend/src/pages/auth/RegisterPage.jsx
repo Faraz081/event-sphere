@@ -50,6 +50,9 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings);
+  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const logo = websiteSettings?.logo?.trim();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -163,12 +166,16 @@ const RegisterPage = () => {
 
           <div className="relative z-10">
             <div className="mb-8 flex items-center font-serif text-3xl font-semibold tracking-wide text-[#2f2a24]">
-              <Sparkles className="mr-2 h-8 w-8 text-[#c49424]" />
-              Event<span className="text-[#c49424]">Sphere</span>
+              {logo ? (
+                <img src={logo} alt="" className="mr-3 max-h-10 max-w-40 object-contain" />
+              ) : (
+                <Sparkles className="mr-2 h-8 w-8 shrink-0 text-[#c49424]" />
+              )}
+              {websiteName}
             </div>
 
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-              Join EventSphere
+              Join {websiteName}
             </p>
 
             <h1 className="font-serif text-4xl font-bold leading-tight text-[#2f2a24] sm:text-5xl">
@@ -180,7 +187,7 @@ const RegisterPage = () => {
             </h1>
 
             <p className="mt-6 max-w-md leading-7 text-[#5d574f]">
-              Join EventSphere and make your event planning experience
+              Join {websiteName} and make your event planning experience
               simpler, smarter and more organized.
             </p>
 
@@ -221,7 +228,7 @@ const RegisterPage = () => {
             </h2>
 
             <p className="mt-2 text-sm text-[#5d574f]">
-              Sign up to get started with EventSphere
+              Sign up to get started with {websiteName}
             </p>
           </div>
 

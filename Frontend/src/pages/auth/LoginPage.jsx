@@ -16,6 +16,9 @@ const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.auth);
+  const websiteSettings = useSelector((state) => state.websiteSettings.settings);
+  const websiteName = websiteSettings?.websiteName?.trim() || "EventSphere";
+  const logo = websiteSettings?.logo?.trim();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -55,15 +58,19 @@ const LoginPage = () => {
 
         <div className="hidden bg-[#f8f5ef] p-12 lg:flex lg:flex-col lg:justify-center">
           <div className="mb-6 flex items-center font-serif text-3xl font-semibold tracking-wide text-[#2f2a24]">
-            <Sparkles className="mr-2 h-8 w-8 text-[#c49424]" />
-            Event<span className="text-[#c49424]">Sphere</span>
+            {logo ? (
+              <img src={logo} alt="" className="mr-3 max-h-10 max-w-40 object-contain" />
+            ) : (
+              <Sparkles className="mr-2 h-8 w-8 shrink-0 text-[#c49424]" />
+            )}
+            {websiteName}
           </div>
 
           <h1 className="font-serif text-4xl font-bold leading-tight text-[#2f2a24]">
             Welcome Back
             <br />
             <span className="text-[#c49424]">
-              To EventSphere
+              Welcome to {websiteName}
             </span>
           </h1>
 

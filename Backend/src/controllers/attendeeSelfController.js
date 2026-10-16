@@ -33,6 +33,7 @@ export const bookEvent = async (req, res) => {
       isCustomEvent,
       customEventName,
       customEventImage,
+      exhibitor: requestedExhibitorId,
       eventDate,
       guests,
       phone,
@@ -72,6 +73,27 @@ export const bookEvent = async (req, res) => {
       typeof customEventImage === "string" ? customEventImage.trim() : "";
     if (isCustom && !trimmedCustomEventName) {
       return res.status(400).json({ error: "Please enter a custom event name" });
+    }
+
+    let customExhibitor = null;
+    if (isCustom) {
+      if (
+        !requestedExhibitorId ||
+        !mongoose.isValidObjectId(requestedExhibitorId)
+      ) {
+        return res.status(400).json({ error: "Please select a valid exhibitor" });
+      }
+
+      customExhibitor = await User.findOne({
+        _id: requestedExhibitorId,
+        role: "exhibitor",
+        status: "active",
+        exhibitorStatus: "approved",
+      }).select("_id");
+
+      if (!customExhibitor) {
+        return res.status(404).json({ error: "Exhibitor not found or not approved" });
+      }
     }
 
     const eventDoc = isCustom
@@ -159,6 +181,7 @@ export const bookEvent = async (req, res) => {
     const attendee = await Attendee.create({
       user: userId,
       ...(eventDoc ? { event: eventDoc._id } : {}),
+      ...(customExhibitor ? { exhibitor: customExhibitor._id } : {}),
       eventName: isCustom ? trimmedCustomEventName : eventDoc.title,
       isCustomEvent: isCustom,
       ...(isCustom
@@ -188,10 +211,11 @@ export const bookEvent = async (req, res) => {
     });
 
     await attendee.populate(eventPopulate);
+    await attendee.populate("exhibitor", "name companyName");
 
     return res.status(201).json({
       msg: isCustom
-        ? "Custom event request sent for admin review"
+        ? "Request sent to the exhibitor for approval"
         : "Booking request sent to the exhibitor",
       attendee,
     });
@@ -290,6 +314,7 @@ export const getMyRegistrations = async (req, res) => {
 
     const registrations = await Attendee.find({ user: userId })
       .populate(eventPopulate)
+      .populate("exhibitor", "name companyName")
       .populate("expo", "title date location")
       .sort({ createdAt: -1 });
 
@@ -307,10 +332,14 @@ export const getBookingRequests = async (req, res) => {
     }).select("_id");
 
     const requests = await Attendee.find({
-      event: { $in: events.map((e) => e._id) },
+      $or: [
+        { event: { $in: events.map((e) => e._id) } },
+        { isCustomEvent: true, exhibitor: req.user._id },
+      ],
     })
       .populate("user", "name email phone")
       .populate("event", "title location eventType images")
+      .populate("exhibitor", "name companyName")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({ requests });
@@ -331,11 +360,18 @@ const findOwnedBooking = async (req) => {
     "exhibitor title location eventType"
   );
 
-  if (!booking || !booking.event) {
+  if (!booking) {
     return { status: 404, error: "Booking not found" };
   }
 
-  if (String(booking.event.exhibitor) !== String(req.user._id)) {
+  const assignedExhibitorId = booking.isCustomEvent
+    ? booking.exhibitor
+    : booking.event?.exhibitor;
+  if (!assignedExhibitorId) {
+    return { status: 404, error: "Booking not found" };
+  }
+
+  if (String(assignedExhibitorId) !== String(req.user._id)) {
     return {
       status: 403,
       error: "This booking is not for your event",
@@ -365,7 +401,10 @@ export const approveBooking = async (req, res) => {
       });
     }
 
-    if (await isDateBooked(booking.event._id, booking.eventDate, booking._id)) {
+    if (
+      booking.event &&
+      (await isDateBooked(booking.event._id, booking.eventDate, booking._id))
+    ) {
       return res.status(409).json({
         error: "Another booking is already confirmed for this event on that date",
       });

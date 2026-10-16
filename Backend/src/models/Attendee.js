@@ -15,6 +15,13 @@ const attendeeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Event",
     },
+    exhibitor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: function () {
+        return this.isCustomEvent;
+      },
+    },
     eventName: {
       type: String,
       trim: true,
@@ -27,6 +34,9 @@ const attendeeSchema = new mongoose.Schema(
       type: String,
       trim: true,
       maxlength: 200,
+      required: function () {
+        return this.isCustomEvent;
+      },
     },
     customEventImage: {
       type: String,
