@@ -72,7 +72,7 @@ export const rejectEvent = createAsyncThunk("event/rejectEvent", async ({id, rea
   }
 });
 
-// TICKET REQUESTS (exhibitor)
+
 export const fetchBookingRequests = createAsyncThunk("event/fetchBookingRequests", async (_, {rejectWithValue}) => {
   try {
     const data = await api.get("/api/attendee-portal/requests");

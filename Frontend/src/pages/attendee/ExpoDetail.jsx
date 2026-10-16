@@ -81,7 +81,8 @@ const ExpoDetail = () => {
     load()
   }, [id])
 
-  // exhibitors: search ke saath, thora ruk kar request
+
+
   useEffect(() => {
     const timer = setTimeout(async () => {
       try {
@@ -135,7 +136,8 @@ const ExpoDetail = () => {
           All Events
         </Link>
 
-        {/* ================= HEADER ================= */}
+    
+
         <section className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-sm">
           <div className="relative h-60 sm:h-72">
             <img
@@ -172,7 +174,7 @@ const ExpoDetail = () => {
           </div>
         </section>
 
-        {/* ================= TABS ================= */}
+      
         <div className="mt-10 flex flex-wrap gap-2 border-b border-[#eadfc9] pb-4">
           {TABS.map((t) => (
             <button
@@ -190,7 +192,8 @@ const ExpoDetail = () => {
 
         <section className="mt-8">
 
-          {/* ---------- SCHEDULE ---------- */}
+        
+        
           {tab === 'Schedule' && (
             <div className="space-y-8">
               {schedules.length === 0 && <p className="text-[#5d574f]">The schedule has not been published yet.</p>}
@@ -221,7 +224,8 @@ const ExpoDetail = () => {
             </div>
           )}
 
-          {/* ---------- EXHIBITORS ---------- */}
+         
+
           {tab === 'Exhibitors' && (
             <div>
               <div className="relative mb-6 max-w-md">
@@ -291,7 +295,8 @@ const ExpoDetail = () => {
             </div>
           )}
 
-          {/* ---------- FLOOR PLAN ---------- */}
+      
+      
           {tab === 'Floor Plan' && (
             <div>
               <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#5d574f]">

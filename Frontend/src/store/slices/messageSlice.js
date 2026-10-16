@@ -1,7 +1,7 @@
 import api from "@/api/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// FETCH CONTACTS
+
 export const fetchContacts = createAsyncThunk(
   "message/fetchContacts",
   async (contactId, { rejectWithValue }) => {
@@ -16,7 +16,7 @@ export const fetchContacts = createAsyncThunk(
   }
 );
 
-// FETCH CONVERSATION
+
 export const fetchConversation = createAsyncThunk(
   "message/fetchConversation",
   async (userId, { rejectWithValue }) => {
@@ -29,7 +29,7 @@ export const fetchConversation = createAsyncThunk(
   }
 );
 
-// SEND MESSAGE
+
 export const sendMessage = createAsyncThunk(
   "message/sendMessage",
   async ({ receiver, content }, { rejectWithValue }) => {
@@ -42,7 +42,8 @@ export const sendMessage = createAsyncThunk(
   }
 );
 
-// FETCH UNREAD COUNTS
+
+
 export const fetchUnreadCounts = createAsyncThunk(
   "message/fetchUnreadCounts",
   async (_, { rejectWithValue }) => {
@@ -55,7 +56,8 @@ export const fetchUnreadCounts = createAsyncThunk(
   }
 );
 
-// MARK AS READ
+
+
 export const markAsRead = createAsyncThunk(
   "message/markAsRead",
   async (userId, { rejectWithValue }) => {
@@ -85,7 +87,8 @@ const messageSlice = createSlice({
 
     builder
 
-      // FETCH CONTACTS
+   
+
       .addCase(fetchContacts.fulfilled, (state, action) => {
         state.contacts = action.payload.contacts;
       })
@@ -93,7 +96,8 @@ const messageSlice = createSlice({
         state.error = action.payload;
       })
 
-      // FETCH CONVERSATION
+ 
+
       .addCase(fetchConversation.pending, (state) => {
         state.loading = true;
       })
@@ -106,7 +110,8 @@ const messageSlice = createSlice({
         state.error = action.payload;
       })
 
-      // SEND MESSAGE
+   
+
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.conversation.push(action.payload.message);
       })
@@ -114,12 +119,14 @@ const messageSlice = createSlice({
         state.error = action.payload;
       })
 
-      // FETCH UNREAD COUNTS
+   
+
       .addCase(fetchUnreadCounts.fulfilled, (state, action) => {
         state.unread = action.payload.unread;
       })
 
-      // MARK AS READ
+  
+      
       .addCase(markAsRead.fulfilled, (state, action) => {
         state.unread = state.unread.filter((u) => u._id !== action.payload.userId);
       });

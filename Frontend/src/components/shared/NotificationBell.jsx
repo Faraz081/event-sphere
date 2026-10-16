@@ -39,7 +39,7 @@ const NotificationBell = () => {
 
   const isAttendee = user?.role === "attendee";
 
-  // polling + tab pe wapas aate hi refresh
+ 
   useEffect(() => {
     if (!isAttendee) return;
 
@@ -58,7 +58,8 @@ const NotificationBell = () => {
     };
   }, [dispatch, isAttendee]);
 
-  // nayi notification aaye to toast (pehli load pe nahi)
+
+
   useEffect(() => {
     if (!loaded) return;
 
@@ -87,7 +88,8 @@ const NotificationBell = () => {
     seenRef.current = keys;
   }, [items, loaded, dispatch, navigate]);
 
-  // tab ke title mein unread count
+  
+
   useEffect(() => {
     if (!isAttendee) return;
 
@@ -99,7 +101,8 @@ const NotificationBell = () => {
     };
   }, [unreadCount, isAttendee]);
 
-  // bahar click karne pe band
+ 
+  
   useEffect(() => {
     const handler = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);

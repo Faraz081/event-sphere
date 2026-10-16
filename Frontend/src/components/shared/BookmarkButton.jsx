@@ -6,7 +6,7 @@ import { toggleBookmark, toggleExpoBookmark } from "@/store/slices/bookmarkSlice
 
 
 
-// <BookmarkButton event={ev} /> ya <BookmarkButton expo={expo} />
+
 const BookmarkButton = ({ event, expo, className = "" }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();

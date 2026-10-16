@@ -178,7 +178,8 @@ const OngoingEvents = () => {
           </p>
         )}
 
-        {/* ---------- EXPOS ---------- */}
+      
+      
         {!loading && filteredExpos.length > 0 && (
           <>
             <h3 className="mb-5 font-serif text-xl font-bold text-[#2f2a24]">Expos</h3>

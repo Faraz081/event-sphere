@@ -34,7 +34,8 @@ const Service = () => {
     <main className="min-h-screen bg-[#fffdf9] px-4 py-20 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl">
 
-        {/* Hero Section */}
+  
+
         <section className="pt-10">
           <div className="grid items-center gap-12 lg:grid-cols-2">
 
@@ -82,12 +83,13 @@ const Service = () => {
           </div>
         </section>
 
-        {/* Services Section */}
+   
+
         <section className="mt-24 pb-20">
 
           <div className="mb-14 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-              Our Services
+              Our Events
             </p>
 
             <h2 className="mt-3 font-serif text-4xl font-bold sm:text-5xl">
@@ -164,7 +166,8 @@ const Service = () => {
             </div>
           )}
 
-          {/* Feedback & Support */}
+          
+          
           <div className="mx-auto mt-16 max-w-xl rounded-3xl border border-[#eadfca] bg-white p-7 text-center shadow-sm">
             <h3 className="font-serif text-2xl font-bold text-neutral-900">
               Feedback & Support

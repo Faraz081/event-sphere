@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api/api";
 
-// SEND OTP
+
 export const sendResetOtp = createAsyncThunk(
   "forgotPassword/sendResetOtp",
   async (email, { rejectWithValue }) => {
@@ -16,7 +16,7 @@ export const sendResetOtp = createAsyncThunk(
   }
 );
 
-// VERIFY OTP
+
 export const verifyResetOtp = createAsyncThunk(
   "forgotPassword/verifyResetOtp",
   async ({ email, otp }, { rejectWithValue }) => {
@@ -31,7 +31,7 @@ export const verifyResetOtp = createAsyncThunk(
   }
 );
 
-// RESET PASSWORD
+
 export const resetPassword = createAsyncThunk(
   "forgotPassword/resetPassword",
   async ({ email, otp, newPassword }, { rejectWithValue }) => {
@@ -82,7 +82,7 @@ const forgotPasswordSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // SEND OTP
+      
       .addCase(sendResetOtp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -96,7 +96,7 @@ const forgotPasswordSlice = createSlice({
         state.error = action.payload;
       })
 
-      // VERIFY OTP
+     
       .addCase(verifyResetOtp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -110,7 +110,7 @@ const forgotPasswordSlice = createSlice({
         state.error = action.payload;
       })
 
-      // RESET PASSWORD
+      
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;

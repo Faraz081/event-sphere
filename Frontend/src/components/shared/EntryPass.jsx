@@ -64,7 +64,7 @@ const EntryPass = ({ booking, user }) => {
       pdf.setFontSize(11);
       pdf.text(attendeeName, 14, 51);
 
-      // Date & Location
+      
       pdf.setTextColor(150, 130, 105);
       pdf.setFontSize(7);
       pdf.text("DATE & TIME", 14, 61);
@@ -77,20 +77,20 @@ const EntryPass = ({ booking, user }) => {
       const locationLines = pdf.splitTextToSize(location, 60);
       pdf.text(locationLines.slice(0, 1), 75, 68);
 
-      // Pass ID Footer Text
+     
       pdf.setTextColor(196, 148, 36);
       pdf.setFont("courier", "bold");
       pdf.setFontSize(8);
       pdf.text(`PASS ID: ${booking.entryPassId || "N/A"}`, 14, 81);
 
-      // 2. Vertical Perforated / Dashed Tear Line (Ticket Stub Divider)
+      
       pdf.setDrawColor(180, 160, 130);
       pdf.setLineWidth(0.6);
       pdf.setLineDashPattern([2, 2], 0);
       pdf.line(148, 6, 148, 89);
       pdf.setLineDashPattern([], 0); // Reset dash
 
-      // Side Ticket Cutout Circles (Top & Bottom Notches)
+     
       pdf.setFillColor(248, 245, 239);
       pdf.circle(148, 6, 4, "F");
       pdf.circle(148, 89, 4, "F");
@@ -100,11 +100,11 @@ const EntryPass = ({ booking, user }) => {
       pdf.circle(148, 6, 4, "S");
       pdf.circle(148, 89, 4, "S");
 
-      // 3. Right Stub Section (QR Code & Scan Details)
+   
       pdf.setFillColor(245, 238, 226);
       pdf.roundedRect(153, 10, 46, 75, 4, 4, "F");
 
-      // QR Code Box inside Stub
+      
       const qrImage = qrCanvas.toDataURL("image/png");
       pdf.addImage(qrImage, "PNG", 157, 14, 38, 38);
 

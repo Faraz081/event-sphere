@@ -30,7 +30,7 @@ const DashboardLayout = ({ role, children }) => {
     setProfileOpen(false);
   }, [location.pathname]);
 
-  // unread messages ka count sidebar badge ke liye
+  
   useEffect(() => {
     if (!hasMessages) return;
     dispatch(fetchUnreadCounts());

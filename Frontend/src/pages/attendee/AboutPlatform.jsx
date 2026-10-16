@@ -234,7 +234,7 @@ export default function AboutPlatform() {
 
 
       
-      {/* Trusted Partners Section */}
+     
       <section className="mx-auto max-w-7xl w-full py-12">
         <div className="text-center mb-12">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -280,7 +280,7 @@ export default function AboutPlatform() {
         </div>
       </section>
 
-      {/* Memorable Events Section */}
+     
       <section className="mx-auto max-w-7xl w-full py-12">
         <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -421,7 +421,7 @@ export default function AboutPlatform() {
       </section>
 
       
-      {/* FAQ SECTION */}
+      
       <section className="bg-[#f8f5ef] px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
@@ -501,7 +501,7 @@ export default function AboutPlatform() {
         </div>
       </section>
 
-      {/* STATS SECTION */}
+     
       <section className="bg-white px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 text-center lg:grid-cols-4">
           <div>

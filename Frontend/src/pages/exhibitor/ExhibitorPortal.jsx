@@ -10,9 +10,9 @@ import { fetchMyBooth } from "@/store/slices/boothSlice";
 import { fetchMyEvents, fetchBookingRequests } from "@/store/slices/eventSlice";
 import { fetchContacts, fetchUnreadCounts } from "@/store/slices/messageSlice";
 
-const POLL_MS = 30000; // har 30 second baad data refresh
+const POLL_MS = 30000; 
 
-// confirmed/approved aur cancelled/rejected ko ek group mein rakha hai
+
 const groupOf = (status) =>
   status === "confirmed" || status === "approved"
     ? "approved"
@@ -45,7 +45,7 @@ const ExhibitorPortal = () => {
     setLastUpdated(new Date());
   }, [dispatch]);
 
-  // pehli dafa load + polling (tab hidden ho to skip)
+ 
   useEffect(() => {
     refresh();
     const timer = setInterval(() => {
@@ -60,7 +60,7 @@ const ExhibitorPortal = () => {
     .map((u) => ({ ...u, contact: contacts.find((c) => c._id === u._id) }))
     .filter((u) => u.contact);
 
-  // ---------- real analytics ----------
+ 
   const analytics = useMemo(() => {
     const approvedBooths = myBooths.filter((b) => b.status !== "pending");
     const products = approvedBooths.reduce((sum, b) => sum + (b.products?.length ?? 0), 0);
@@ -72,7 +72,7 @@ const ExhibitorPortal = () => {
       counts[groupOf(r.bookingStatus)] += 1;
     });
 
-    // har event ke liye status-wise requests
+
     const perEvent = {};
     requests.forEach((r) => {
       const name = r.event?.title || r.eventName || "Event";
@@ -182,7 +182,7 @@ const ExhibitorPortal = () => {
             )}
           </div>
 
-          {/* Requests per event */}
+         
           <div className="rounded-3xl border border-border bg-surface p-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Requests per Event</h2>
             {analytics.perEventData.length === 0 ? (

@@ -28,7 +28,8 @@ const ExhibitorBooth = () => {
     dispatch(fetchMyBooth());
   }, [dispatch]);
 
-  // floor plan: saare booths (available/pending/reserved) dikhane ke liye
+  
+
   const loadPlan = async (expoId) => {
     try {
       const data = await fetchPublicBooths(expoId);
@@ -110,7 +111,7 @@ const ExhibitorBooth = () => {
     }
   };
 
-  // derived values (handlers ke baad, return se pehle)
+  
   const mineIds = myBooths.map((b) => b._id);
   const alreadyInExpo = myBooths.some((b) => (b.expo?._id || b.expo) === selectedExpo);
   const picked =

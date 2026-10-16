@@ -35,7 +35,8 @@ const FILTERS = [
   { key: "rejected", label: "Rejected" },
 ];
 
-// confirmed/approved aur cancelled/rejected ko ek hi group mein rakha hai
+
+
 const groupOf = (status) =>
   status === "confirmed" || status === "approved"
     ? "approved"

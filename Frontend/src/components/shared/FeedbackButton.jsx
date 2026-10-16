@@ -4,7 +4,7 @@ import { MessageSquareText } from 'lucide-react'
 const FeedbackButton = () => {
   const { pathname } = useLocation()
 
-  // Login, Signup aur Forgot Password pages par button hide rahega
+  
   if (
     pathname === '/login' ||
     pathname === '/signup' ||

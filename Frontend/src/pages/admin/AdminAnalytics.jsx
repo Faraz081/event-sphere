@@ -69,7 +69,8 @@ const AdminAnalytics = () => {
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
-        {/* Header */}
+       
+
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground">
@@ -101,14 +102,16 @@ const AdminAnalytics = () => {
           <div className="py-20 text-center text-muted">Loading analytics...</div>
         ) : (
           <>
-            {/* Stats Cards */}
+           
+
             <StatGrid>
               {overviewStats.map((stat) => (
                 <StatCard key={stat.label} label={stat.label} value={stat.value} />
               ))}
             </StatGrid>
 
-            {/* Charts Row */}
+          
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Booth Status Bar Chart */}
               <div className="bg-surface border border-border rounded-2xl p-5">
@@ -144,7 +147,8 @@ const AdminAnalytics = () => {
                 )}
               </div>
 
-              {/* Exhibitor Status Pie */}
+             
+
               <div className="bg-surface border border-border rounded-2xl p-5">
                 <h3 className="font-display text-foreground text-lg mb-4">
                   Exhibitor Status
@@ -186,7 +190,8 @@ const AdminAnalytics = () => {
               </div>
             </div>
 
-            {/* Recent Expos */}
+        
+
             <div className="bg-surface border border-border rounded-2xl p-5">
               <h3 className="font-display text-foreground text-lg mb-4">
                 Recent Expos
@@ -227,7 +232,7 @@ const AdminAnalytics = () => {
               )}
             </div>
 
-            {/* Quick summary line */}
+          
             <div className="text-sm text-muted">
               Occupancy: <span className="text-gold font-medium">{booths.occupancyRate ?? 0}%</span>
               {" · "}

@@ -32,7 +32,8 @@ import {
   User,
 } from "lucide-react";
 
-// Convert ISO string to format required by <input type="datetime-local"> (YYYY-MM-DDTHH:mm)
+
+
 const toDatetimeLocal = (isoString) => {
   if (!isoString) return "";
   const date = new Date(isoString);
@@ -46,7 +47,8 @@ const toDatetimeLocal = (isoString) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-// Clean date/time display without non-standard encoding characters
+
+
 const formatDateTimeRange = (startIso, endIso) => {
   if (!startIso || !endIso) return "-";
   const start = new Date(startIso);
@@ -117,13 +119,14 @@ const AdminSchedule = () => {
   const [search, setSearch] = useState("");
   const [selectedExpoFilter, setSelectedExpoFilter] = useState("all");
 
-  // Modal state
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Delete modal state
+  
+
   const [sessionToDelete, setSessionToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -144,7 +147,7 @@ const AdminSchedule = () => {
     ? new Date(Math.min(expoEnd.getTime(), selectedStart.getTime() + MAX_SESSION_DURATION_MS))
     : expoEnd;
 
-  // Load available Expos for filtering & selection
+
   const loadExpos = useCallback(async () => {
     try {
       const data = await fetchExpos({ limit: "all" });
@@ -154,7 +157,7 @@ const AdminSchedule = () => {
     }
   }, []);
 
-  // Load Schedules from API
+ 
   const loadSchedules = useCallback(async () => {
     try {
       setLoading(true);
@@ -358,9 +361,10 @@ const AdminSchedule = () => {
           </div>
         </div>
 
-        {/* Filter bar */}
+    
         <div className="flex flex-col sm:flex-row gap-4 mb-6 items-stretch sm:items-center justify-between">
-          {/* Search */}
+       
+
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
             <input
@@ -372,7 +376,8 @@ const AdminSchedule = () => {
             />
           </div>
 
-          {/* Expo Filter */}
+        
+
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted hidden sm:inline">Expo:</span>
             <select
@@ -390,7 +395,8 @@ const AdminSchedule = () => {
           </div>
         </div>
 
-        {/* Error State */}
+   
+
         {error && (
           <div className="mb-4 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 text-sm flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -406,7 +412,7 @@ const AdminSchedule = () => {
           </div>
         )}
 
-        {/* Table */}
+     
         <ResponsiveTable minWidth="800px">
           <thead className="border-b border-border">
             <tr>
@@ -533,7 +539,8 @@ const AdminSchedule = () => {
           </tbody>
         </ResponsiveTable>
 
-        {/* Create / Edit Modal */}
+     
+
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-surface border border-border rounded-2xl w-full max-w-lg p-6 shadow-xl max-h-[90vh] overflow-y-auto">
@@ -550,7 +557,8 @@ const AdminSchedule = () => {
               </div>
 
               <div className="space-y-4">
-                {/* Expo Selection */}
+             
+
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Expo *</label>
                   <select
@@ -571,7 +579,7 @@ const AdminSchedule = () => {
                   </select>
                 </div>
 
-                {/* Title */}
+
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Session Title *</label>
                   <input
@@ -583,7 +591,8 @@ const AdminSchedule = () => {
                   />
                 </div>
 
-                {/* Speaker */}
+                
+
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Speaker</label>
                   <input
@@ -595,7 +604,8 @@ const AdminSchedule = () => {
                   />
                 </div>
 
-                {/* Topic */}
+          
+
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Topic</label>
                   <input
@@ -607,7 +617,8 @@ const AdminSchedule = () => {
                   />
                 </div>
 
-                {/* Location */}
+             
+
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Location / Room</label>
                   <input
@@ -619,7 +630,8 @@ const AdminSchedule = () => {
                   />
                 </div>
 
-                {/* Start & End Times */}
+         
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-muted mb-1.5">Start Time *</label>
@@ -671,7 +683,8 @@ const AdminSchedule = () => {
           </div>
         )}
 
-        {/* Delete Confirmation */}
+      
+      
         <AlertDialog
           open={!!sessionToDelete}
           onOpenChange={(open) => !open && setSessionToDelete(null)}

@@ -89,17 +89,17 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-[#f8f5ef] text-[#29251f]">
 
-      {/* ================= HERO ================= */}
+      
       <section className="relative min-h-screen overflow-hidden pt-28">
 
-        {/* Background Image */}
+        
         <img
           src={mainBannerImage}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
 
-        {/* Background Overlay */}
+      
         <div className="absolute inset-0 bg-[#f8f5ef]/80" />
 
         <div className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center px-6 lg:px-10">
@@ -155,7 +155,7 @@ useEffect(() => {
 
             </div>
 
-            {/* Hero Image Box */}
+          
             <div className="relative flex justify-center lg:justify-end">
 
               <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-[#c49424]/25 blur-2xl" />
@@ -179,7 +179,7 @@ useEffect(() => {
       </section>
 
 
-      {/* ================= ABOUT ================= */}
+      
       <section
         id="about"
         className="scroll-mt-24 bg-[#f8f5ef] px-6 py-24 lg:px-10"
@@ -187,7 +187,7 @@ useEffect(() => {
 
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
 
-          {/* Text */}
+          
           <div>
 
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -225,7 +225,7 @@ useEffect(() => {
           </div>
 
 
-          {/* About Card */}
+          
           <div className="rounded-[2rem] bg-white p-8 shadow-lg">
 
             <div className="grid grid-cols-2 gap-5">
@@ -275,7 +275,7 @@ useEffect(() => {
       </section>
 
 
-          {/* ================= Events ================= */}
+         
       <section id="services" className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
 
@@ -358,7 +358,7 @@ useEffect(() => {
       </section>
 
 
-       {/* ================= SERVICES ================= */}
+      
       <section
         id="services"
         className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10"
@@ -386,7 +386,7 @@ useEffect(() => {
 
           <div className="grid gap-7 md:grid-cols-3">
 
-            {/* Wedding */}
+     
             <div className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
 
               <div className="overflow-hidden">
@@ -422,7 +422,7 @@ useEffect(() => {
             </div>
 
 
-            {/* Corporate */}
+           
             <div className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
 
               <div className="overflow-hidden">
@@ -456,7 +456,7 @@ useEffect(() => {
             </div>
 
 
-            {/* Birthday */}
+         
             <div className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
 
               <div className="overflow-hidden">
@@ -506,7 +506,7 @@ useEffect(() => {
 
 
       
-      {/* ================= GALLERY ================= */}
+     
       <section
         id="gallery"
         className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10"
@@ -514,7 +514,7 @@ useEffect(() => {
 
         <div className="mx-auto max-w-7xl">
 
-          {/* Gallery Heading */}
+       
           <div className="mb-14 text-center">
 
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -527,7 +527,7 @@ useEffect(() => {
 
           </div>
 
-          {/* Bento Gallery */}
+          
           <div className="grid gap-5 md:grid-cols-4 md:grid-rows-2">
 
             {/* Large image */}
@@ -539,7 +539,7 @@ useEffect(() => {
               />
             </div>
 
-            {/* Top right */}
+           
             <div className="group overflow-hidden rounded-3xl md:col-span-2">
               <img
                 src={gallery2}
@@ -548,7 +548,7 @@ useEffect(() => {
               />
             </div>
 
-            {/* Bottom right */}
+          
             <div className="group overflow-hidden rounded-3xl md:col-span-2">
               <img
                 src={gallery3}
@@ -559,7 +559,7 @@ useEffect(() => {
 
           </div>
 
-          {/* Explore More */}
+         
           <div className="mt-10 text-center">
             <Link
               to="/event-gallery"
@@ -574,12 +574,12 @@ useEffect(() => {
       </section>
 
 
-      {/* ================= REVIEWS ================= */}
+     
       <section className="bg-[#f8f5ef] px-6 py-24 lg:px-10">
 
         <div className="mx-auto max-w-7xl">
 
-          {/* Heading */}
+      
           <div className="text-center">
 
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -598,7 +598,7 @@ useEffect(() => {
           </div>
 
 
-          {/* Rating Summary */}
+        
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 sm:grid-cols-2">
 
             <div className="rounded-2xl border border-[#eadfc9] bg-white p-6 shadow-sm">
@@ -649,7 +649,7 @@ useEffect(() => {
           </div>
 
 
-          {/* Reviews Carousel */}
+          
           <div className="relative mt-10">
 
             <div
@@ -661,7 +661,7 @@ useEffect(() => {
               }}
             >
 
-              {/* Review 1 */}
+             
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -704,7 +704,7 @@ useEffect(() => {
               </div>
 
 
-              {/* Review 2 */}
+            
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -747,7 +747,7 @@ useEffect(() => {
               </div>
 
 
-              {/* Review 3 */}
+             
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -790,7 +790,7 @@ useEffect(() => {
               </div>
 
 
-              {/* Review 4 */}
+            
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -833,7 +833,7 @@ useEffect(() => {
               </div>
 
 
-              {/* Review 5 */}
+          
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -876,7 +876,7 @@ useEffect(() => {
               </div>
 
 
-              {/* Review 6 */}
+      
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -919,7 +919,7 @@ useEffect(() => {
               </div>
 
 
-              {/* Review 7 */}
+             
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -962,7 +962,7 @@ useEffect(() => {
               </div>
 
 
-              {/* Review 8 */}
+              
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -1007,7 +1007,7 @@ useEffect(() => {
             </div>
 
 
-            {/* Previous Arrow */}
+           
             <button
               type="button"
               onClick={() => {
@@ -1040,7 +1040,7 @@ useEffect(() => {
             </button>
 
 
-            {/* Next Arrow */}
+         
             <button
               type="button"
               onClick={() => {
@@ -1078,7 +1078,6 @@ useEffect(() => {
           </div>
 
 
-          {/* Contact Button */}
           <div className="mt-12 text-center">
 
             <Link
@@ -1095,12 +1094,12 @@ useEffect(() => {
       </section>
 
 
-      {/* ================= FAQ + STATS ================= */}
+     
       <section className="bg-[#f8f5ef] px-6 py-20 lg:px-10">
 
         <div className="mx-auto max-w-5xl">
 
-          {/* FAQ HEADER */}
+         
           <div className="text-center">
 
             <h2 className="font-serif text-4xl font-semibold text-[#2f2a24] sm:text-5xl">
@@ -1114,7 +1113,7 @@ useEffect(() => {
           </div>
 
 
-          {/* FAQ LIST */}
+       
           <div className="mx-auto mt-12 max-w-4xl space-y-3">
 
             {faqs.map((faq, index) => (
@@ -1168,12 +1167,12 @@ useEffect(() => {
       </section>
 
 
-      {/* ================= STATISTICS ================= */}
+     
       <section className="bg-white px-6 py-20 lg:px-10">
 
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 text-center lg:grid-cols-4">
 
-          {/* Stat 1 */}
+         
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               140+
@@ -1185,7 +1184,6 @@ useEffect(() => {
           </div>
 
 
-          {/* Stat 2 */}
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               3,000+
@@ -1197,7 +1195,7 @@ useEffect(() => {
           </div>
 
 
-          {/* Stat 3 */}
+       
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               80K+
@@ -1209,7 +1207,7 @@ useEffect(() => {
           </div>
 
 
-          {/* Stat 4 */}
+      
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               99%
