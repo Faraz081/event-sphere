@@ -8,10 +8,8 @@ import adminMiddleware from "../middleware/adminMiddleware.js";
 
 const websiteSettingsRoute = express.Router();
 
-// Public: frontend website settings read kar sakta hai
 websiteSettingsRoute.get("/", getWebsiteSettings);
 
-// Admin only: settings update kar sakta hai
 websiteSettingsRoute.put(
   "/",
   authMiddleware,

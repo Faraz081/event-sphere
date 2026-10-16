@@ -93,7 +93,6 @@ const Footer = () => {
 
         <div className="grid gap-12 border-b border-white/10 pb-16 md:grid-cols-2 lg:grid-cols-12">
 
-          {/* Brand / Newsletter */}
           <div className="lg:col-span-4">
 
             <Link
@@ -134,7 +133,7 @@ const Footer = () => {
               </form>
             </div>
 
-            {/* Social Links */}
+           
             <div className="mt-6 flex gap-3">
 
               {socials.map((social, index) => (
@@ -153,7 +152,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+        
           <div className="lg:col-span-2 lg:border-l lg:border-white/10 lg:pl-8">
 
             <h3 className="text-sm font-semibold uppercase tracking-widest text-[#c49424]">
@@ -210,7 +209,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Platform */}
+          
           <div className="lg:col-span-3 lg:border-l lg:border-white/10 lg:pl-8">
 
             <h3 className="text-sm font-semibold uppercase tracking-widest text-[#c49424]">
@@ -267,7 +266,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact */}
+        
           <div className="lg:col-span-3 lg:border-l lg:border-white/10 lg:pl-8">
 
             <h3 className="text-sm font-semibold uppercase tracking-widest text-[#c49424]">
@@ -345,7 +344,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Footer */}
+      
         <div className="flex flex-col gap-4 pt-8 text-sm text-white/40 md:flex-row md:items-center md:justify-between">
 
           <p>{copyright}</p>

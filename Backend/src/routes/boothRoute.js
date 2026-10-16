@@ -10,7 +10,6 @@ import { adminAuth } from "../middleware/authMiddleware.js";
 
 const boothRoute = express.Router();
 
-// All booth routes protected (Admin only)
 boothRoute.get("/", adminAuth, getAllBooths);
 boothRoute.post("/", adminAuth, createBooth);
 boothRoute.get("/:id", adminAuth, getBoothById);

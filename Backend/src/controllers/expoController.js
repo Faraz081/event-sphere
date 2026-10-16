@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 import Expo from "../models/Expo.js";
 import Booth from "../models/Booth.js";
-// Adjust these paths/names to match your project. Remove any model that doesn't exist.
 import ExhibitorApplication from "../models/ExhibitorApplication.js";
 import Schedule from "../models/Schedule.js";
 
 const VALID_STATUSES = ["draft", "published", "ongoing", "completed", "cancelled"];
 
-// CREATE Expo
 export const createExpo = async (req, res) => {
   try {
     const { title, description, theme, date, location, status, banner, maxBooths = 10 } = req.body;
@@ -79,7 +77,6 @@ export const createExpo = async (req, res) => {
   }
 };
 
-// GET all expos with optional filtering and pagination.
 export const getAllExpos = async (req, res) => {
   try {
     await Expo.updateLifecycleStatuses();
@@ -153,7 +150,6 @@ export const getAllExpos = async (req, res) => {
   }
 };
 
-// GET Single Expo
 export const getExpoById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -173,7 +169,6 @@ export const getExpoById = async (req, res) => {
   }
 };
 
-// Update only validated expo fields, preserving createdBy.
 export const updateExpo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -264,7 +259,6 @@ export const updateExpo = async (req, res) => {
   }
 };
 
-// DEDICATED STATUS CHANGE
 export const updateExpoStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -300,7 +294,6 @@ export const updateExpoStatus = async (req, res) => {
   }
 };
 
-// DELETE Expo (cascades to related data)
 export const deleteExpo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -313,12 +306,10 @@ export const deleteExpo = async (req, res) => {
       return res.status(404).json({ error: "Expo not found" });
     }
 
-    // Children first, expo last: if something fails midway, the expo still exists and delete can be retried.
     await Promise.all([
       Booth.deleteMany({ expo: expo._id }),
       ExhibitorApplication.deleteMany({ expo: expo._id }),
       Schedule.deleteMany({ expo: expo._id }),
-      // Ticket.deleteMany({ expo: expo._id }),
     ]);
     await expo.deleteOne();
 

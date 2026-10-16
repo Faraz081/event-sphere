@@ -65,10 +65,8 @@ function App() {
         }}
       />
 
-       
-
       <Routes>
-        {/* PUBLIC WEBSITE */}
+        
         <Route path="/" element={<WebsiteLayout />}>
           <Route index element={<Home />} />
           <Route path="event-gallery" element={<EventGallery />} />
@@ -102,7 +100,7 @@ function App() {
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<DashboardRedirect />} />
 
-          {/* ADMIN */}
+          
           <Route element={<RequireRole allowedRoles={["admin"]} />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUsers />} />
@@ -119,7 +117,7 @@ function App() {
             <Route path="/admin/check-in/:passCode" element={<AdminCheckIn />} />
           </Route>
 
-          {/* EXHIBITOR */}
+          
           <Route element={<RequireRole allowedRoles={["exhibitor"]} />}>
             <Route path="/exhibitor" element={<ExhibitorPortal />} />
             <Route path="/exhibitor/registration" element={<ExhibitorRegistration />} />

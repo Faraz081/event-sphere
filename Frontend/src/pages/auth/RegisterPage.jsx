@@ -40,11 +40,9 @@ const labelClass = "mb-2 block text-sm font-semibold text-[#2f2a24]";
 const countLetters = (str) => (str.match(/\p{L}/gu) || []).length;
 const lettersOnly = /^[\p{L}\s]+$/u;
 
-// Email: local part letter se start ho, number/dot/symbol se nahi
 const emailRegex =
   /^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 
-// Phone: 03XXXXXXXXX, +923XXXXXXXXX, 021XXXXXXXX (Karachi landline), +9221XXXXXXXX
 const phoneRegex = /^(\+92|0)(3\d{9}|21\d{8})$/;
 
 const RegisterPage = () => {
@@ -56,8 +54,6 @@ const RegisterPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Phone: digits, aur sirf shuru mein ek "+" allowed
-    // "+" se start ho to max 13 chars (+923001234567), warna max 11
     if (name === "phone") {
       let cleaned = value.replace(/[^\d+]/g, "");
       const hasPlus = cleaned.startsWith("+");
@@ -68,7 +64,6 @@ const RegisterPage = () => {
       return;
     }
 
-    // Name / Company: sirf letters aur spaces
     if (name === "name" || name === "companyName") {
       setFormData((prev) => ({
         ...prev,
@@ -161,7 +156,7 @@ const RegisterPage = () => {
     >
       <div className="grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#eadfca] bg-white shadow-xl lg:grid-cols-2">
 
-        {/* Left Side - Branding */}
+        
         <div className="relative hidden overflow-hidden bg-[#f8f5ef] p-12 lg:flex lg:flex-col lg:justify-center">
           <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#c49424]/10" />
           <div className="absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-[#c49424]/10" />
@@ -214,7 +209,7 @@ const RegisterPage = () => {
           </div>
         </div>
 
-        {/* Right Side - Signup Form */}
+       
         <div className="p-8 sm:p-12 lg:p-14">
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fdf8ed]">
@@ -233,7 +228,7 @@ const RegisterPage = () => {
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             <div className="grid gap-x-5 gap-y-5 md:grid-cols-2">
 
-              {/* Full Name */}
+           
               <div>
                 <label htmlFor="fullName" className={labelClass}>
                   Full Name
@@ -255,7 +250,7 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Company */}
+          
               <div>
                 <label htmlFor="company" className={labelClass}>
                   Company / Organization
@@ -277,7 +272,6 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Email */}
               <div>
                 <label htmlFor="email" className={labelClass}>
                   Email Address
@@ -298,7 +292,6 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Role */}
               <div>
                 <label className={labelClass}>Role</label>
 
@@ -319,7 +312,6 @@ const RegisterPage = () => {
                 </Select>
               </div>
 
-              {/* Password */}
               <div>
                 <label htmlFor="password" className={labelClass}>
                   Password
@@ -340,7 +332,6 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Confirm Password */}
               <div>
                 <label htmlFor="confirmPassword" className={labelClass}>
                   Confirm Password
@@ -361,7 +352,6 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Phone */}
               <div className="md:col-span-2">
                 <label htmlFor="phone" className={labelClass}>
                   Phone
@@ -386,7 +376,7 @@ const RegisterPage = () => {
 
             </div>
 
-            {/* Signup Button */}
+
             <button
               type="submit"
               disabled={loading}

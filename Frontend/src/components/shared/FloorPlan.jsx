@@ -47,7 +47,7 @@ const FloorPlan = ({ booths = [], onSelect, selectedId, mineIds = [], variant = 
         ))}
       </div>
 
-      {/* Hall */}
+      
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {sorted.map((b) => {
           const selectable = !!onSelect && b.status === "available";

@@ -18,7 +18,6 @@ const getScheduleTimeError = (start, end, expoDate) => {
   return null;
 };
 
-// CREATE Schedule
 export const createSchedule = async (req, res) => {
   try {
     const { expo, expoId, title, speaker, topic, location, startTime, endTime } = req.body;
@@ -38,18 +37,15 @@ export const createSchedule = async (req, res) => {
       return res.status(400).json({ error: "End time is required" });
     }
 
-    // Validate Expo ObjectId
     if (!mongoose.Types.ObjectId.isValid(targetExpoId)) {
       return res.status(400).json({ error: "Invalid expo ID" });
     }
 
-    // Verify selected Expo exists
     const expoExists = await Expo.findById(targetExpoId);
     if (!expoExists) {
       return res.status(404).json({ error: "Selected expo does not exist" });
     }
 
-    // Validate times against the selected Expo's schedule window.
     const start = new Date(startTime);
     const end = new Date(endTime);
 
@@ -82,7 +78,7 @@ export const createSchedule = async (req, res) => {
       success: true,
       msg: "Schedule created successfully",
       schedule,
-      addSchedule: schedule, // Backwards compatibility with initial implementation
+      addSchedule: schedule, 
     });
   } catch (error) {
     console.error("createSchedule error:", error);
@@ -90,7 +86,6 @@ export const createSchedule = async (req, res) => {
   }
 };
 
-// GET All Schedules (with expoId filtering, chronological sorting, and expo population)
 export const getAllSchedules = async (req, res) => {
   try {
     const { expo, expoId, search } = req.query;
@@ -117,7 +112,7 @@ export const getAllSchedules = async (req, res) => {
 
     const schedules = await Schedule.find(filter)
       .populate("expo", "title date location status")
-      .sort({ startTime: 1 }); // Sort chronologically
+      .sort({ startTime: 1 }); 
 
     return res.status(200).json({
       success: true,
@@ -130,7 +125,6 @@ export const getAllSchedules = async (req, res) => {
   }
 };
 
-// GET Single Schedule
 export const getScheduleById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -153,7 +147,6 @@ export const getScheduleById = async (req, res) => {
   }
 };
 
-// UPDATE Schedule (validate allowed fields, verify expo exists, validate startTime < endTime)
 export const updateSchedule = async (req, res) => {
   try {
     const { id } = req.params;
@@ -198,7 +191,6 @@ export const updateSchedule = async (req, res) => {
       updates.location = req.body.location ? req.body.location.trim() : "";
     }
 
-    // Validate times if updated
     const hasNewStart = req.body.startTime !== undefined;
     const hasNewEnd = req.body.endTime !== undefined;
 
@@ -249,7 +241,6 @@ export const updateSchedule = async (req, res) => {
   }
 };
 
-// DELETE Schedule
 export const deleteSchedule = async (req, res) => {
   try {
     const { id } = req.params;

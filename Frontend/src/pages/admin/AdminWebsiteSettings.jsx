@@ -361,7 +361,8 @@ const AdminWebsiteSettings = () => {
         </div>
 
         <form onSubmit={handleSave} className="space-y-6">
-          {/* General Settings */}
+       
+
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -430,7 +431,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-          {/* Main Banner */}
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -513,7 +513,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-          {/* About */}
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -576,7 +575,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-          {/* Contact */}
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -671,7 +669,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-          {/* Social Links */}
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -786,7 +783,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-          {/* Footer */}
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -841,7 +837,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-          {/* Save */}
           <div className="flex justify-end">
             <button
               type="submit"

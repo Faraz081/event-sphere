@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { LogOut } from 'lucide-react'
+import { LogOut, Menu, X } from 'lucide-react'
 import api from '../../api/api'
 import { logout } from '@/store/slices/authSlice'
 import { fetchUnreadCounts } from '@/store/slices/messageSlice'
@@ -9,6 +9,7 @@ import { clearNotifications } from '@/store/slices/notificationSlice'
 import { clearBookmarks } from '@/store/slices/bookmarkSlice'
 import NotificationBell from '@/components/shared/NotificationBell'
 import websiteDefaults from '@/data/websiteDefaults'
+import defaultLogoImg from '@/assets/Logo.jpg'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -19,6 +20,7 @@ const Navbar = () => {
   const isGuest = !user
 
   const navigate = useNavigate()
+  const location = useLocation()
   const dispatch = useDispatch()
 
   const unreadCount = unread.reduce((total, item) => total + item.count, 0)
@@ -56,115 +58,84 @@ const Navbar = () => {
     return () => clearInterval(interval)
   }, [dispatch, isAttendee])
 
-  const websiteName =
-    settings?.websiteName?.trim() || websiteDefaults.websiteName
-  const logo = settings?.logo?.trim() || websiteDefaults.logo
-
-  const renderLogo = () => {
-    return (
-      <img
-        src={logo}
-        alt={websiteName}
-        className="mr-2 h-8 max-h-9 w-auto max-w-30 shrink-0 rounded-md object-contain shadow-[0_1px_3px_rgba(0,0,0,0.3)] md:h-9 md:max-w-40"
-      />
-    )
-  }
+  const websiteName = settings?.websiteName?.trim() || websiteDefaults.websiteName
+  const logo = settings?.logo?.trim() || defaultLogoImg || websiteDefaults.logo
 
   const scrollToSection = (id) => {
-    if (window.location.pathname !== '/') {
+    setMenuOpen(false)
+    if (location.pathname !== '/') {
       navigate('/')
-
       setTimeout(() => {
-        const section = document.getElementById(id)
-
-        if (section) {
-          section.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          })
-        }
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
-
-      return
-    }
-
-    const section = document.getElementById(id)
-
-    if (section) {
-      section.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
 
   const goHome = () => {
-    if (window.location.pathname !== '/') {
+    setMenuOpen(false)
+    if (location.pathname !== '/') {
       navigate('/')
     } else {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-
-    setMenuOpen(false)
   }
 
   return (
-    <nav className="fixed inset-x-0 top-6 z-50 mx-auto max-w-7xl px-4 font-bold sm:px-6">
-      <div className="flex h-16 items-center justify-between rounded-full border border-white/80 bg-white/20 px-6 shadow-[0_8px_32px_0_rgba(196,148,36,0.15)] backdrop-blur-2xl transition-all duration-300 md:px-8">
-
-        {/* Logo */}
+    <nav className="fixed inset-x-0 top-4 z-50 mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="flex h-16 sm:h-20 items-center justify-between rounded-full border border-white/80 bg-white/70 px-4 sm:px-6 shadow-[0_8px_32px_0_rgba(196,148,36,0.12)] backdrop-blur-2xl transition-all duration-300">
         <Link
           to="/"
-          className="inline-flex min-w-0 shrink items-center font-serif text-2xl font-medium tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] transition-opacity hover:opacity-80"
+          onClick={goHome}
+          className="inline-flex min-w-0 shrink-0 items-center transition-transform duration-200 hover:scale-[1.03]"
         >
-          {renderLogo()}
-          {websiteName}
+          <img
+            src={logo}
+            alt={websiteName}
+            className="h-12 sm:h-16 w-auto max-w-[160px] sm:max-w-[220px] rounded-xl object-contain drop-shadow-sm"
+          />
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden items-center gap-7 lg:flex whitespace-nowrap">
-
+        <div className="hidden items-center gap-6 lg:flex whitespace-nowrap">
           <button
             onClick={goHome}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+            className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
             Home
           </button>
 
           <button
             onClick={() => scrollToSection('about')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+            className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
             About
           </button>
 
           <button
             onClick={() => scrollToSection('expos')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+            className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
             Services
           </button>
 
           <button
             onClick={() => scrollToSection('gallery')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+            className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
             Gallery
           </button>
 
           <Link
             to="/contact"
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+            className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
             Contact
           </Link>
 
           <button
             onClick={() => navigate('/book-now')}
-            className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+            className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
             Book Now
           </button>
@@ -172,11 +143,11 @@ const Navbar = () => {
           {isAttendee && (
             <Link
               to="/attendee/messages"
-              className="relative text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+              className="relative text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               Messages
               {unreadCount > 0 && (
-                <span className="absolute -right-3 -top-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#c49424] px-1 text-[10px] font-bold text-white">
+                <span className="absolute -right-3 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c49424] px-1 text-[10px] font-bold text-white">
                   {unreadCount}
                 </span>
               )}
@@ -186,7 +157,7 @@ const Navbar = () => {
           {isAttendee && (
             <Link
               to="/profile"
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               Profile
             </Link>
@@ -196,7 +167,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               <LogOut size={16} />
               Logout
@@ -204,28 +175,25 @@ const Navbar = () => {
           )}
 
           {isGuest && (
-            <>
+            <div className="flex items-center gap-3 pl-1">
               <Link
                 to="/login"
-                className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+                className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
               >
                 Login
               </Link>
 
               <Link
                 to="/register"
-                className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
+                className="rounded-full bg-gradient-to-r from-[#d4a73b] to-[#b48620] px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-300 hover:opacity-90 hover:shadow-md hover:shadow-[#c49424]/20"
               >
                 Sign Up
               </Link>
-            </>
+            </div>
           )}
-
         </div>
 
-        {/* Right side: Dashboard (admin/exhibitor), Notifications (attendee), Mobile menu */}
         <div className="flex items-center gap-3">
-
           {user && !isAttendee && (
             <Link
               to="/dashboard"
@@ -239,52 +207,41 @@ const Navbar = () => {
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-xl text-neutral-900 focus:outline-none lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#c49424]/20 bg-white/60 text-[#b48620] shadow-sm transition hover:bg-white lg:hidden"
             aria-label="Toggle menu"
           >
-            {menuOpen ? '×' : '☰'}
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {menuOpen && (
-        <div className="absolute inset-x-4 top-20 rounded-3xl border border-white/80 bg-white/30 p-6 shadow-[0_16px_48px_0_rgba(196,148,36,0.2)] backdrop-blur-3xl lg:hidden">
+        <div className="absolute inset-x-4 top-[72px] sm:top-24 rounded-3xl border border-white/80 bg-white/40 p-6 shadow-[0_16px_48px_0_rgba(196,148,36,0.2)] backdrop-blur-3xl lg:hidden">
           <div className="flex flex-col gap-4 text-center">
-
             <button
               onClick={goHome}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               Home
             </button>
 
             <button
-              onClick={() => {
-                scrollToSection('about')
-                setMenuOpen(false)
-              }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+              onClick={() => scrollToSection('about')}
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               About
             </button>
 
             <button
-              onClick={() => {
-                scrollToSection('expos')
-                setMenuOpen(false)
-              }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+              onClick={() => scrollToSection('expos')}
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               Services
             </button>
 
             <button
-              onClick={() => {
-                scrollToSection('gallery')
-                setMenuOpen(false)
-              }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+              onClick={() => scrollToSection('gallery')}
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               Gallery
             </button>
@@ -292,7 +249,7 @@ const Navbar = () => {
             <Link
               to="/contact"
               onClick={() => setMenuOpen(false)}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               Contact
             </Link>
@@ -302,18 +259,17 @@ const Navbar = () => {
                 navigate('/book-now')
                 setMenuOpen(false)
               }}
-              className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
               Book Now
             </button>
 
             <div className="flex flex-col gap-4 pt-2">
-
               {isAttendee && (
                 <Link
                   to="/attendee/messages"
                   onClick={() => setMenuOpen(false)}
-                  className="relative text-sm text-[#c49424] transition-opacity hover:opacity-75"
+                  className="relative text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
                 >
                   Messages
                   {unreadCount > 0 && (
@@ -328,7 +284,7 @@ const Navbar = () => {
                 <Link
                   to="/profile"
                   onClick={() => setMenuOpen(false)}
-                  className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+                  className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
                 >
                   Profile
                 </Link>
@@ -338,7 +294,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 text-sm text-[#c49424] transition-opacity hover:opacity-75"
+                  className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
                 >
                   <LogOut size={16} />
                   Logout
@@ -346,11 +302,11 @@ const Navbar = () => {
               )}
 
               {isGuest && (
-                <>
+                <div className="flex flex-col gap-3">
                   <Link
                     to="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+                    className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
                   >
                     Login
                   </Link>
@@ -358,14 +314,13 @@ const Navbar = () => {
                   <Link
                     to="/register"
                     onClick={() => setMenuOpen(false)}
-                    className="text-sm text-[#c49424] transition-opacity hover:opacity-75"
+                    className="inline-block rounded-full bg-gradient-to-r from-[#d4a73b] to-[#b48620] py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm hover:opacity-95"
                   >
                     Sign Up
                   </Link>
-                </>
+                </div>
               )}
 
-              {/* Dashboard */}
               {user && !isAttendee && (
                 <Link
                   to="/dashboard"
@@ -375,7 +330,6 @@ const Navbar = () => {
                   Dashboard
                 </Link>
               )}
-
             </div>
           </div>
         </div>

@@ -60,7 +60,7 @@ const Service1 = () => {
     <main className="min-h-screen bg-[#fffdf9] px-4 py-20 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl">
 
-        {/* Hero Section */}
+      
         <section className="pt-10">
           <div className="grid items-center gap-12 lg:grid-cols-2">
 
@@ -108,7 +108,6 @@ const Service1 = () => {
           </div>
         </section>
 
-        {/* Services Section */}
         <section className="mt-24 pb-20">
 
           <div className="mb-14 text-center">

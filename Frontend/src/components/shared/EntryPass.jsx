@@ -73,7 +73,6 @@ const checkInUrl = passCode
       pdf.setFontSize(11);
       pdf.text(attendeeName, 14, 51);
 
-      // Date & Location
       pdf.setTextColor(150, 130, 105);
       pdf.setFontSize(7);
       pdf.text("DATE & TIME", 14, 61);
@@ -95,7 +94,7 @@ const checkInUrl = passCode
       pdf.setLineWidth(0.6);
       pdf.setLineDashPattern([2, 2], 0);
       pdf.line(148, 6, 148, 89);
-      pdf.setLineDashPattern([], 0); // Reset dash
+      pdf.setLineDashPattern([], 0); 
 
       pdf.setFillColor(248, 245, 239);
       pdf.circle(148, 6, 4, "F");

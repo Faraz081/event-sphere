@@ -139,24 +139,24 @@ const [eventsLoading, setEventsLoading] = useState(true)
   return (
     <div className="min-h-screen bg-[#f8f5ef] text-[#29251f]">
 
-      {/* ================= HERO ================= */}
+      
       <section className="relative min-h-screen overflow-hidden pt-28">
 
-        {/* Background Image */}
+        
         <img
           src={mainBannerImage}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
 
-        {/* Background Overlay */}
+        
         <div className="absolute inset-0 bg-[#f8f5ef]/80" />
 
         <div className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center px-6 lg:px-10">
 
           <div className="grid w-full items-center gap-12 lg:grid-cols-2">
 
-            {/* Hero Content */}
+            
             <div className="max-w-2xl">
 
               <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -191,7 +191,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
             </div>
 
-            {/* Hero Image Box */}
+            
             <div className="relative flex justify-center lg:justify-end">
 
               <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-[#c49424]/25 blur-2xl" />
@@ -214,8 +214,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
       </section>
 
-
-      {/* ================= ABOUT ================= */}
       <section
         id="about"
         className="scroll-mt-24 bg-[#f8f5ef] px-6 py-24 lg:px-10"
@@ -223,7 +221,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
 
-          {/* Text */}
+          
           <div>
 
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -286,8 +284,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
       </section>
 
-
-      {/* ================= EXPOS ================= */}
       <section id="expos" className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
 
@@ -420,8 +416,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
         </div>
       </section>
 
-
-      {/* ================= ONGOING EVENTS ================= */}
 <section id="events" className="scroll-mt-24 bg-[#f8f5ef] px-6 py-24 lg:px-10">
   <div className="mx-auto max-w-7xl">
 
@@ -513,7 +507,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
   </div>
 </section>
 
-      {/* ================= GALLERY ================= */}
+      
       <section
         id="gallery"
         className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10"
@@ -521,7 +515,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
         <div className="mx-auto max-w-7xl">
 
-          {/* Gallery Heading */}
+          
           <div className="mb-14 text-center">
 
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -534,10 +528,10 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           </div>
 
-          {/* Bento Gallery */}
+          
           <div className="grid gap-5 md:grid-cols-4 md:grid-rows-2">
 
-            {/* Large image */}
+            
             <div className="group overflow-hidden rounded-3xl md:col-span-2 md:row-span-2">
               <img
                 src={gallery1}
@@ -546,7 +540,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
               />
             </div>
 
-            {/* Top right */}
+            
             <div className="group overflow-hidden rounded-3xl md:col-span-2">
               <img
                 src={gallery2}
@@ -555,7 +549,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
               />
             </div>
 
-            {/* Bottom right */}
+            
             <div className="group overflow-hidden rounded-3xl md:col-span-2">
               <img
                 src={gallery3}
@@ -566,7 +560,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           </div>
 
-          {/* Explore More */}
+          
           <div className="mt-10 text-center">
             <Link
               to="/event-gallery"
@@ -580,13 +574,11 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
       </section>
 
-
-      {/* ================= REVIEWS ================= */}
       <section className="bg-[#f8f5ef] px-6 py-24 lg:px-10">
 
         <div className="mx-auto max-w-7xl">
 
-          {/* Heading */}
+          
           <div className="text-center">
 
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -604,8 +596,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           </div>
 
-
-          {/* Rating Summary */}
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 sm:grid-cols-2">
 
             <div className="rounded-2xl border border-[#eadfc9] bg-white p-6 shadow-sm">
@@ -655,8 +645,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           </div>
 
-
-          {/* Reviews Carousel */}
           <div className="relative mt-10">
 
             <div
@@ -668,7 +656,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
               }}
             >
 
-              {/* Review 1 */}
+              
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -710,8 +698,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-
-              {/* Review 2 */}
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -753,8 +739,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-
-              {/* Review 3 */}
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -796,8 +780,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-
-              {/* Review 4 */}
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -839,8 +821,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-
-              {/* Review 5 */}
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -882,8 +862,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-
-              {/* Review 6 */}
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -925,8 +903,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-
-              {/* Review 7 */}
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -968,8 +944,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-
-              {/* Review 8 */}
               <div
                 data-review-card
                 className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
@@ -1013,8 +987,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
             </div>
 
-
-            {/* Previous Arrow */}
             <button
               type="button"
               onClick={() => {
@@ -1046,8 +1018,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
               <ArrowLeft className="h-5 w-5" />
             </button>
 
-
-            {/* Next Arrow */}
             <button
               type="button"
               onClick={() => {
@@ -1084,8 +1054,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           </div>
 
-
-          {/* Contact Button */}
           <div className="mt-12 text-center">
 
             <Link
@@ -1101,13 +1069,11 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
       </section>
 
-
-      {/* ================= FAQ + STATS ================= */}
       <section className="bg-[#f8f5ef] px-6 py-20 lg:px-10">
 
         <div className="mx-auto max-w-5xl">
 
-          {/* FAQ HEADER */}
+          
           <div className="text-center">
 
             <h2 className="font-serif text-4xl font-semibold text-[#2f2a24] sm:text-5xl">
@@ -1120,8 +1086,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           </div>
 
-
-          {/* FAQ LIST */}
           <div className="mx-auto mt-12 max-w-4xl space-y-3">
 
             {faqs.map((faq, index) => (
@@ -1174,13 +1138,11 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
       </section>
 
-
-      {/* ================= STATISTICS ================= */}
       <section className="bg-white px-6 py-20 lg:px-10">
 
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 text-center lg:grid-cols-4">
 
-          {/* Stat 1 */}
+          
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               140+
@@ -1191,8 +1153,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
             </p>
           </div>
 
-
-          {/* Stat 2 */}
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               3,000+
@@ -1203,8 +1163,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
             </p>
           </div>
 
-
-          {/* Stat 3 */}
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               80K+
@@ -1215,8 +1173,6 @@ const [eventsLoading, setEventsLoading] = useState(true)
             </p>
           </div>
 
-
-          {/* Stat 4 */}
           <div>
             <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
               99%

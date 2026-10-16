@@ -69,7 +69,7 @@ const AdminBooths = () => {
   const [expoFilter, setExpoFilter] = useState("");
   const [expoCapacity, setExpoCapacity] = useState(null);
   const boothRequestId = useRef(0);
-  const [viewMode, setViewMode] = useState("table"); // table | grid
+  const [viewMode, setViewMode] = useState("table"); 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
@@ -288,7 +288,8 @@ const AdminBooths = () => {
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8">
-        {/* Header */}
+     
+
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-2">
@@ -300,7 +301,8 @@ const AdminBooths = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* View toggle */}
+         
+
             <div className="inline-flex rounded-xl border border-border bg-surface p-1">
               <button
                 onClick={() => setViewMode("table")}
@@ -350,7 +352,6 @@ const AdminBooths = () => {
           </div>
         )}
 
-        {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
@@ -388,7 +389,6 @@ const AdminBooths = () => {
           </select>
         </div>
 
-        {/* Legend for floor view */}
         {viewMode === "grid" && (
           <div className="flex flex-wrap gap-4 mb-4 text-xs text-muted">
             <span className="inline-flex items-center gap-1.5">
@@ -411,7 +411,6 @@ const AdminBooths = () => {
           </div>
         )}
 
-        {/* ========== TABLE VIEW ========== */}
         {viewMode === "table" && (
           <ResponsiveTable>
             <thead className="border-b border-border">
@@ -524,7 +523,6 @@ const AdminBooths = () => {
           </ResponsiveTable>
         )}
 
-        {/* ========== FLOOR / GRID VIEW ========== */}
         {viewMode === "grid" && (
           <div>
             {loading ? (
@@ -589,7 +587,6 @@ const AdminBooths = () => {
           </div>
         )}
 
-        {/* Create / Edit Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-surface border border-border rounded-2xl w-full max-w-lg p-6 shadow-xl">
@@ -701,7 +698,6 @@ const AdminBooths = () => {
           </div>
         )}
 
-        {/* Assign Modal */}
         {assignBooth && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-surface border border-border rounded-2xl w-full max-w-md p-6 shadow-xl">
@@ -759,7 +755,7 @@ const AdminBooths = () => {
           </div>
         )}
 
-        {/* Delete Confirmation */}
+       
         <AlertDialog
           open={!!boothToDelete}
           onOpenChange={(open) => !open && setBoothToDelete(null)}

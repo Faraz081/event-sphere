@@ -485,7 +485,6 @@ const AdminAttendees = () => {
           )}
         </div>
 
-        {/* Attendees Responsive Table */}
         <ResponsiveTable minWidth="860px">
           <thead className="border-b border-border bg-surface/50">
             <tr>

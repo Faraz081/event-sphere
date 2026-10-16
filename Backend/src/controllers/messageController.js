@@ -206,6 +206,8 @@ const markAsRead = async (req, res) => {
     }
 
     await Message.updateMany({ sender: userId, receiver: me, read: false }, { read: true });
+
+    // is sender ki message notification bhi read ho jaye
     await Notification.updateOne({ user: me, dedupeKey: `message:${userId}` }, { isRead: true });
 
     return res.status(200).json({ msg: "Messages marked as read" });

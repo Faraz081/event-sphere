@@ -12,6 +12,4 @@ expoRoute.patch("/:id/status", adminAuth, updateExpoStatus);
 expoRoute.put("/:id/status", adminAuth, updateExpoStatus);
 expoRoute.delete("/:id", adminAuth, deleteExpo);
 
-
-
 export default expoRoute;

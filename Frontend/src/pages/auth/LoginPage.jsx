@@ -53,7 +53,6 @@ const LoginPage = () => {
     >
       <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-xl lg:grid-cols-2">
 
-        {/* Left Side */}
         <div className="hidden bg-[#f8f5ef] p-12 lg:flex lg:flex-col lg:justify-center">
           <div className="mb-6 flex items-center font-serif text-3xl font-semibold tracking-wide text-[#2f2a24]">
             <Sparkles className="mr-2 h-8 w-8 text-[#c49424]" />
@@ -74,7 +73,6 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Right Side - Login Form */}
         <div className="p-8 sm:p-12">
           <div className="mb-8 text-center">
             <h2 className="font-serif text-3xl font-bold text-[#2f2a24]">
@@ -88,7 +86,6 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* Email */}
             <div>
               <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[#2f2a24]">
                 Email Address
@@ -109,7 +106,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[#2f2a24]">
                 Password
@@ -130,7 +126,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}

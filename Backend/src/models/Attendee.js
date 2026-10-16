@@ -50,13 +50,11 @@ const attendeeSchema = new mongoose.Schema(
     checkedInAt: {
       type: Date,
     },
-    // Legacy records remain outside unique indexes until safely validated by the API.
     uniqueKeysEnforced: { type: Boolean, default: false, select: false },
     notes: {
       type: String,
       trim: true,
     },
-    // exhibitor ki taraf se approve/reject ki wajah
     decisionNote: {
       type: String,
       trim: true,

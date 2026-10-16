@@ -81,7 +81,7 @@ const Feedback = () => {
   return (
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
 
-      {/* Header */}
+     
       <section className="mx-auto max-w-3xl text-center">
 
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff4d9]">
@@ -103,12 +103,11 @@ const Feedback = () => {
 
       </section>
 
-      {/* Content */}
+      
       <section className="mx-auto mt-12 max-w-3xl">
 
         <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-6 shadow-xl sm:p-10">
 
-          {/* Not logged in */}
           {!user && (
             <div className="py-6 text-center">
               <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">
@@ -128,7 +127,6 @@ const Feedback = () => {
             </div>
           )}
 
-          {/* Sent */}
           {user && sent && (
             <div className="py-6 text-center">
               <CheckCircle2 className="mx-auto h-14 w-14 text-[#c49424]" />
@@ -153,11 +151,10 @@ const Feedback = () => {
             </div>
           )}
 
-          {/* Form */}
           {user && !sent && (
             <form onSubmit={handleSubmit} className="space-y-6">
 
-              {/* Name + Email */}
+              
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
@@ -180,7 +177,6 @@ const Feedback = () => {
                 </div>
               </div>
 
-              {/* Type */}
               <div>
                 <label className="mb-3 block text-sm font-semibold text-[#4d473f]">
                   What would you like to share?
@@ -205,7 +201,7 @@ const Feedback = () => {
                 </div>
               </div>
 
-              {/* Expo */}
+          
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Select an Expo <span className="font-normal text-[#8a8379]">(optional)</span>
@@ -220,7 +216,6 @@ const Feedback = () => {
                 </select>
               </div>
 
-              {/* Subject */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Subject <span className="font-normal text-[#8a8379]">(optional)</span>
@@ -236,7 +231,6 @@ const Feedback = () => {
                 />
               </div>
 
-              {/* Rating */}
               <div>
                 <label className="mb-3 block text-sm font-semibold text-[#4d473f]">
                   How was your experience? <span className="font-normal text-[#8a8379]">(optional)</span>
@@ -267,7 +261,7 @@ const Feedback = () => {
                 </div>
               </div>
 
-              {/* Message */}
+              
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Your Message
@@ -286,7 +280,6 @@ const Feedback = () => {
                 <p className="mt-1 text-right text-xs text-[#8a8379]">{message.length}/2000</p>
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={submitting}

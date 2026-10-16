@@ -77,7 +77,7 @@ const ContactUs = () => {
   return (
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
 
-      {/* ================= HERO ================= */}
+     
       <section className="mx-auto max-w-4xl text-center">
 
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -98,12 +98,12 @@ const ContactUs = () => {
 
       </section>
 
-      {/* ================= CONTACT INFO ================= */}
+   
       <section className="mx-auto mt-14 max-w-7xl">
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 
-          {/* Email */}
+        
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
@@ -120,7 +120,7 @@ const ContactUs = () => {
 
           </div>
 
-          {/* Phone */}
+          
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
@@ -137,7 +137,6 @@ const ContactUs = () => {
 
           </div>
 
-          {/* Location */}
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
@@ -154,7 +153,7 @@ const ContactUs = () => {
 
           </div>
 
-          {/* Hours */}
+         
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">
@@ -175,12 +174,12 @@ const ContactUs = () => {
 
       </section>
 
-      {/* ================= FORM + MAP ================= */}
+  
       <section className="mx-auto mt-16 max-w-7xl">
 
         <div className="grid gap-10 lg:grid-cols-2">
 
-          {/* Contact Form */}
+     
           <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-7 shadow-xl sm:p-10">
 
             <div className="mb-8">
@@ -204,7 +203,7 @@ const ContactUs = () => {
               className="space-y-5"
             >
 
-              {/* Name */}
+              
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Full Name
@@ -221,7 +220,7 @@ const ContactUs = () => {
                 />
               </div>
 
-              {/* Email + Phone */}
+          
               <div className="grid gap-5 sm:grid-cols-2">
 
                 <div>
@@ -258,7 +257,7 @@ const ContactUs = () => {
 
               </div>
 
-              {/* Subject */}
+          
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Subject
@@ -275,7 +274,7 @@ const ContactUs = () => {
                 />
               </div>
 
-              {/* Message */}
+             
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Message
@@ -292,7 +291,7 @@ const ContactUs = () => {
                 />
               </div>
 
-              {/* Submit */}
+              
               <button
                 type="submit"
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg"
@@ -305,7 +304,7 @@ const ContactUs = () => {
 
           </div>
 
-          {/* Map */}
+      
           <div className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-xl">
 
             <div className="p-7 sm:p-10">
@@ -343,7 +342,7 @@ const ContactUs = () => {
 
       </section>
 
-      {/* ================= BOTTOM CTA ================= */}
+     
       <section className="mx-auto mt-16 max-w-7xl">
 
         <div className="rounded-[2rem] bg-[#c49424] px-7 py-14 text-center text-white shadow-xl sm:px-12">

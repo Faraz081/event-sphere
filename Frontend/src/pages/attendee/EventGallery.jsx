@@ -48,7 +48,7 @@ const EventGallery = () => {
 
       <div className="mx-auto max-w-7xl">
 
-        {/* Heading */}
+       
        <div className="mb-10 pt-12 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
             Our Moments
@@ -64,7 +64,7 @@ const EventGallery = () => {
           </p>
         </div>
 
-        {/* Pinterest Style Masonry Grid */}
+        
         <div className="columns-1 gap-5 sm:columns-2 lg:columns-4 xl:columns-5">
 
           {galleryImages.map((image, index) => (
