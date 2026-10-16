@@ -20,7 +20,6 @@ const DashboardLayout = ({ role, children }) => {
   const activeUser = currentUser || user;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-
   const navigation = dashboardNavigation[role] ?? [];
   const hasMessages = navigation.some((item) => item.path.endsWith("/messages"));
   const totalUnread = unread.reduce((sum, u) => sum + u.count, 0);
@@ -49,11 +48,11 @@ const DashboardLayout = ({ role, children }) => {
   };
 
   return (
-    <div className="dashboard-theme min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-background text-foreground">
+    <div className="dashboard-theme min-h-screen w-full max-w-[100vw] overflow-x-clip bg-background text-foreground">
       <div className="flex min-h-screen">
         <aside
           className={[
-            "fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-border bg-surface/95 backdrop-blur md:static md:z-auto md:flex",
+            "fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-border bg-surface/95 backdrop-blur md:sticky md:top-0 md:bottom-auto md:z-auto md:h-screen md:flex",
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
             "transform transition-transform duration-300 ease-out"].join(" ")}>
           <div className="border-b border-border px-6 py-5">
@@ -68,7 +67,7 @@ const DashboardLayout = ({ role, children }) => {
             </div>
           </div>
 
-          <nav className="flex-1 space-y-2 overflow-y-auto p-4">
+          <nav className="flex-1 min-h-0 space-y-2 overflow-y-auto p-4">
             {navigation.map(({ label, path, icon: Icon }) => (
               <NavLink key={path} to={path} end={path === getRoleHomePath(role)} className={navLinkClassName}>
                 <Icon size={18} />

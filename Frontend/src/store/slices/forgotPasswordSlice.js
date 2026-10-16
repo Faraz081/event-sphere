@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api/api";
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const sendResetOtp = createAsyncThunk(
   "forgotPassword/sendResetOtp",
   async (email, { rejectWithValue }) => {
@@ -16,7 +19,10 @@ export const sendResetOtp = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const verifyResetOtp = createAsyncThunk(
   "forgotPassword/verifyResetOtp",
   async ({ email, otp }, { rejectWithValue }) => {
@@ -31,7 +37,10 @@ export const verifyResetOtp = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const resetPassword = createAsyncThunk(
   "forgotPassword/resetPassword",
   async ({ email, otp, newPassword }, { rejectWithValue }) => {
@@ -126,10 +135,5 @@ const forgotPasswordSlice = createSlice({
   },
 });
 
-export const {
-  setEmail,
-  setOtp,
-  clearForgotPassword,
-} = forgotPasswordSlice.actions;
-
+export const { setEmail, setOtp, clearForgotPassword} = forgotPasswordSlice.actions;
 export default forgotPasswordSlice.reducer;

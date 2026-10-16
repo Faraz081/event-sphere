@@ -3,9 +3,9 @@ import corporateEventImage from '../../assets/event-gallery/corporate-1.jpg'
 import birthdayEventImage from '../../assets/event-gallery/birthday-1.jpg'
 
 import { useEffect, useState } from 'react'
-import aboutPlatformImage from '../../assets/about-gallery/about-company.jpg'
 import { Target, Eye, CalendarCheck, Users, Diamond, Headset, ChevronDown  } from 'lucide-react'
 import api from '../../api/api'
+import websiteDefaults from '@/data/websiteDefaults'
 
 export default function AboutPlatform() {
   const [settings, setSettings] = useState(null)
@@ -27,14 +27,14 @@ export default function AboutPlatform() {
   const aboutSettings = settings?.about || {}
 
   const aboutTitle =
-    aboutSettings.title || 'We Make Event Management Simple & Successful'
+    aboutSettings.title?.trim() || websiteDefaults.about.title
 
   const aboutDescription =
-    aboutSettings.description ||
-    'EventSphere is a modern event and expo management platform created to make event planning easier, smarter and more organized. Our platform brings all important event activities together in one convenient place.'
+    aboutSettings.description?.trim() ||
+    websiteDefaults.about.description
 
   const aboutImage =
-    aboutSettings.image || aboutPlatformImage
+    aboutSettings.image?.trim() || websiteDefaults.about.image
 
   const teamMembers = [
     {
@@ -77,11 +77,11 @@ export default function AboutPlatform() {
       <section className="mx-auto max-w-7xl">
         <div className="grid items-center gap-12 lg:grid-cols-2">
 
-          <div className="group overflow-hidden rounded-[2rem] shadow-lg">
+          <div className="group h-72 overflow-hidden rounded-[2rem] bg-[#f8f5ef] shadow-lg sm:h-96">
             <img
               src={aboutImage}
               alt="EventSphere event management platform"        
-           className="h-400px w-full object-cover transition duration-700 group-hover:scale-105"
+              className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
 
             />
           </div>
@@ -99,17 +99,6 @@ export default function AboutPlatform() {
               {aboutDescription}
             </p>
 
-            <p className="mt-4 leading-7 text-[#5d574f]">
-              From managing exhibitors and attendees to organizing schedules,
-              communication and event details, EventSphere helps organizers
-              save time and manage every part of their event efficiently.
-            </p>
-
-            <p className="mt-4 leading-7 text-[#5d574f]">
-              Whether you are arranging a corporate expo, wedding celebration
-              or special gathering, EventSphere is designed to support you
-              from planning to successful execution.
-            </p>
           </div>
 
         </div>
@@ -443,7 +432,7 @@ export default function AboutPlatform() {
               {
                 question: 'What is EventSphere?',
                 answer:
-                  'EventSphere is an event and expo management platform designed to help organizers manage event planning, exhibitors, attendees and event details in one place.',
+                  'EventSphere is an event and expo management platform designed to help event teams manage planning, exhibitors, attendees and event details in one place.',
               },
               {
                 question: 'What types of events can I manage?',

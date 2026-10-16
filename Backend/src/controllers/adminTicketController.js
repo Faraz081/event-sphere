@@ -1,20 +1,7 @@
-import crypto from "crypto";
 import mongoose from "mongoose";
 import Attendee from "../models/Attendee.js";
 import { notify, PROFILE_LINK } from "../utils/notify.js";
-
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-const randomPart = (len) =>
-  Array.from(crypto.randomBytes(len), (b) => ALPHABET[b % ALPHABET.length]).join("");
-
-const generateEntryPassId = async () => {
-  for (let attempt = 0; attempt < 10; attempt += 1) {
-    const candidate = `ESP-${new Date().getFullYear()}-${randomPart(8)}`;
-    if (!(await Attendee.exists({ entryPassId: candidate }))) return candidate;
-  }
-  return null;
-};
+import { generatePassCode } from "../utils/passCode.js";
 
 const populateTicket = [
   { path: "user", select: "name email phone" },
@@ -68,6 +55,7 @@ export const getExpoTicketRequests = async (req, res) => {
           expoTitle.includes(q) ||
           eventTitle.includes(q) ||
           eventName.includes(q) ||
+          (t.passCode || "").toLowerCase().includes(q) ||
           (t.entryPassId || "").toLowerCase().includes(q)
         );
       });
@@ -84,17 +72,19 @@ export const approveExpoTicket = async (req, res) => {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id)) return res.status(400).json({ error: "Invalid ticket ID" });
 
-    const entryPassId = await generateEntryPassId();
-    if (!entryPassId) return res.status(503).json({ error: "Could not generate entry pass. Please try again" });
+    const passCode = await generatePassCode();
+    if (!passCode) return res.status(503).json({ error: "Could not generate entry pass. Please try again" });
 
     const ticket = await Attendee.findOneAndUpdate(
-      { _id: id, bookingStatus: "pending" },
+      { _id: id, bookingStatus: "pending", passStatus: { $ne: "scanned" } },
       {
         $set: {
           bookingStatus: "confirmed",
           registrationStatus: "confirmed",
           passStatus: "issued",
-          entryPassId,
+          passCode,
+          entryPassId: passCode,
+          checkedInAt: null,
           decisionNote: "",
           reviewedAt: new Date(),
         },
@@ -183,6 +173,7 @@ export const cancelExpoTicket = async (req, res) => {
       {
         _id: id,
         bookingStatus: { $in: ["pending", "confirmed"] },
+        passStatus: { $ne: "scanned" },
       },
       {
         $set: {
@@ -199,7 +190,7 @@ export const cancelExpoTicket = async (req, res) => {
     if (!ticket) {
       const exists = await Attendee.exists({ _id: id });
       return exists
-        ? res.status(409).json({ error: "Ticket already cancelled or not eligible" })
+        ? res.status(409).json({ error: "Ticket already cancelled, checked in, or not eligible" })
         : res.status(404).json({ error: "Ticket not found" });
     }
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare, Store, ClipboardList, User, CalendarDays, CalendarCheck } from "lucide-react";
@@ -10,15 +10,17 @@ import { fetchMyBooth } from "@/store/slices/boothSlice";
 import { fetchMyEvents, fetchBookingRequests } from "@/store/slices/eventSlice";
 import { fetchContacts, fetchUnreadCounts } from "@/store/slices/messageSlice";
 
+<<<<<<< HEAD
 const POLL_MS = 30000; 
 
 
+=======
+const POLL_MS = 30000;
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 const groupOf = (status) =>
   status === "confirmed" || status === "approved"
-    ? "approved"
-    : status === "cancelled" || status === "rejected"
-    ? "rejected"
-    : "pending";
+    ? "approved" : status === "cancelled" || status === "rejected"
+    ? "rejected" : "pending";
 
 const tooltipStyle = {
   background: "var(--color-surface)",
@@ -32,7 +34,6 @@ const ExhibitorPortal = () => {
   const { myBooths = [] } = useSelector((state) => state.booth);
   const { events = [], requests = [] } = useSelector((state) => state.event);
   const { contacts, unread } = useSelector((state) => state.message);
-  const [lastUpdated, setLastUpdated] = useState(null);
 
   const refresh = useCallback(async () => {
     await Promise.all([
@@ -42,10 +43,12 @@ const ExhibitorPortal = () => {
       dispatch(fetchContacts()),
       dispatch(fetchUnreadCounts()),
     ]);
-    setLastUpdated(new Date());
   }, [dispatch]);
 
+<<<<<<< HEAD
  
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     refresh();
     const timer = setInterval(() => {
@@ -59,8 +62,11 @@ const ExhibitorPortal = () => {
   const unreadContacts = unread
     .map((u) => ({ ...u, contact: contacts.find((c) => c._id === u._id) }))
     .filter((u) => u.contact);
+<<<<<<< HEAD
 
  
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   const analytics = useMemo(() => {
     const approvedBooths = myBooths.filter((b) => b.status !== "pending");
     const products = approvedBooths.reduce((sum, b) => sum + (b.products?.length ?? 0), 0);
@@ -72,7 +78,10 @@ const ExhibitorPortal = () => {
       counts[groupOf(r.bookingStatus)] += 1;
     });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
     const perEvent = {};
     requests.forEach((r) => {
       const name = r.event?.title || r.eventName || "Event";
@@ -145,14 +154,6 @@ const ExhibitorPortal = () => {
               Manage your booth, events, bookings, and communications from one place.
             </p>
           </div>
-
-          <div className="flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald" />
-            </span>
-            Live{lastUpdated ? ` · updated ${lastUpdated.toLocaleTimeString()}` : ""}
-          </div>
         </div>
 
         <StatGrid>
@@ -162,7 +163,6 @@ const ExhibitorPortal = () => {
         </StatGrid>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Booking requests by status */}
           <div className="rounded-3xl border border-border bg-surface p-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Booking Requests by Status</h2>
             {requests.length === 0 ? (
@@ -182,7 +182,10 @@ const ExhibitorPortal = () => {
             )}
           </div>
 
+<<<<<<< HEAD
          
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
           <div className="rounded-3xl border border-border bg-surface p-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Requests per Event</h2>
             {analytics.perEventData.length === 0 ? (
@@ -213,11 +216,7 @@ const ExhibitorPortal = () => {
 
             <div className="space-y-3">
               {analytics.pendingRequests.map((r) => (
-                <button
-                  key={r._id}
-                  onClick={() => navigate("/exhibitor/bookings")}
-                  className="w-full flex items-center justify-between rounded-xl border border-border bg-background p-3 text-left hover:border-gold/40"
-                >
+                <button key={r._id} onClick={() => navigate("/exhibitor/bookings")} className="w-full flex items-center justify-between rounded-xl border border-border bg-background p-3 text-left hover:border-gold/40">
                   <div>
                     <p className="text-sm font-medium text-foreground">{r.user?.name || "Attendee"}</p>
                     <p className="text-xs text-muted">
@@ -229,11 +228,7 @@ const ExhibitorPortal = () => {
               ))}
 
               {unreadContacts.map((u) => (
-                <button
-                  key={u._id}
-                  onClick={() => navigate("/exhibitor/messages")}
-                  className="w-full flex items-center justify-between rounded-xl border border-border bg-background p-3 text-left hover:border-gold/40"
-                >
+                <button key={u._id} onClick={() => navigate("/exhibitor/messages")} className="w-full flex items-center justify-between rounded-xl border border-border bg-background p-3 text-left hover:border-gold/40">
                   <div>
                     <p className="text-sm font-medium text-foreground">{u.contact.name}</p>
                     <p className="text-xs text-muted">{u.contact.role} sent you a message</p>

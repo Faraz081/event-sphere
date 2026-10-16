@@ -1,6 +1,7 @@
 import Expo from "../models/Expo.js";
 import Booth from "../models/Booth.js";
 import User from "../models/User.js";
+import ExhibitorApplication from "../models/ExhibitorApplication.js";
 import Attendee from "../models/Attendee.js";
 import Schedule from "../models/Schedule.js";
 
@@ -28,7 +29,7 @@ export const getDashboardAnalytics = async (req, res) => {
       Booth.countDocuments({ status: "reserved" }),
       Booth.countDocuments({ status: "occupied" }),
       User.countDocuments({ role: "exhibitor" }),
-      User.countDocuments({ role: "exhibitor", exhibitorStatus: "pending" }),
+      ExhibitorApplication.countDocuments({ status: "pending" }),
       User.countDocuments({ role: "exhibitor", exhibitorStatus: "approved" }),
       User.countDocuments({ role: "exhibitor", exhibitorStatus: "rejected" }),
       Attendee.countDocuments(),

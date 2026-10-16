@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
+import Event from "../models/Event.js";
+import Attendee from "../models/Attendee.js";
 
-const VALID_ROLES = ["admin", "organizer", "attendee", "exhibitor"];
+const VALID_ROLES = ["admin", "attendee", "exhibitor"];
 const VALID_STATUSES = ["active", "inactive", "suspended"];
 
 export const getAllUsers = async (req, res) => {
@@ -58,7 +60,6 @@ export const getUserStats = async (req, res) => {
   try {
     const [
       total,
-      organizers,
       attendees,
       exhibitors,
       active,
@@ -66,7 +67,6 @@ export const getUserStats = async (req, res) => {
       suspended,
     ] = await Promise.all([
       User.countDocuments({ role: { $ne: "admin" } }),
-      User.countDocuments({ role: "organizer" }),
       User.countDocuments({ role: "attendee" }),
       User.countDocuments({ role: "exhibitor" }),
       User.countDocuments({ status: "active", role: { $ne: "admin" } }),
@@ -78,7 +78,6 @@ export const getUserStats = async (req, res) => {
       success: true,
       stats: {
         total,
-        organizers,
         attendees,
         exhibitors,
         active,
@@ -174,7 +173,7 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, password, role, status, phone, companyName } = req.body;
+    const { name, email, role, status, phone, companyName } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid user ID format" });
@@ -221,13 +220,6 @@ export const updateUser = async (req, res) => {
       user.status = status;
     }
 
-    if (password && password.trim() !== "") {
-      if (password.length < 6) {
-        return res.status(400).json({ error: "Password must be at least 6 characters long." });
-      }
-      user.password = await bcrypt.hash(password, 10);
-    }
-
     await user.save();
 
     const updatedUser = user.toObject();
@@ -266,6 +258,22 @@ export const deleteUser = async (req, res) => {
     if (target.role === "admin") {
       return res.status(403).json({ error: "Admin account cannot be deleted." });
     }
+
+    if (target.role === "exhibitor") {
+  const events = await Event.find({ exhibitor: id }).select("_id");
+
+  await Attendee.updateMany(
+    { event: { $in: events.map((e) => e._id) }, bookingStatus: { $ne: "cancelled" } },
+    {
+      bookingStatus: "cancelled",
+      registrationStatus: "cancelled",
+      passStatus: "revoked",
+      decisionNote: "This event was cancelled because the exhibitor account was removed",
+    }
+  );
+
+  await Event.deleteMany({ exhibitor: id });
+}
 
     await User.findByIdAndDelete(id);
 

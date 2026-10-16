@@ -15,14 +15,16 @@ const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const findPublishedExpo = async (id) => {
   if (!mongoose.isValidObjectId(id)) return null;
 
-  return Expo.findOne({ _id: id, status: "published" }).select(PUBLIC_EXPO_FIELDS);
+  await Expo.updateLifecycleStatuses();
+  return Expo.findOne({ _id: id, status: { $in: ["published", "ongoing"] } }).select(PUBLIC_EXPO_FIELDS);
 };
 
 // GET /api/public/expos
 
 export const getPublicExpos = async (req, res) => {
   try {
-    const expos = await Expo.find({ status: "published" }).select(PUBLIC_EXPO_FIELDS).sort({ date: 1 });
+    await Expo.updateLifecycleStatuses();
+    const expos = await Expo.find({ status: { $in: ["published", "ongoing"] } }).select(PUBLIC_EXPO_FIELDS).sort({ date: 1 });
 
     const applications = await ExhibitorApplication.find({
       expo: { $in: expos.map((expo) => expo._id) },
@@ -146,9 +148,11 @@ export const getPublicBooths = async (req, res) => {
 
 export const getPublicEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: "approved" })
-      .populate("exhibitor", "name")
-      .sort({ createdAt: -1 });
+   const allEvents = await Event.find({ status: "approved" })
+  .populate({ path: "exhibitor", select: "name", match: { status: "active" } })
+  .sort({ createdAt: -1 });
+
+const events = allEvents.filter((e) => e.exhibitor);
 
     const exhibitorIds = events.map((e) => e.exhibitor?._id).filter(Boolean);
 
@@ -163,6 +167,7 @@ export const getPublicEvents = async (req, res) => {
       return {
         _id: obj._id,
         title: obj.title,
+        price: obj.price ?? 0,
         description: obj.description,
         eventType: obj.eventType,
         location: obj.location,
@@ -251,6 +256,7 @@ export const getPublicEventStalls = async (req, res) => {
       name: s.name,
       size: s.size,
       description: s.description,
+      price: s.price ?? 0,
     }));
 
     return res.status(200).json({ stalls, dateBooked });

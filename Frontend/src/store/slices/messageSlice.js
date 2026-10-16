@@ -1,7 +1,10 @@
 import api from "@/api/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const fetchContacts = createAsyncThunk(
   "message/fetchContacts",
   async (contactId, { rejectWithValue }) => {
@@ -16,7 +19,10 @@ export const fetchContacts = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const fetchConversation = createAsyncThunk(
   "message/fetchConversation",
   async (userId, { rejectWithValue }) => {
@@ -29,7 +35,10 @@ export const fetchConversation = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const sendMessage = createAsyncThunk(
   "message/sendMessage",
   async ({ receiver, content }, { rejectWithValue }) => {
@@ -42,8 +51,11 @@ export const sendMessage = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const fetchUnreadCounts = createAsyncThunk(
   "message/fetchUnreadCounts",
   async (_, { rejectWithValue }) => {
@@ -56,8 +68,11 @@ export const fetchUnreadCounts = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const markAsRead = createAsyncThunk(
   "message/markAsRead",
   async (userId, { rejectWithValue }) => {
@@ -130,7 +145,6 @@ const messageSlice = createSlice({
       .addCase(markAsRead.fulfilled, (state, action) => {
         state.unread = state.unread.filter((u) => u._id !== action.payload.userId);
       });
-
   },
 });
 

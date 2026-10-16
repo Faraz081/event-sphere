@@ -7,7 +7,6 @@ import { getMyNotifications, markNotificationRead, markAllNotificationsRead } fr
 
 const attendeeSelfRoute = express.Router();
 
-// attendee
 attendeeSelfRoute.post("/book", protect, bookEvent);
 attendeeSelfRoute.get("/my", protect, getMyRegistrations);
 attendeeSelfRoute.post("/book-expo", protect, bookExpoTicket);
@@ -16,7 +15,6 @@ attendeeSelfRoute.post("/bookmarks/:id", protect, toggleBookmark);
 attendeeSelfRoute.get("/expo-bookmarks", protect, getMyExpoBookmarks);
 attendeeSelfRoute.post("/expo-bookmarks/:id", protect, toggleExpoBookmark);
 
-// exhibitor
 attendeeSelfRoute.get("/requests", identifyUser, getBookingRequests);
 attendeeSelfRoute.put("/requests/:id/approve", identifyUser, approveBooking);
 attendeeSelfRoute.put("/requests/:id/reject", identifyUser, rejectBooking);

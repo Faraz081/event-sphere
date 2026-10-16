@@ -152,15 +152,15 @@ const TicketCard = ({ ticket }) => {
         )}
       </div>
 
-      {ticket.bookingStatus === "confirmed" && ticket.entryPassId && (
+      {(ticket.passCode || ticket.entryPassId) && (
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3">
           <TicketCheck size={18} className="text-gold" />
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
-              Entry pass ID
+              Pass code · {ticket.passStatus || "issued"}
             </p>
             <p className="font-mono text-sm font-bold tracking-widest text-gold">
-              {ticket.entryPassId}
+              {ticket.passCode || ticket.entryPassId}
             </p>
           </div>
         </div>

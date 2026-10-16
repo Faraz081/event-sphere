@@ -8,7 +8,11 @@ import { fetchUnreadCounts } from '@/store/slices/messageSlice'
 import { clearNotifications } from '@/store/slices/notificationSlice'
 import { clearBookmarks } from '@/store/slices/bookmarkSlice'
 import NotificationBell from '@/components/shared/NotificationBell'
+<<<<<<< HEAD
 import LogoImg from '@/assets/Logo.jpg' 
+=======
+import websiteDefaults from '@/data/websiteDefaults'
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -56,19 +60,23 @@ const Navbar = () => {
     return () => clearInterval(interval)
   }, [dispatch, isAttendee])
 
-  const websiteName = settings?.websiteName || 'EventSphere'
-  const logo = settings?.logo || ''
+  const websiteName =
+    settings?.websiteName?.trim() || websiteDefaults.websiteName
+  const logo = settings?.logo?.trim() || websiteDefaults.logo
 
   const renderLogo = () => {
+<<<<<<< HEAD
    
 
     const imageSource = logo || LogoImg
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
     return (
       <img
-        src={imageSource}
+        src={logo}
         alt={websiteName}
-        className="mr-2 h-35 w-35   rounded-full object-cover [0_1px_3px_rgba(0,0,0,0.3)]"
+        className="mr-2 h-8 max-h-9 w-auto max-w-30 shrink-0 rounded-md object-contain shadow-[0_1px_3px_rgba(0,0,0,0.3)] md:h-9 md:max-w-40"
       />
     )
   }
@@ -121,7 +129,7 @@ const Navbar = () => {
        
         <Link
           to="/"
-          className="inline-flex items-center font-serif text-2xl font-medium tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] transition-opacity hover:opacity-80"
+          className="inline-flex min-w-0 shrink items-center font-serif text-2xl font-medium tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] transition-opacity hover:opacity-80"
         >
           {renderLogo()}
           {websiteName}
@@ -146,7 +154,7 @@ const Navbar = () => {
           </button>
 
           <button
-            onClick={() => scrollToSection('services')}
+            onClick={() => scrollToSection('expos')}
             className="text-sm text-[#c49424] transition-opacity hover:opacity-75 whitespace-nowrap"
           >
             Services
@@ -275,7 +283,7 @@ const Navbar = () => {
 
             <button
               onClick={() => {
-                scrollToSection('services')
+                scrollToSection('expos')
                 setMenuOpen(false)
               }}
               className="text-sm text-[#c49424] transition-opacity hover:opacity-75"

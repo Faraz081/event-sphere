@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
-import { Check, X } from "lucide-react";
+import React, {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {toast} from "sonner";
+import {Check, X} from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
-import {
-  fetchBookingRequests,
-  approveBooking,
-  rejectBooking,
-} from "@/store/slices/eventSlice";
+import {fetchBookingRequests, approveBooking, rejectBooking} from "@/store/slices/eventSlice";
 
 const badge = {
   pending: "bg-gold/20 text-gold border border-gold/40",
@@ -35,19 +31,18 @@ const FILTERS = [
   { key: "rejected", label: "Rejected" },
 ];
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 const groupOf = (status) =>
-  status === "confirmed" || status === "approved"
-    ? "approved"
-    : status === "cancelled" || status === "rejected"
-    ? "rejected"
-    : "pending";
+  status === "confirmed" || status === "approved" ? "approved" : status === "cancelled" || status === "rejected"
+    ? "rejected" : "pending";
 
 const ExhibitorBookings = () => {
   const dispatch = useDispatch();
   const { requests, loading } = useSelector((state) => state.event);
-
   const [filter, setFilter] = useState("all");
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectNote, setRejectNote] = useState("");
@@ -99,22 +94,11 @@ const ExhibitorBookings = () => {
 
   return (
     <DashboardLayout role="exhibitor">
-      <DashboardSectionPage
-        title="Booking Requests"
-        description="Attendees who want to book your events. Approve or reject each request."
-      >
+      <DashboardSectionPage title="Booking Requests" description="Attendees who want to book your events. Approve or reject each request.">
         <div className="mb-6 flex flex-wrap gap-2">
           {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              type="button"
-              onClick={() => setFilter(f.key)}
-              className={`rounded-full border px-4 py-1.5 text-sm transition ${
-                filter === f.key
-                  ? "border-gold bg-gold text-background"
-                  : "border-border text-muted hover:border-gold/40 hover:text-foreground"
-              }`}
-            >
+            <button key={f.key} type="button" onClick={() => setFilter(f.key)} className={`rounded-full border px-4 py-1.5 text-sm transition
+               ${filter === f.key ? "border-gold bg-gold text-background" : "border-border text-muted hover:border-gold/40 hover:text-foreground"}`}>
               {f.label} ({countOf(f.key)})
             </button>
           ))}
@@ -166,21 +150,10 @@ const ExhibitorBookings = () => {
 
               {r.bookingStatus === "pending" && rejectingId !== r._id && (
                 <div className="mt-4 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleApprove(r._id)}
-                    className="flex items-center gap-1.5 rounded-lg bg-gold px-4 py-2 text-sm font-medium text-background"
-                  >
-                    <Check size={14} /> Approve
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRejectingId(r._id);
-                      setRejectNote("");
-                    }}
-                    className="flex items-center gap-1.5 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-300"
-                  >
+                  <button type="button" onClick={() => handleApprove(r._id)} className="flex items-center gap-1.5 rounded-lg bg-gold px-4 py-2 text-sm font-medium text-background">
+                    <Check size={14} /> Approve </button>
+                  <button type="button" onClick={() => { setRejectingId(r._id); setRejectNote("");}}
+                    className="flex items-center gap-1.5 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-300">
                     <X size={14} /> Reject
                   </button>
                 </div>
@@ -188,26 +161,12 @@ const ExhibitorBookings = () => {
 
               {r.bookingStatus === "pending" && rejectingId === r._id && (
                 <div className="mt-4 space-y-2">
-                  <textarea
-                    value={rejectNote}
-                    onChange={(e) => setRejectNote(e.target.value)}
-                    rows={2}
-                    placeholder="Reason for rejection"
-                    className={field}
-                  />
+                  <textarea value={rejectNote} onChange={(e) => setRejectNote(e.target.value)} rows={2} placeholder="Reason for rejection" className={field}/>
                   <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleReject(r._id)}
-                      className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white"
-                    >
+                    <button type="button" onClick={() => handleReject(r._id)} className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white">
                       Confirm reject
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setRejectingId(null)}
-                      className="rounded-lg border border-border px-4 py-2 text-sm text-muted"
-                    >
+                    <button type="button" onClick={() => setRejectingId(null)} className="rounded-lg border border-border px-4 py-2 text-sm text-muted">
                       Cancel
                     </button>
                   </div>

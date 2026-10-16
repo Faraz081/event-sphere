@@ -9,15 +9,8 @@ import { toast } from "sonner";
 const inputClass = "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-sm text-foreground outline-none focus:border-[#d4a62a]";
 const labelClass = "mb-1 block text-sm text-muted";
 
-const statusStyles = {
-  pending: "bg-yellow-500",
-  approved: "bg-green-500",
-  rejected: "bg-red-500",
-};
-
 const ExhibitorProfile = () => {
   const { user } = useSelector((state) => state.auth);
-
   const [applications, setApplications] = useState([]);
   const application = applications[0] ?? null;
   const [loading, setLoading] = useState(true);
@@ -28,9 +21,9 @@ const ExhibitorProfile = () => {
 
   const fillForm = (app) =>
     setForm({
-      email: app.email ?? "",
-      phone: app.phone ?? "",
-      address: app.address ?? "",
+      email: app?.email ?? "",
+      phone: app?.phone ?? "",
+      address: app?.address ?? "",
     });
 
   useEffect(() => {
@@ -44,7 +37,7 @@ const ExhibitorProfile = () => {
         const res = await api.get("/api/exhibitor-profile/profile");
         const profileApplications = res.data.applications ?? [res.data.application].filter(Boolean);
         setApplications(profileApplications);
-        fillForm(profileApplications[0]);
+        if (profileApplications[0]) fillForm(profileApplications[0]);
       } catch (err) {
         if (err.response?.status !== 404) {
           toast.error(err.response?.data?.error || "Could not load profile");
@@ -62,7 +55,6 @@ const ExhibitorProfile = () => {
   const handleCancel = () => {
     fillForm(application);
     setLogo(null);
-    setError("");
     setEditing(false);
   };
 
@@ -79,7 +71,7 @@ const ExhibitorProfile = () => {
       const res = await api.put("/api/exhibitor-profile/profile", formData);
       const profileApplications = res.data.applications ?? [res.data.application].filter(Boolean);
       setApplications(profileApplications);
-      fillForm(profileApplications[0]);
+      if (profileApplications[0]) fillForm(profileApplications[0]);
       setLogo(null);
       setEditing(false);
       toast.success("Profile updated successfully");
@@ -93,11 +85,7 @@ const ExhibitorProfile = () => {
   const header = application && (
     <div className="mb-6 flex items-center gap-4">
       {application.logo ? (
-        <img
-          src={application.logo}
-          alt="Company logo"
-          className="h-20 w-20 rounded-2xl border border-border object-cover"
-        />
+        <img src={application.logo} alt="Company logo" className="h-20 w-20 rounded-2xl border border-border object-cover"/>
       ) : (
         <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-border text-xs text-muted">
           No logo
@@ -106,19 +94,13 @@ const ExhibitorProfile = () => {
 
       <div>
         <p className="text-lg font-semibold text-foreground">{application.companyName}</p>
-        <span className={`mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-bold capitalize text-black ${statusStyles[application.status]}`}>
-          {application.status}
-        </span>
       </div>
     </div>
   );
 
   return (
     <DashboardLayout role="exhibitor">
-      <DashboardSectionPage
-        title="Profile"
-        description="Edit company and contact details from the shared exhibitor area."
-      >
+      <DashboardSectionPage title="Profile" description="Edit company and contact details from the shared exhibitor area.">
         {loading ? (
           <p className="text-sm text-muted">Loading...</p>
         ) : !user?._id ? (
@@ -129,10 +111,7 @@ const ExhibitorProfile = () => {
             <p className="mt-2 text-sm text-muted">
               You have not applied yet. Please submit your registration first.
             </p>
-            <Link
-              to="/exhibitor/registration"
-              className="mt-4 inline-block rounded-xl bg-[#d4a62a] px-5 py-2 text-sm font-bold text-black"
-            >
+            <Link to="/exhibitor/registration" className="mt-4 inline-block rounded-xl bg-[#d4a62a] px-5 py-2 text-sm font-bold text-black">
               Go to Registration
             </Link>
           </div>
@@ -140,13 +119,8 @@ const ExhibitorProfile = () => {
           <div className="rounded-3xl border border-border bg-surface p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">Company profile</h2>
-              <button
-                onClick={() => {
-                  setSuccess("");
-                  setEditing(true);
-                }}
-                className="rounded-xl bg-[#d4a62a] px-5 py-2 text-sm font-bold text-black"
-              >
+              <button onClick={() => setEditing(true)}
+                className="rounded-xl bg-[#d4a62a] px-5 py-2 text-sm font-bold text-black">
                 Edit Profile
               </button>
             </div>
@@ -177,56 +151,27 @@ const ExhibitorProfile = () => {
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className={labelClass}>Email</label>
-                <input
-                  className={inputClass}
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                />
+                <input className={inputClass} type="email" name="email" value={form.email} onChange={handleChange}/>
               </div>
 
               <div>
                 <label className={labelClass}>Phone</label>
-                <input
-                  className={inputClass}
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                />
+                <input className={inputClass} name="phone" value={form.phone} onChange={handleChange}/>
               </div>
             </div>
 
             <label className={`${labelClass} mt-4`}>Address</label>
-            <input
-              className={`${inputClass} mb-4`}
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-            />
+            <input className={`${inputClass} mb-4`} name="address" value={form.address} onChange={handleChange}/>
 
             <label className={labelClass}>Change logo</label>
-            <input
-              className={`${inputClass} mb-4`}
-              type="file"
-              accept="image/*"
-              onChange={(e) => setLogo(e.target.files[0])}
-            />
+            <input className={`${inputClass} mb-4`} type="file" accept="image/*" onChange={(e) => setLogo(e.target.files[0])}/>
 
             <div className="flex gap-3">
-              <button
-                type="submit"
-                disabled={saving}
-                className="rounded-xl bg-[#d4a62a] px-6 py-3 text-sm font-bold text-black disabled:opacity-60"
-              >
+              <button type="submit" disabled={saving} className="rounded-xl bg-[#d4a62a] px-6 py-3 text-sm font-bold text-black disabled:opacity-60">
                 {saving ? "Saving..." : "Save changes"}
               </button>
 
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="rounded-xl border border-border px-6 py-3 text-sm font-semibold text-foreground"
-              >
+              <button type="button" onClick={handleCancel} className="rounded-xl border border-border px-6 py-3 text-sm font-semibold text-foreground">
                 Cancel
               </button>
             </div>

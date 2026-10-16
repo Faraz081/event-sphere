@@ -42,6 +42,7 @@ import AttendeeMessages from "./pages/attendee/AttendeeMessages";
 import AdminEvents from "./pages/admin/AdminEvents";
 import ExhibitorPublicProfile from "./pages/attendee/ExhibitorPublicProfile";
 import ExhibitorBookings from "./pages/exhibitor/ExhibitorBookings";
+import ExhibitorRegistrationForm from "./pages/exhibitor/ExhibitorRegistrationForm";
 
 function App() {
   const { email, otp } = useSelector((state) => state.forgotPassword);
@@ -121,6 +122,7 @@ function App() {
             <Route path="/exhibitor/profile" element={<ExhibitorProfile />} />
             <Route path="/exhibitor/events" element={<ExhibitorEvents />} />
             <Route path="/exhibitor/bookings" element={<ExhibitorBookings />} />
+            <Route path="/exhibitor/registration/new" element={<ExhibitorRegistrationForm />} />
           </Route>
         </Route>
 

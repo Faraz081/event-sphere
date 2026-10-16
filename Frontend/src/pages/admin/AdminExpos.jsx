@@ -42,6 +42,7 @@ import ResponsiveTable from "@/components/shared/ResponsiveTable";
 const statusStyles = {
   draft: "bg-muted/20 text-muted border border-muted/30",
   published: "bg-gold/20 text-gold border border-gold/40",
+  ongoing: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   completed: "bg-emerald/20 text-emerald-300 border border-emerald/40",
   cancelled: "bg-red-500/20 text-red-300 border border-red-500/30",
 };
@@ -383,6 +384,7 @@ const AdminExpos = () => {
               <option value="all">All Statuses</option>
               <option value="draft">Draft</option>
               <option value="published">Published</option>
+              <option value="ongoing">Ongoing</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
@@ -404,6 +406,123 @@ const AdminExpos = () => {
           </div>
         )}
 
+        <div className="space-y-3 md:hidden">
+  {loading ? (
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface py-10 text-muted">
+      <RotateCcw size={24} className="animate-spin text-gold" />
+      <span className="text-sm">Loading expos...</span>
+    </div>
+  ) : expos.length === 0 ? (
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface px-4 py-10 text-center">
+      <Calendar size={36} className="text-muted/50" />
+      <p className="text-base font-medium text-foreground">No expos found</p>
+      <p className="text-sm text-muted">
+        {search || statusFilter !== "all"
+          ? "No expos match your active search or status filter. Try clearing filters."
+          : "No expos have been created yet. Create your first expo to get started."}
+      </p>
+      {search || statusFilter !== "all" ? (
+        <button
+          onClick={() => {
+            setSearch("");
+            setStatusFilter("all");
+            setCurrentPage(1);
+          }}
+          className="text-sm text-gold hover:underline"
+        >
+          Reset filters
+        </button>
+      ) : (
+        <button
+          onClick={openCreateModal}
+          className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-background"
+        >
+          <Plus size={16} />
+          Create First Expo
+        </button>
+      )}
+    </div>
+  ) : (
+    expos.map((expo) => (
+      <div key={expo._id} className="rounded-xl border border-border bg-surface p-4">
+        <div className="flex items-start gap-3">
+          {expo.banner ? (
+            <img
+              src={expo.banner}
+              alt={expo.title}
+              className="h-12 w-12 shrink-0 rounded-lg border border-border object-cover"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-muted">
+              <ImageIcon size={20} />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium text-foreground">{expo.title}</p>
+            <p className="truncate text-xs text-muted">
+              {expo.theme ? `${expo.theme} · ` : ""}Booths: {expo.totalBooths ?? 0} / {expo.maxBooths ?? 10}
+            </p>
+          </div>
+          <select
+            value={expo.status}
+            disabled={updatingStatusId === expo._id}
+            onChange={(e) => handleQuickStatusChange(expo._id, e.target.value)}
+            className={`shrink-0 cursor-pointer rounded-full border px-2.5 py-1 text-xs font-semibold focus:outline-none ${
+              statusStyles[expo.status] || statusStyles.draft
+            }`}
+          >
+            <option value="draft" className="bg-background text-foreground">Draft</option>
+            <option value="published" className="bg-background text-foreground">Published</option>
+            <option value="ongoing" className="bg-background text-foreground">Ongoing</option>
+            <option value="completed" className="bg-background text-foreground">Completed</option>
+            <option value="cancelled" className="bg-background text-foreground">Cancelled</option>
+          </select>
+        </div>
+
+        <div className="mt-3 space-y-1.5 text-xs text-muted">
+          <p className="flex items-center gap-2">
+            <Calendar size={12} className="shrink-0 text-gold" />
+            <span>{formatDateTime(expo.date)}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <MapPin size={12} className="shrink-0 text-gold" />
+            <span className="truncate">{expo.location}</span>
+          </p>
+        </div>
+
+        <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
+          <button
+            type="button"
+            onClick={() => handleGenerateReport(expo)}
+            disabled={reportLoadingId === expo._id}
+            title="Generate Report"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold disabled:opacity-50"
+          >
+            <FileDown size={15} className={reportLoadingId === expo._id ? "animate-pulse" : ""} />
+          </button>
+          <button
+            type="button"
+            onClick={() => openEditModal(expo)}
+            title="Edit Expo"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold"
+          >
+            <Edit2 size={15} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setExpoToDelete(expo)}
+            title="Delete Expo"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+        
+        <div className="hidden md:block">
         <ResponsiveTable>
           <thead className="border-b border-border">
             <tr>
@@ -520,6 +639,9 @@ const AdminExpos = () => {
                         <option value="published" className="bg-background text-foreground">
                           Published
                         </option>
+                        <option value="ongoing" className="bg-background text-foreground">
+                          Ongoing
+                        </option>
                         <option value="completed" className="bg-background text-foreground">
                           Completed
                         </option>
@@ -562,6 +684,7 @@ const AdminExpos = () => {
             )}
           </tbody>
         </ResponsiveTable>
+        </div>
 
         {!loading && totalCount > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-border text-sm text-muted">
@@ -705,6 +828,7 @@ const AdminExpos = () => {
                     >
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
+                      <option value="ongoing">Ongoing</option>
                       <option value="completed">Completed</option>
                       <option value="cancelled">Cancelled</option>
                     </select>

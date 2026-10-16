@@ -1,6 +1,7 @@
 import Booth from "../models/Booth.js";
 import mongoose from "mongoose";
 import Expo from "../models/Expo.js";
+import { isExpoEnded } from "../utils/expoStatus.js";
 
 // CREATE Booth
 export const createBooth = async (req, res) => {
@@ -18,6 +19,10 @@ export const createBooth = async (req, res) => {
     const selectedExpo = await Expo.findById(expo);
     if (!selectedExpo) {
       return res.status(404).json({ error: "Expo not found" });
+    }
+
+    if (isExpoEnded(selectedExpo) && exhibitor) {
+      return res.status(400).json({ error: "Cannot assign an exhibitor to a completed, cancelled or past expo" });
     }
 
     // Check duplicate booth number in same expo
@@ -163,6 +168,17 @@ export const updateBooth = async (req, res) => {
       return res.status(400).json({ error: "Invalid expo ID" });
     }
     const isMovingToAnotherExpo = nextExpo.toString() !== booth.expo.toString();
+
+    const targetExpo = await Expo.findById(nextExpo);
+    if (!targetExpo) {
+      return res.status(404).json({ error: "Expo not found" });
+    }
+    // Unassigning / status cleanup stays allowed; only new assignment or moving into an ended expo is blocked.
+    const assigningExhibitor = exhibitor !== undefined && exhibitor;
+    if (isExpoEnded(targetExpo) && (assigningExhibitor || isMovingToAnotherExpo)) {
+      return res.status(400).json({ error: "This expo has ended. Booths cannot be assigned or moved into it" });
+    }
+
     const nextExhibitor = exhibitor !== undefined ? (exhibitor || null) : booth.exhibitor;
     let nextStatus = status ?? booth.status;
     if (exhibitor !== undefined && exhibitor && nextStatus === "available") nextStatus = "reserved";
@@ -185,12 +201,8 @@ export const updateBooth = async (req, res) => {
     }
 
     if (isMovingToAnotherExpo) {
-      const destinationExpo = await Expo.findById(nextExpo);
-      if (!destinationExpo) {
-        return res.status(404).json({ error: "Expo not found" });
-      }
       const destinationCount = await Booth.countDocuments({ expo: nextExpo });
-      if (destinationCount >= (destinationExpo.maxBooths || 10)) {
+      if (destinationCount >= (targetExpo.maxBooths || 10)) {
         return res.status(400).json({ error: "Booth full for this expo" });
       }
     }

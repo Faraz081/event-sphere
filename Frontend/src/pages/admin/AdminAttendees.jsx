@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   fetchAttendees,
+  checkInAttendee,
   createAttendee,
   updateAttendee,
   deleteAttendee,
@@ -87,6 +88,8 @@ const AdminAttendees = () => {
   const [selectedRegStatus, setSelectedRegStatus] = useState("all");
   const [selectedBookingStatus, setSelectedBookingStatus] = useState("all");
   const [selectedPassStatus, setSelectedPassStatus] = useState("all");
+  const [checkInCode, setCheckInCode] = useState("");
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -262,6 +265,27 @@ const AdminAttendees = () => {
     }
   };
 
+  const handleCheckIn = async (e) => {
+    e.preventDefault();
+    if (!checkInCode.trim()) {
+      toast.error("Enter a pass code to check in.");
+      return;
+    }
+
+    setIsCheckingIn(true);
+    try {
+      const response = await checkInAttendee(checkInCode);
+      const attendeeName = response.attendee?.user?.name || "Attendee";
+      toast.success(`${attendeeName} checked in successfully.`);
+      setCheckInCode("");
+      loadAttendees();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Could not check in this pass.");
+    } finally {
+      setIsCheckingIn(false);
+    }
+  };
+
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
@@ -283,6 +307,32 @@ const AdminAttendees = () => {
             <span>Register Attendee</span>
           </button>
         </div>
+
+        <form
+          onSubmit={handleCheckIn}
+          className="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4 sm:flex-row sm:items-center"
+        >
+          <div className="flex-1">
+            <label htmlFor="attendee-pass-check-in" className="mb-1 block text-sm font-semibold text-foreground">
+              Check in attendee
+            </label>
+            <input
+              id="attendee-pass-check-in"
+              value={checkInCode}
+              onChange={(e) => setCheckInCode(e.target.value)}
+              placeholder="Enter or scan pass code"
+              autoComplete="off"
+              className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground placeholder:font-sans placeholder:text-muted focus:border-gold focus:outline-none"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isCheckingIn}
+            className="rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            {isCheckingIn ? "Checking in..." : "Check in"}
+          </button>
+        </form>
 
         <div className="bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
@@ -465,36 +515,36 @@ const AdminAttendees = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-muted">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
-                    <p className="text-sm">Loading attendees directory...</p>
-                  </div>
-                </td>
-              </tr>
-            ) : attendees.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-muted">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <AlertCircle size={32} className="text-muted/60" />
-                    <p className="font-medium text-foreground">
-                      {expoFilter ? "No attendees found" : "Select an expo"}
-                    </p>
-                    <p className="text-xs text-muted">
-                      {expoFilter
-                        ? searchTerm ||
-                          selectedRegStatus !== "all" ||
-                          selectedBookingStatus !== "all" ||
-                          selectedPassStatus !== "all"
-                          ? "Try adjusting your search criteria or clearing filters."
-                          : "No attendee registrations for this expo yet."
-                        : "Select an expo to view its attendees"}
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
+  <tr>
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+        <p className="text-sm">Loading attendees directory...</p>
+      </div>
+    </td>
+  </tr>
+) : attendees.length === 0 ? (
+  <tr>
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <AlertCircle size={32} className="text-muted/60" />
+        <p className="font-medium text-foreground">
+          {expoFilter ? "No attendees found" : "Select an expo"}
+        </p>
+        <p className="text-xs text-muted">
+          {expoFilter
+            ? searchTerm ||
+              selectedRegStatus !== "all" ||
+              selectedBookingStatus !== "all" ||
+              selectedPassStatus !== "all"
+              ? "Try adjusting your search criteria or clearing filters."
+              : "No attendee registrations for this expo yet."
+            : "Select an expo to view its attendees"}
+        </p>
+      </div>
+    </td>
+  </tr>
+) : (
               attendees.map((item) => (
                 <tr
                   key={item._id}
@@ -562,10 +612,10 @@ const AdminAttendees = () => {
                       >
                         {item.passStatus}
                       </span>
-                      {item.passCode && (
+                      {(item.passCode || item.entryPassId) && (
                         <span className="text-xs text-muted font-mono flex items-center gap-1">
                           <Ticket size={12} className="text-gold" />
-                          {item.passCode}
+                          {item.passCode || item.entryPassId}
                         </span>
                       )}
                     </div>
@@ -697,7 +747,7 @@ const AdminAttendees = () => {
                     Pass Code
                   </p>
                   <p className="font-mono text-gold font-semibold">
-                    {attendeeToView.passCode || "None issued"}
+                    {attendeeToView.passCode || attendeeToView.entryPassId || "None issued"}
                   </p>
                 </div>
 
@@ -962,7 +1012,7 @@ const AdminAttendees = () => {
                 <span className="text-[#2f2a24] font-semibold">
                   "{attendeeToDelete?.user?.name || "this attendee"}"
                 </span>{" "}
-                and revoke their pass ({attendeeToDelete?.passCode || "N/A"}). This action
+                and revoke their pass ({attendeeToDelete?.passCode || attendeeToDelete?.entryPassId || "N/A"}). This action
                 cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>

@@ -5,10 +5,7 @@ import MessagesPanel from "@/components/shared/MessagesPanel";
 
 const ExhibitorMessages = () => (
   <DashboardLayout role="exhibitor">
-    <DashboardSectionPage
-      title="Messages"
-      description="Chat with the admin and other exhibitors."
-    >
+    <DashboardSectionPage title="Messages" description="Chat with the admin and other exhibitors.">
       <MessagesPanel />
     </DashboardSectionPage>
   </DashboardLayout>

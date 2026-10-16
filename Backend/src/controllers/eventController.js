@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 import Event from "../models/Event.js";
 import Attendee from "../models/Attendee.js";
@@ -26,6 +25,11 @@ const createEvent = async (req, res) => {
     }
 
     const { title, description, date, eventType, images, boothCapacity, banner, location, expo } = req.body;
+    const eventPrice = Number(req.body.price ?? 0);
+
+    if (!Number.isFinite(eventPrice) || eventPrice < 0) {
+      return res.status(400).json({ error: "Event price must be a valid non-negative amount" });
+    }
 
     if (
       !title?.trim() ||
@@ -97,6 +101,7 @@ const createEvent = async (req, res) => {
       ...(parsedDate && { date: parsedDate }),
       images: Array.isArray(images) ? images : [],
       boothCapacity: parsedBoothCapacity,
+      price: eventPrice,
       banner,
       status: "pending",
     });
@@ -139,9 +144,11 @@ const getAllEvents = async (req, res) => {
       filter.status = req.query.status;
     }
 
-    const events = await Event.find(filter)
-      .populate("exhibitor", "name companyName")
-      .sort({ createdAt: -1 });
+    const allEvents = await Event.find(filter)
+  .populate({ path: "exhibitor", select: "name companyName", match: { status: "active" } })
+  .sort({ createdAt: -1 });
+
+const events = allEvents.filter((e) => e.exhibitor);
 
     return res.status(200).json({ msg: "All approved events fetched", events });
   } catch (error) {
@@ -261,12 +268,12 @@ const rejectEvent = async (req, res) => {
   }
 };
 
-const deleteEvent = async (req, res) => {
+const removeEvent = async (req, res, isAdmin) => {
   try {
     const { id } = req.params;
     const exhibitor = getMyId(req);
 
-    if (!mongoose.isValidObjectId(exhibitor)) {
+    if (!isAdmin && !mongoose.isValidObjectId(exhibitor)) {
       return res.status(401).json({ error: "Please login again" });
     }
 
@@ -274,19 +281,31 @@ const deleteEvent = async (req, res) => {
       return res.status(400).json({ error: "Invalid event ID" });
     }
 
-    const event = await Event.findOneAndDelete({ _id: id, exhibitor });
+    const event = await Event.findOneAndDelete({
+      _id: id,
+      ...(!isAdmin && { exhibitor }),
+    });
 
     if (!event) {
-      return res.status(404).json({ error: "Event not found or not yours" });
+      return res.status(404).json({
+        error: isAdmin ? "Event not found" : "Event not found or not yours",
+      });
     }
 
     await Attendee.updateMany(
-      { event: id, bookingStatus: { $ne: "cancelled" } },
+      { event: id, bookingStatus: { $ne: "cancelled" }, passStatus: { $ne: "scanned" } },
       {
         bookingStatus: "cancelled",
         registrationStatus: "cancelled",
         passStatus: "revoked",
-        decisionNote: "This event was cancelled by the exhibitor",
+        decisionNote: `This event was cancelled by the ${isAdmin ? "administrator" : "exhibitor"}`,
+      }
+    );
+    await Attendee.updateMany(
+      { event: id, bookingStatus: { $ne: "cancelled" }, passStatus: "scanned" },
+      {
+        bookingStatus: "cancelled",
+        decisionNote: "This event was deleted after check-in",
       }
     );
 
@@ -295,6 +314,9 @@ const deleteEvent = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+const deleteEvent = (req, res) => removeEvent(req, res, false);
+const deleteAdminEvent = (req, res) => removeEvent(req, res, true);
 
 const updateEvent = async (req, res) => {
   try {
@@ -355,6 +377,14 @@ const updateEvent = async (req, res) => {
     event.location = location.trim();
     event.boothCapacity = parsedBoothCapacity;
 
+    if (req.body.price !== undefined) {
+      const eventPrice = Number(req.body.price);
+      if (!Number.isFinite(eventPrice) || eventPrice < 0) {
+        return res.status(400).json({ error: "Event price must be a valid non-negative amount" });
+      }
+      event.price = eventPrice;
+    }
+
     if (banner !== undefined) event.banner = banner;
 
     if (date !== undefined) {
@@ -397,5 +427,6 @@ export {
   approveEvent,
   rejectEvent,
   deleteEvent,
+  deleteAdminEvent,
   updateEvent,
 };

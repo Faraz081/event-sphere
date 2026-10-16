@@ -10,41 +10,42 @@ const websiteSettingsSchema = new mongoose.Schema(
 
     logo: {
       type: String,
-      default: "",
+      default: "/logo.jpg",
       trim: true,
     },
 
     favicon: {
       type: String,
-      default: "",
+      default: "/favicon.png",
       trim: true,
     },
 
     tagline: {
       type: String,
-      default: "",
+      default: "Event Management Platform",
       trim: true,
     },
 
     hero: {
       title: {
         type: String,
-        default: "",
+        default: "Create\nUnforgettable\nEvents With Style",
         trim: true,
       },
       description: {
         type: String,
-        default: "",
+        default:
+          "Plan, manage and experience extraordinary events with EventSphere. From exhibitors and schedules to attendees and event analytics, everything is managed in one place.",
         trim: true,
       },
       buttonText: {
         type: String,
-        default: "",
+        default: "Book Now",
         trim: true,
       },
       image: {
         type: String,
-        default: "",
+        default: "/images/hero-default.jpg",
         trim: true,
       },
     },
@@ -52,17 +53,18 @@ const websiteSettingsSchema = new mongoose.Schema(
     about: {
       title: {
         type: String,
-        default: "",
+        default: "Everything You Need For A Perfect Event",
         trim: true,
       },
       description: {
         type: String,
-        default: "",
+        default:
+          "EventSphere is an event and expo management platform designed to make event planning simple, organized and efficient. Admins can manage exhibitors, schedules, attendees, communication and event information from one place. Whether it is a corporate expo, a wedding celebration or a special gathering, EventSphere helps bring every important part of an event together.",
         trim: true,
       },
       image: {
         type: String,
-        default: "",
+        default: "/images/about-default.jpg",
         trim: true,
       },
     },
@@ -70,22 +72,22 @@ const websiteSettingsSchema = new mongoose.Schema(
     contact: {
       email: {
         type: String,
-        default: "",
+        default: "hello@eventsphere.com",
         trim: true,
       },
       phone: {
         type: String,
-        default: "",
+        default: "+92 300 1234567",
         trim: true,
       },
       address: {
         type: String,
-        default: "",
+        default: "Karachi, Pakistan",
         trim: true,
       },
       officeHours: {
         type: String,
-        default: "",
+        default: "Mon - Fri, 9 AM - 6 PM",
         trim: true,
       },
     },
@@ -121,12 +123,13 @@ const websiteSettingsSchema = new mongoose.Schema(
     footer: {
       description: {
         type: String,
-        default: "",
+        default:
+          "A modern event and expo management platform designed to simplify planning, connect people, and create memorable experiences.",
         trim: true,
       },
       copyright: {
         type: String,
-        default: "",
+        default: "© 2026 EventSphere Management. All rights reserved.",
         trim: true,
       },
     },

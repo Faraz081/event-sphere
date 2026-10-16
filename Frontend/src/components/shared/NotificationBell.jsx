@@ -6,7 +6,6 @@ import { Bell, BellRing, CheckCircle2, XCircle, MessageSquare, Ticket } from "lu
 import { fetchNotifications, markNotificationRead, markAllNotificationsRead } from "@/store/slices/notificationSlice";
 
 const POLL_MS = 30 * 1000;
-
 const typeStyle = {
   booking_approved: { icon: CheckCircle2, color: "text-emerald-600 bg-emerald-50" },
   ticket_approved: { icon: Ticket, color: "text-emerald-600 bg-emerald-50" },
@@ -39,7 +38,10 @@ const NotificationBell = () => {
 
   const isAttendee = user?.role === "attendee";
 
+<<<<<<< HEAD
  
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     if (!isAttendee) return;
 
@@ -58,8 +60,11 @@ const NotificationBell = () => {
     };
   }, [dispatch, isAttendee]);
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     if (!loaded) return;
 
@@ -75,10 +80,7 @@ const NotificationBell = () => {
       .forEach((n) => {
         toast(n.title, {
           description: n.message,
-          action: {
-            label: "View",
-            onClick: () => {
-              dispatch(markNotificationRead(n._id));
+          action: { label: "View", onClick: () => { dispatch(markNotificationRead(n._id));
               if (n.link) navigate(n.link);
             },
           },
@@ -88,8 +90,11 @@ const NotificationBell = () => {
     seenRef.current = keys;
   }, [items, loaded, dispatch, navigate]);
 
+<<<<<<< HEAD
   
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     if (!isAttendee) return;
 
@@ -101,8 +106,11 @@ const NotificationBell = () => {
     };
   }, [unreadCount, isAttendee]);
 
+<<<<<<< HEAD
  
   
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     const handler = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
@@ -122,12 +130,8 @@ const NotificationBell = () => {
 
   return (
     <div ref={wrapRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-label="Notifications"
-        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfc9] bg-white text-[#c49424] shadow-sm transition hover:bg-[#fff4d9]"
-      >
+      <button type="button" onClick={() => setOpen((prev) => !prev)} aria-label="Notifications"
+        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfc9] bg-white text-[#c49424] shadow-sm transition hover:bg-[#fff4d9]">
         <Bell size={18} />
         {unreadCount > 0 && (
           <span className="absolute -right-1 -top-1 flex h-5 min-w-5 animate-pulse items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
@@ -141,11 +145,8 @@ const NotificationBell = () => {
           <div className="flex items-center justify-between border-b border-[#f0e8d8] px-4 py-3">
             <p className="font-serif text-base font-bold text-[#2f2a24]">Notifications</p>
             {unreadCount > 0 && (
-              <button
-                type="button"
-                onClick={() => dispatch(markAllNotificationsRead())}
-                className="text-xs font-semibold text-[#b48620] hover:text-[#8f6b18]"
-              >
+              <button type="button" onClick={() => dispatch(markAllNotificationsRead())}
+                className="text-xs font-semibold text-[#b48620] hover:text-[#8f6b18]">
                 Mark all as read
               </button>
             )}
@@ -161,12 +162,8 @@ const NotificationBell = () => {
               const Icon = style.icon;
 
               return (
-                <button
-                  key={n._id}
-                  type="button"
-                  onClick={() => handleClick(n)}
-                  className={`flex w-full items-start gap-3 border-b border-[#f6f0e3] px-4 py-3 text-left transition hover:bg-[#fffdf9] ${n.isRead ? "" : "bg-[#fff9ec]"}`}
-                >
+                <button key={n._id} type="button" onClick={() => handleClick(n)}
+                  className={`flex w-full items-start gap-3 border-b border-[#f6f0e3] px-4 py-3 text-left transition hover:bg-[#fffdf9] ${n.isRead ? "" : "bg-[#fff9ec]"}`}>
                   <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${style.color}`}>
                     <Icon size={15} />
                   </span>

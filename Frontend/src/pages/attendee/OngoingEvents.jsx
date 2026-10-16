@@ -2,50 +2,19 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  CalendarDays,
-  Clock3,
-  MapPin,
-  Sparkles,
-  ArrowUpRight,
   Radio,
   Search,
   X,
+  ArrowUpRight,
 } from 'lucide-react'
 
-import { fetchPublicExpos, fetchPublicEvents } from '@/api/publicService'
-import { API_BASE_URL } from '@/api/api'
+import api from '@/api/api'
 import BookmarkButton from '@/components/shared/BookmarkButton'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
 import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
 
-const BASE = API_BASE_URL
-
-const getImage = (banner) => {
-  if (!banner) return fallbackImage
-  return banner.startsWith('http') ? banner : `${BASE}${banner}`
-}
-
-const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-
-const formatTime = (iso) => {
-  const d = new Date(iso)
-  if (d.getHours() === 0 && d.getMinutes() === 0) return null
-  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-}
-
-const getBadge = (iso) => {
-  const d = new Date(iso)
-  const today = new Date()
-  const sameDay = d.toDateString() === today.toDateString()
-  if (sameDay) return { label: 'Live Today', text: 'text-green-600', dot: 'bg-green-500' }
-  if (d > today) return { label: 'Upcoming', text: 'text-[#9a721c]', dot: 'bg-[#c49424]' }
-  return { label: 'Ended', text: 'text-gray-500', dot: 'bg-gray-400' }
-}
-
 const OngoingEvents = () => {
-  const [expos, setExpos] = useState([])
-  const [approvedEvents, setApprovedEvents] = useState([])
+  const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
@@ -53,38 +22,23 @@ const OngoingEvents = () => {
 
   const normalizedSearch = search.trim().toLocaleLowerCase()
 
-  const filteredExpos = normalizedSearch
-    ? expos.filter((expo) =>
-        (expo.exhibitors || []).some((companyName) =>
-          companyName.toLocaleLowerCase().includes(normalizedSearch)
-        ) ||
-        (expo.theme || '').toLocaleLowerCase().includes(normalizedSearch) ||
-        (expo.title || '').toLocaleLowerCase().includes(normalizedSearch)
-      )
-    : expos
-
   const filteredEvents = normalizedSearch
-    ? approvedEvents.filter((ev) => {
-        const title = (ev.title || '').toLocaleLowerCase()
+    ? events.filter((ev) => {
+        const title = (ev.title || ev.name || '').toLocaleLowerCase()
         const company = (ev.companyName || ev.exhibitorName || '').toLocaleLowerCase()
-        const type = (ev.eventType || '').toLocaleLowerCase()
         return (
           title.includes(normalizedSearch) ||
-          company.includes(normalizedSearch) ||
-          type.includes(normalizedSearch)
+          company.includes(normalizedSearch)
         )
       })
-    : approvedEvents
+    : events
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [expoData, eventData] = await Promise.all([
-          fetchPublicExpos(),
-          fetchPublicEvents(),
-        ])
-        setExpos(expoData.expos ?? [])
-        setApprovedEvents(eventData.events ?? [])
+        const response = await api.get('/api/public/events')
+        const list = response.data?.events ?? response.data
+        setEvents(Array.isArray(list) ? list : [])
       } catch (err) {
         toast.error(err.response?.data?.error || 'Could not load events')
       } finally {
@@ -94,7 +48,7 @@ const OngoingEvents = () => {
     load()
   }, [])
 
-  const totalCount = filteredExpos.length + filteredEvents.length
+  const totalCount = filteredEvents.length
 
   return (
     <main className="min-h-screen bg-[#fffdf9] px-6 pt-40 pb-24 lg:px-10">
@@ -105,16 +59,16 @@ const OngoingEvents = () => {
         </div>
 
         <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-          Live & Ongoing Expos
+          Live & Ongoing Events
         </p>
 
         <h1 className="mt-4 font-serif text-4xl font-bold text-[#2f2a24] sm:text-5xl">
           Explore Our{' '}
-          <span className="text-[#c49424]">Ongoing Expos</span>
+          <span className="text-[#c49424]">Ongoing Events</span>
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
-          Discover expos and exhibitor events currently happening or coming soon.
+          Discover exhibitor events currently happening or coming soon.
           Choose one and reserve your spot today.
         </p>
       </section>
@@ -123,10 +77,10 @@ const OngoingEvents = () => {
         <div className="mb-10 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#b48620]">
-              Available Expos
+              Available Events
             </p>
             <h2 className="mt-2 font-serif text-3xl font-bold text-[#2f2a24]">
-              Expos You Can Attend
+              Events You Can Attend
             </h2>
           </div>
 
@@ -145,7 +99,7 @@ const OngoingEvents = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by title, category, exhibitor or company"
+            placeholder="Search by title or exhibitor"
             aria-label="Search events"
             className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]"
           />
@@ -178,6 +132,7 @@ const OngoingEvents = () => {
           </p>
         )}
 
+<<<<<<< HEAD
       
       
         {!loading && filteredExpos.length > 0 && (
@@ -187,106 +142,62 @@ const OngoingEvents = () => {
               {filteredExpos.map((expo) => {
                 const badge = getBadge(expo.date)
                 const time = formatTime(expo.date)
+=======
+        {/* ---------- EVENTS ---------- */}
+        {!loading && filteredEvents.length > 0 && (
+          <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+            {filteredEvents.map((ev) => (
+              <div
+                key={ev._id}
+                className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={ev.images?.[0] || fallbackImage}
+                    alt={ev.title ?? ev.name}
+                    className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <BookmarkButton event={ev} className="absolute right-4 top-4" />
+                </div>
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 
-                return (
-                  <div
-                    key={expo._id}
-                    className="group overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                <div className="p-7 text-center">
+                  <h3 className="font-serif text-2xl font-bold text-[#c49424]">
+                    {ev.title ?? ev.name}
+                  </h3>
+
+                  {(ev.companyName || ev.exhibitorName) && (
+                    <p className="mt-1 text-sm font-medium text-[#8d681b]">
+                      by{' '}
+                      {ev.exhibitor?._id ? (
+                        <Link to={`/exhibitors/${ev.exhibitor._id}`} className="underline-offset-4 transition hover:text-[#c49424] hover:underline">
+                          {ev.companyName ?? ev.exhibitorName}
+                        </Link>
+                      ) : (
+                        ev.companyName ?? ev.exhibitorName
+                      )}
+                    </p>
+                  )}
+
+                  {ev.location && (
+                    <p className="mt-2 text-sm text-[#8a8379]">📍 {ev.location}</p>
+                  )}
+
+                  <p className="mt-3 line-clamp-3 leading-6 text-[#5d574f]">
+                    {ev.description}
+                  </p>
+
+                  <Link
+                    to={`/book-now?event=${ev._id}`}
+                    className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
                   >
-                    <div className="relative h-56 overflow-hidden">
-                      <img
-                        src={getImage(expo.banner)}
-                        alt={expo.title}
-                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-black/20" />
-                      <BookmarkButton expo={expo} className="absolute left-5 top-5" />
-                      <span
-                        className={`absolute right-5 top-5 flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold shadow-md ${badge.text}`}
-                      >
-                        <span className={`h-2 w-2 rounded-full ${badge.dot}`} />
-                        {badge.label}
-                      </span>
-                    </div>
-
-                    <div className="p-7">
-                      <span className="rounded-full bg-[#fff4d9] px-3 py-1 text-xs font-semibold text-[#9a721c]">
-                        {expo.theme || 'Expo'}
-                      </span>
-
-                      <h3 className="mt-4 font-serif text-2xl font-bold text-[#2f2a24]">
-                        {expo.title}
-                      </h3>
-
-                      <p className="mt-3 line-clamp-3 leading-7 text-[#5d574f]">
-                        {expo.description}
-                      </p>
-
-                      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div className="flex items-center gap-3">
-                          <CalendarDays className="h-5 w-5 text-[#c49424]" />
-                          <div>
-                            <p className="text-xs text-[#8a8379]">Date</p>
-                            <p className="text-sm font-medium text-[#4d473f]">
-                              {formatDate(expo.date)}
-                            </p>
-                          </div>
-                        </div>
-
-                        {time && (
-                          <div className="flex items-center gap-3">
-                            <Clock3 className="h-5 w-5 text-[#c49424]" />
-                            <div>
-                              <p className="text-xs text-[#8a8379]">Time</p>
-                              <p className="text-sm font-medium text-[#4d473f]">{time}</p>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex items-center gap-3">
-                          <MapPin className="h-5 w-5 text-[#c49424]" />
-                          <div>
-                            <p className="text-xs text-[#8a8379]">Location</p>
-                            <p className="text-sm font-medium text-[#4d473f]">
-                              {expo.location}
-                            </p>
-                          </div>
-                        </div>
-
-                        {expo.theme && (
-                          <div className="flex items-center gap-3">
-                            <Sparkles className="h-5 w-5 text-[#c49424]" />
-                            <div>
-                              <p className="text-xs text-[#8a8379]">Theme</p>
-                              <p className="text-sm font-medium text-[#4d473f]">
-                                {expo.theme}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                        <Link
-                          to={`/expos/${expo._id}`}
-                          className="inline-flex flex-1 items-center justify-center rounded-full border border-[#c49424] px-6 py-3.5 text-sm font-semibold text-[#8d681b] transition hover:bg-[#fffdf9]"
-                        >
-                          View Details
-                        </Link>
-                        <Link
-                          to={`/book-ticket?expo=${expo._id}`}
-                          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#c49424] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg"
-                        >
-                          Book Ticket
-                          <ArrowUpRight className="h-4 w-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </>
+                    Book Now
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </section>
 

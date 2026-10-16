@@ -9,7 +9,7 @@ const AttendeeMessages = () => {
     <div className="min-h-screen bg-[#fffaf2] px-4 pt-24 pb-12 md:px-8 md:pt-28">
       <div className="mx-auto max-w-7xl">
         <button
-          onClick={() => navigate("/ongoing-events")}
+          onClick={() => navigate("/service")}
           className="mb-6 text-sm font-medium text-[#9a721c] transition-colors hover:text-[#c49424]"
         >
           ← Back to Expos

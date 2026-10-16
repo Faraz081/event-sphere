@@ -432,19 +432,26 @@ const AdminBooths = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted">
-                    Loading booths...
-                  </td>
-                </tr>
-              ) : booths.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted">
-                    <Building2 className="mx-auto mb-2 opacity-40" size={32} />
-                    {expoFilter ? "No booths found. Create your first booth." : "Select an expo to view its booths"}
-                  </td>
-                </tr>
-              ) : (
+  <tr>
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+        <p className="text-sm">Loading booths...</p>
+      </div>
+    </td>
+  </tr>
+) : booths.length === 0 ? (
+  <tr>
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <Building2 className="opacity-40" size={32} />
+        <p className="text-sm">
+          {expoFilter ? "No booths found. Create your first booth." : "Select an expo to view its booths"}
+        </p>
+      </div>
+    </td>
+  </tr>
+) : (
                 booths.map((booth) => (
                   <tr key={booth._id} className="border-b border-border last:border-0 hover:bg-surface/50">
                     <td data-label="Booth #" className="px-6 py-4 text-foreground font-mono font-medium">

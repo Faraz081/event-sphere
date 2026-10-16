@@ -22,6 +22,11 @@ const stallSchema = new mongoose.Schema({
     trim: true,
     default: "",
   },
+  price: {
+  type: Number,
+  min: 0,
+  default: 0,
+},
 });
 
 const eventSchema = new mongoose.Schema({
@@ -62,6 +67,11 @@ const eventSchema = new mongoose.Schema({
   boothCapacity: {
     type: Number,
     min: 1,
+  },
+  price: {
+    type: Number,
+    min: 0,
+    default: 0,
   },
   stalls: {
     type: [stallSchema],

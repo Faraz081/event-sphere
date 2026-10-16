@@ -1,15 +1,5 @@
 import express from "express";
-import {
-  createEvent,
-  getMyEvents,
-  getAllEvents,
-  getPendingEvents,
-  getAdminEvents,
-  approveEvent,
-  rejectEvent,
-  deleteEvent,
-  updateEvent,
-} from "../controllers/eventController.js";
+import {createEvent,getMyEvents,getAllEvents,getPendingEvents,getAdminEvents,approveEvent,rejectEvent,deleteEvent,updateEvent} from "../controllers/eventController.js";
 import { protect, adminAuth } from "../middleware/authMiddleware.js";
 import { addStall, deleteStall, updateStall } from "../controllers/eventStallController.js";
 

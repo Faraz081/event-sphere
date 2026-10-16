@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Attendee from "../models/Attendee.js";
 import User from "../models/User.js";
+import { generatePassCode } from "../utils/passCode.js";
 
 const VALID_REGISTRATION_STATUSES = ["registered", "confirmed", "attended", "cancelled"];
 const VALID_BOOKING_STATUSES = ["confirmed", "pending", "cancelled"];
@@ -12,7 +13,11 @@ const eventKey = (expoId, name) => expoId
     : undefined;
 const isDuplicateKeyError = (error) => error?.code === 11000;
 const duplicateResponse = (res, error) => res.status(409).json({
-  error: error?.keyPattern?.passCode || error?.keyValue?.passCode
+  error:
+    error?.keyPattern?.passCode ||
+    error?.keyPattern?.entryPassId ||
+    error?.keyValue?.passCode ||
+    error?.keyValue?.entryPassId
     ? "This pass code is already in use."
     : "This user is already registered for this event.",
 });
@@ -63,6 +68,7 @@ export const getAllAttendees = async (req, res) => {
       filter.$or = [
         { user: { $in: userIds } },
         { passCode: searchRegex },
+        { entryPassId: searchRegex },
         { eventName: searchRegex },
         { ticketType: searchRegex },
       ];
@@ -71,6 +77,7 @@ export const getAllAttendees = async (req, res) => {
     const attendees = await Attendee.find(filter)
       .populate("user", "name email phone role companyName")
       .populate("expo", "title date location status")
+      .populate("event", "title date location")
       .sort({ createdAt: -1 });
 
     const total = attendees.length;
@@ -99,7 +106,8 @@ export const getAttendeeById = async (req, res) => {
       user: { $in: await User.find({ role: "attendee" }).distinct("_id") },
     })
       .populate("user", "name email phone role companyName")
-      .populate("expo", "title date location status");
+    .populate("expo", "title date location status")
+    .populate("event", "title date location");
 
     if (!attendee) {
       return res.status(404).json({ error: "Attendee record not found" });
@@ -187,17 +195,13 @@ export const createAttendee = async (req, res) => {
 
     let finalPassCode = passCode?.trim() ? passCode.trim().toUpperCase() : "";
     if (!finalPassCode) {
-      for (let attempt = 0; attempt < 10; attempt += 1) {
-        const candidate = `PASS-${Math.floor(100000 + Math.random() * 900000)}`;
-        if (!(await Attendee.exists({ passCode: candidate }))) {
-          finalPassCode = candidate;
-          break;
-        }
-      }
+      finalPassCode = await generatePassCode();
       if (!finalPassCode) {
         return res.status(503).json({ error: "Unable to generate a unique pass code. Please try again." });
       }
-    } else if (await Attendee.exists({ passCode: finalPassCode })) {
+    } else if (await Attendee.exists({
+      $or: [{ passCode: finalPassCode }, { entryPassId: finalPassCode }],
+    })) {
       return res.status(409).json({ error: "This pass code is already in use." });
     }
 
@@ -210,6 +214,7 @@ export const createAttendee = async (req, res) => {
       passStatus: passStatus || "issued",
       ticketType: ticketType ? ticketType.trim() : "Standard Pass",
       passCode: finalPassCode,
+      entryPassId: finalPassCode,
       registrationEventKey: eventKey(expoId, eventName),
       uniqueKeysEnforced: true,
       notes: notes ? notes.trim() : undefined,
@@ -217,7 +222,8 @@ export const createAttendee = async (req, res) => {
 
     const populated = await Attendee.findById(newAttendee._id)
       .populate("user", "name email phone role companyName")
-      .populate("expo", "title date location status");
+      .populate("expo", "title date location status")
+      .populate("event", "title date location");
 
     res.status(201).json({
       success: true,
@@ -253,6 +259,14 @@ export const updateAttendee = async (req, res) => {
     const attendee = await Attendee.findById(id);
     if (!attendee) {
       return res.status(404).json({ error: "Attendee record not found." });
+    }
+
+    if (
+      attendee.passStatus === "scanned" &&
+      ((bookingStatus && bookingStatus !== attendee.bookingStatus) ||
+        (registrationStatus && registrationStatus !== attendee.registrationStatus))
+    ) {
+      return res.status(409).json({ error: "A checked-in pass cannot be reset." });
     }
 
     const nextUserId = userId || attendee.user;
@@ -296,11 +310,18 @@ export const updateAttendee = async (req, res) => {
           error: `Invalid pass status. Must be one of: ${VALID_PASS_STATUSES.join(", ")}`,
         });
       }
+      if (attendee.passStatus === "scanned" && passStatus !== "scanned") {
+        return res.status(409).json({ error: "A checked-in pass cannot be reactivated." });
+      }
       attendee.passStatus = passStatus;
     }
 
     if (ticketType !== undefined) attendee.ticketType = ticketType.trim();
-    if (passCode !== undefined) attendee.passCode = passCode.trim().toUpperCase();
+    if (passCode !== undefined) {
+      const normalizedPassCode = passCode.trim().toUpperCase();
+      attendee.passCode = normalizedPassCode;
+      attendee.entryPassId = normalizedPassCode;
+    }
     if (eventName !== undefined) attendee.eventName = eventName.trim();
     if (notes !== undefined) attendee.notes = notes.trim();
 
@@ -328,7 +349,13 @@ export const updateAttendee = async (req, res) => {
     if (
       passCode !== undefined &&
       passCode.trim() &&
-      (await Attendee.exists({ _id: { $ne: id }, passCode: passCode.trim().toUpperCase() }))
+      (await Attendee.exists({
+        _id: { $ne: id },
+        $or: [
+          { passCode: passCode.trim().toUpperCase() },
+          { entryPassId: passCode.trim().toUpperCase() },
+        ],
+      }))
     ) {
       return res.status(409).json({ error: "This pass code is already in use." });
     }
@@ -350,6 +377,75 @@ export const updateAttendee = async (req, res) => {
     console.error("Error updating attendee:", error);
     if (isDuplicateKeyError(error)) return duplicateResponse(res, error);
     res.status(500).json({ error: error.message || "Failed to update attendee" });
+  }
+};
+
+export const checkInAttendee = async (req, res) => {
+  try {
+    const passCode = typeof req.body.passCode === "string"
+      ? req.body.passCode.trim().toUpperCase()
+      : "";
+    const { expoId } = req.body;
+
+    if (!passCode) {
+      return res.status(400).json({ error: "Pass code is required." });
+    }
+
+    if (expoId && !mongoose.Types.ObjectId.isValid(expoId)) {
+      return res.status(400).json({ error: "Invalid expo ID." });
+    }
+
+    const passFilter = {
+      $or: [{ passCode }, { entryPassId: passCode }],
+      ...(expoId && { expo: expoId }),
+    };
+    const attendee = await Attendee.findOneAndUpdate(
+      {
+        ...passFilter,
+        bookingStatus: "confirmed",
+        passStatus: { $in: ["issued", "claimed"] },
+      },
+      {
+        $set: {
+          passStatus: "scanned",
+          registrationStatus: "attended",
+          checkedInAt: new Date(),
+        },
+      },
+      { new: true }
+    )
+      .populate("user", "name email")
+      .populate("expo", "title")
+      .populate("event", "title");
+
+    if (attendee) {
+      return res.status(200).json({
+        msg: "Check-in successful",
+        attendee,
+      });
+    }
+
+    const existingAttendee = await Attendee.findOne(passFilter)
+      .populate("user", "name email")
+      .populate("expo", "title")
+      .populate("event", "title");
+
+    if (!existingAttendee) {
+      return res.status(404).json({ error: "Pass not found." });
+    }
+
+    if (existingAttendee.passStatus === "scanned") {
+      return res.status(409).json({ error: "Pass already used." });
+    }
+
+    if (existingAttendee.passStatus === "revoked" || existingAttendee.bookingStatus === "cancelled") {
+      return res.status(400).json({ error: "This pass has been revoked or cancelled." });
+    }
+
+    return res.status(400).json({ error: "This pass is not valid for check-in." });
+  } catch (error) {
+    console.error("Error checking in attendee:", error);
+    return res.status(500).json({ error: error.message || "Failed to check in attendee." });
   }
 };
 

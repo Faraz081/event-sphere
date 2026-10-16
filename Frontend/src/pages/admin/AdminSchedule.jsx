@@ -412,7 +412,98 @@ const AdminSchedule = () => {
           </div>
         )}
 
+<<<<<<< HEAD
      
+=======
+      <div className="space-y-3 md:hidden">
+  {loading ? (
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface py-10 text-muted">
+      <RotateCcw size={24} className="animate-spin text-gold" />
+      <span className="text-sm">Loading schedule sessions...</span>
+    </div>
+  ) : schedules.length === 0 ? (
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface px-4 py-10 text-center">
+      <Clock size={36} className="text-muted/50" />
+      <p className="text-base font-medium text-foreground">No sessions found</p>
+      <p className="text-sm text-muted">
+        {search || selectedExpoFilter !== "all"
+          ? "No sessions match your search or expo filter. Try changing your filters."
+          : "No schedule sessions have been created yet. Add your first session."}
+      </p>
+      {search || selectedExpoFilter !== "all" ? (
+        <button
+          onClick={() => {
+            setSearch("");
+            setSelectedExpoFilter("all");
+          }}
+          className="text-sm text-gold hover:underline"
+        >
+          Reset filters
+        </button>
+      ) : (
+        <button
+          onClick={openCreateModal}
+          className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-background"
+        >
+          <Plus size={16} />
+          Add First Session
+        </button>
+      )}
+    </div>
+  ) : (
+    schedules.map((session) => (
+      <div key={session._id} className="rounded-xl border border-border bg-surface p-4">
+        <div className="min-w-0">
+          <p className="font-medium text-foreground">{session.title}</p>
+          {session.topic && <p className="mt-0.5 text-xs text-muted">{session.topic}</p>}
+          <p className="mt-1 truncate text-xs text-gold">{session.expo?.title || "-"}</p>
+        </div>
+
+        <div className="mt-3 space-y-1.5 text-xs text-muted">
+          <div className="flex items-start gap-2">
+            <Clock size={12} className="mt-0.5 shrink-0 text-gold" />
+            {formatDateTimeRange(session.startTime, session.endTime)}
+          </div>
+          {session.speaker && (
+            <p className="flex items-center gap-2">
+              <User size={12} className="shrink-0 text-gold" />
+              <span className="truncate">{session.speaker}</span>
+            </p>
+          )}
+          {session.location && (
+            <p className="flex items-center gap-2">
+              <MapPin size={12} className="shrink-0 text-gold" />
+              <span className="truncate">{session.location}</span>
+            </p>
+          )}
+        </div>
+
+        <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
+          <button
+            type="button"
+            onClick={() => openEditModal(session)}
+            title="Edit Session"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold"
+          >
+            <Edit2 size={15} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setSessionToDelete(session)}
+            title="Delete Session"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
+        {/* Table */}
+        <div className="hidden md:block">
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
         <ResponsiveTable minWidth="800px">
           <thead className="border-b border-border">
             <tr>
@@ -538,6 +629,7 @@ const AdminSchedule = () => {
             )}
           </tbody>
         </ResponsiveTable>
+        </div>
 
      
 

@@ -3,6 +3,7 @@ import Attendee from "../models/Attendee.js";
 import Event from "../models/Event.js";
 import User from "../models/User.js";
 import Expo from "../models/Expo.js";
+import { generatePassCode } from "../utils/passCode.js";
 
 // protect middleware jis naam se bhi id rakhe, wahi utha lo
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
@@ -60,13 +61,18 @@ export const bookEvent = async (req, res) => {
     }
 
     const eventDoc = await Event.findOne({
-      _id: event,
-      status: "approved",
-    }).select("title location eventType images stalls");
+  _id: event,
+  status: "approved",
+}).select("title location eventType images price stalls exhibitor");
 
-    if (!eventDoc) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+if (!eventDoc) {
+  return res.status(404).json({ error: "Event not found" });
+}
+
+const exhibitorActive = await User.exists({ _id: eventDoc.exhibitor, status: "active" });
+if (!exhibitorActive) {
+  return res.status(404).json({ error: "Event not found" });
+}
 
     const parsedDate = new Date(eventDate);
 
@@ -128,6 +134,8 @@ export const bookEvent = async (req, res) => {
       });
     }
 
+    const totalAmount = (eventDoc.price ?? 0) + chosen.reduce((sum, s) => sum + (s.price ?? 0), 0);
+
     const attendee = await Attendee.create({
       user: userId,
       event: eventDoc._id,
@@ -141,6 +149,7 @@ export const bookEvent = async (req, res) => {
       contactName,
       stalls: chosen.map((s) => s._id),
       stallNumbers: chosen.map((s) => String(s.stallNumber)),
+      totalAmount,
       contactPhone: phone?.trim() || undefined,
       notes: message?.trim() || undefined,
       registrationEventKey: `event:${eventDoc._id}:${dateKey}`,
@@ -150,7 +159,7 @@ export const bookEvent = async (req, res) => {
     await attendee.populate(eventPopulate);
 
     return res.status(201).json({
-      msg: "Booking request sent to the organizer",
+      msg: "Booking request sent to the exhibitor",
       attendee,
     });
   } catch (error) {
@@ -320,6 +329,10 @@ export const approveBooking = async (req, res) => {
 
     const { booking } = found;
 
+    if (booking.passStatus === "scanned") {
+      return res.status(409).json({ error: "This pass has already been used." });
+    }
+
     if (booking.bookingStatus === "confirmed") {
       return res.status(409).json({
         error: "Booking is already approved",
@@ -336,10 +349,28 @@ export const approveBooking = async (req, res) => {
     booking.bookingStatus = "confirmed";
     booking.registrationStatus = "confirmed";
     booking.passStatus = "issued";
+    if (!booking.passCode) {
+      const passCode = await generatePassCode();
+      if (!passCode) {
+        return res.status(503).json({ error: "Could not generate entry pass. Please try again" });
+      }
+      booking.passCode = passCode;
+      booking.entryPassId = passCode;
+    } else if (!booking.entryPassId) {
+      booking.entryPassId = booking.passCode;
+    }
+    booking.checkedInAt = undefined;
     booking.decisionNote = "";
     booking.reviewedAt = new Date();
 
-    await booking.save();
+    try {
+      await booking.save();
+    } catch (error) {
+      if (error.code === 11000) {
+        return res.status(503).json({ error: "Entry pass clash, please try again" });
+      }
+      throw error;
+    }
     await booking.populate("user", "name email phone");
 
     return res.status(200).json({
@@ -370,6 +401,10 @@ export const rejectBooking = async (req, res) => {
     }
 
     const { booking } = found;
+
+    if (booking.passStatus === "scanned") {
+      return res.status(409).json({ error: "A checked-in booking cannot be rejected." });
+    }
 
     booking.bookingStatus = "cancelled";
     booking.registrationStatus = "cancelled";

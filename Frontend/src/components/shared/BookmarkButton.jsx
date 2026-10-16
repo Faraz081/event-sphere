@@ -4,9 +4,12 @@ import { toast } from "sonner";
 import { Bookmark } from "lucide-react";
 import { toggleBookmark, toggleExpoBookmark } from "@/store/slices/bookmarkSlice";
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 const BookmarkButton = ({ event, expo, className = "" }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,12 +45,7 @@ const BookmarkButton = ({ event, expo, className = "" }) => {
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      aria-label={saved ? "Remove bookmark" : "Add bookmark"}
-      className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur transition hover:scale-110 ${className}`}
-    >
+    <button type="button" onClick={handleClick} aria-label={saved ? "Remove bookmark" : "Add bookmark"} className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur transition hover:scale-110 ${className}`}>
       <Bookmark size={18} className="text-[#c49424]" fill={saved ? "currentColor" : "none"} />
     </button>
   );

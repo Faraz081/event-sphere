@@ -231,6 +231,67 @@ const AdminExhibitors = () => {
           </div>
         )}
 
+       <div className="space-y-3 md:hidden">
+  {loading ? (
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface py-10 text-muted">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+      <p className="text-sm">Loading applications...</p>
+    </div>
+  ) : applications.length === 0 ? (
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface py-10 text-center text-muted">
+      <Building2 className="opacity-40" size={32} />
+      <p className="px-4 text-sm">No applications found for this filter.</p>
+    </div>
+  ) : (
+    applications.map((a) => (
+      <div key={a._id} className="rounded-xl border border-border bg-surface p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate font-medium text-foreground">{a.companyName}</p>
+            <p className="truncate text-xs text-muted">{a.userId?.name}</p>
+          </div>
+          <span
+            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+              statusStyles[a.status] ?? statusStyles.pending
+            }`}
+          >
+            {a.status}
+          </span>
+        </div>
+
+        <div className="mt-3 space-y-1.5 text-xs text-muted">
+          <p className="flex items-center gap-2">
+            <Building2 size={12} className="shrink-0 text-gold" />
+            <span className="truncate">{expoTitle(a)}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <Mail size={12} className="shrink-0 text-gold" />
+            <span className="truncate">{a.email || a.userId?.email}</span>
+          </p>
+          {(a.phone || a.userId?.phone) && (
+            <p className="flex items-center gap-2">
+              <Phone size={12} className="shrink-0 text-gold" />
+              {a.phone || a.userId?.phone}
+            </p>
+          )}
+        </div>
+
+        <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+          <span className="text-xs text-muted">Applied {formatDate(a.createdAt)}</span>
+          <button
+            onClick={() => openReview(a)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gold/15 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/25 transition-colors"
+          >
+            <Eye size={14} />
+            Review
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
+       <div className="hidden md:block">
         <ResponsiveTable>
           <thead className="border-b border-border">
             <tr>
@@ -244,20 +305,25 @@ const AdminExhibitors = () => {
           </thead>
 
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-muted">
-                  Loading applications...
-                </td>
-              </tr>
-            ) : applications.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-muted">
-                  <Building2 className="mx-auto mb-2 opacity-40" size={32} />
-                  No applications found for this filter.
-                </td>
-              </tr>
-            ) : (
+           {loading ? (
+  <tr>
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+        <p className="text-sm">Loading applications...</p>
+      </div>
+    </td>
+  </tr>
+) : applications.length === 0 ? (
+  <tr>
+    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
+        <Building2 className="opacity-40" size={32} />
+        <p className="text-sm">No applications found for this filter.</p>
+      </div>
+    </td>
+  </tr>
+) : (
               applications.map((a) => (
                 <tr key={a._id} className="border-b border-border last:border-0 hover:bg-surface/50">
                   <td data-label="Company" className="px-6 py-4">
@@ -311,6 +377,7 @@ const AdminExhibitors = () => {
             )}
           </tbody>
         </ResponsiveTable>
+        </div>
 
         <AlertDialog open={!!selected} onOpenChange={(open) => !open && closeReview()}>
           <AlertDialogContent className="w-[calc(100%-2rem)] max-w-2xl border border-[#eadfc9] bg-[#f8f5ef] text-[#2f2a24] shadow-2xl shadow-black/20 p-0 overflow-hidden">

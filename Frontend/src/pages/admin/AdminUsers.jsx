@@ -39,7 +39,6 @@ import {
 
 const roleBadgeStyles = {
   admin: "bg-gold/20 text-gold border border-gold/40",
-  organizer: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
   attendee: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   exhibitor: "bg-emerald/20 text-emerald-300 border border-emerald/40",
 };
@@ -77,7 +76,6 @@ const AdminUsers = () => {
   const [stats, setStats] = useState({
     total: 0,
     admins: 0,
-    organizers: 0,
     attendees: 0,
     exhibitors: 0,
     active: 0,
@@ -225,7 +223,7 @@ const AdminUsers = () => {
       return;
     }
 
-    if (formData.password && formData.password.length < 6) {
+    if (!editingUserId && formData.password.length < 6) {
       toast.error("Password must be at least 6 characters.");
       return;
     }
@@ -241,9 +239,6 @@ const AdminUsers = () => {
           role: formData.role,
           status: formData.status,
         };
-        if (formData.password.trim()) {
-          payload.password = formData.password.trim();
-        }
         const res = await updateUser(editingUserId, payload);
         toast.success(res.msg || "User updated successfully.");
       } else {
@@ -352,7 +347,6 @@ const AdminUsers = () => {
                 className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
               >
                 <option value="all">All Roles</option>
-                <option value="organizer">Organizer</option>
                 <option value="attendee">Attendee</option>
                 <option value="exhibitor">Exhibitor</option>
               </select>
@@ -419,28 +413,110 @@ const AdminUsers = () => {
           )}
         </div>
 
-        <ResponsiveTable minWidth="100%">
+       <div className="space-y-3 md:hidden">
+  {loading ? (
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface py-10 text-muted">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+      <p className="text-sm">Loading users directory...</p>
+    </div>
+  ) : users.length === 0 ? (
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface py-10 text-center">
+      <AlertCircle size={32} className="text-muted/60" />
+      <p className="font-medium text-foreground">No users found</p>
+      <p className="px-4 text-xs text-muted">
+        {searchTerm || selectedRole !== "all" || selectedStatus !== "all"
+          ? "Try adjusting your search criteria or clearing filters."
+          : "No users exist in the platform yet."}
+      </p>
+    </div>
+  ) : (
+    users.map((item) => (
+      <div key={item._id} className="rounded-xl border border-border bg-surface p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-sm font-semibold text-gold">
+              {item.name ? item.name[0].toUpperCase() : "U"}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
+              {item.companyName && (
+                <p className="flex items-center gap-1 truncate text-xs text-muted">
+                  <Building2 size={12} className="shrink-0" />
+                  {item.companyName}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${roleBadgeStyles[item.role] || "bg-muted/20 text-muted"}`}>
+              {item.role}
+            </span>
+            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusBadgeStyles[item.status] || "bg-muted/20 text-muted"}`}>
+              {item.status || "active"}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 space-y-1 font-mono text-xs text-muted">
+          <p className="flex items-center gap-2 truncate">
+            <Mail size={12} className="shrink-0 text-gold" />
+            {item.email}
+          </p>
+          <div className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Phone size={12} className="shrink-0 text-gold" />
+              {item.phone || "—"}
+            </span>
+            <span className="flex items-center gap-2">
+              <Calendar size={12} className="shrink-0 text-gold" />
+              {formatDate(item.createdAt)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
+          <button type="button" onClick={() => handleOpenViewModal(item)} title="View User Details"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-foreground">
+            <Eye size={15} />
+          </button>
+          <button type="button" onClick={() => handleOpenEditModal(item)} title="Edit User"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold">
+            <Edit2 size={15} />
+          </button>
+          <button type="button" onClick={() => setUserToDelete(item)} title="Delete User"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400">
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
+        <div className="hidden md:block [&_table]:table-fixed">
+        <ResponsiveTable minWidth="0">
           <thead className="border-b border-border bg-surface/50">
             <tr>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th style={{ width: "18%" }} className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
                 User
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th style={{ width: "20%" }} className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
                 Email
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th style={{ width: "12%" }} className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
                 Phone
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th style={{ width: "9%" }} className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
                 Role
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th style={{ width: "11%" }} className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th style={{ width: "15%" }} className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider whitespace-nowrap">
                 Registered Date
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider text-right">
+              <th style={{ width: "15%" }} className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider text-right whitespace-nowrap">
                 Actions
               </th>
             </tr>
@@ -448,7 +524,7 @@ const AdminUsers = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-muted">
+                <td colSpan={7} className="px-2 py-12 text-center text-muted">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
                     <p className="text-sm">Loading users directory...</p>
@@ -457,7 +533,7 @@ const AdminUsers = () => {
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-muted">
+                <td colSpan={7} className="px-2 py-12 text-center text-muted">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <AlertCircle size={32} className="text-muted/60" />
                     <p className="font-medium text-foreground">No users found</p>
@@ -475,7 +551,7 @@ const AdminUsers = () => {
                   key={item._id}
                   className="border-b border-border hover:bg-surface/60 transition-colors last:border-0"
                 >
-                  <td data-label="User" className="px-6 py-4">
+                  <td data-label="User" className="px-2 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-gold font-semibold text-sm">
                         {item.name ? item.name[0].toUpperCase() : "U"}
@@ -491,13 +567,13 @@ const AdminUsers = () => {
                       </div>
                     </div>
                   </td>
-                  <td data-label="Email" className="px-6 py-4 text-sm text-muted font-mono truncate">
+                  <td data-label="Email" className="px-2 py-3 text-sm text-muted font-mono truncate">
                     {item.email}
                   </td>
-                  <td data-label="Phone" className="px-6 py-4 text-sm text-muted font-mono">
+                  <td data-label="Phone" className="px-2 py-3 text-sm text-muted font-mono whitespace-nowrap">
                     {item.phone || "—"}
                   </td>
-                  <td data-label="Role" className="px-6 py-4">
+                  <td data-label="Role" className="px-2 py-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
                         roleBadgeStyles[item.role] || "bg-muted/20 text-muted"
@@ -506,7 +582,7 @@ const AdminUsers = () => {
                       {item.role}
                     </span>
                   </td>
-                  <td data-label="Status" className="px-6 py-4">
+                  <td data-label="Status" className="px-2 py-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
                         statusBadgeStyles[item.status] || "bg-muted/20 text-muted"
@@ -515,11 +591,11 @@ const AdminUsers = () => {
                       {item.status || "active"}
                     </span>
                   </td>
-                  <td data-label="Registered" className="px-6 py-4 text-sm text-muted font-mono">
+                  <td data-label="Registered" className="px-2 py-3 text-sm text-muted font-mono whitespace-nowrap">
                     {formatDate(item.createdAt)}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-2 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
                       <button
                         type="button"
                         onClick={() => handleOpenViewModal(item)}
@@ -551,6 +627,7 @@ const AdminUsers = () => {
             )}
           </tbody>
         </ResponsiveTable>
+        </div>
 
         {isViewModalOpen && userToView && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">
@@ -748,7 +825,6 @@ const AdminUsers = () => {
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
                     >
-                      <option value="organizer">Organizer</option>
                       <option value="attendee">Attendee</option>
                       <option value="exhibitor">Exhibitor</option>
                     </select>
@@ -769,27 +845,21 @@ const AdminUsers = () => {
                     </select>
                   </div>
                 </div>
-                <div>
+                {!editingUserId && <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
-                    {editingUserId
-                      ? "Password (Leave blank to keep unchanged)"
-                      : "Password (Min. 6 characters) *"}
+                    Password (Min. 6 characters) *
                   </label>
                   <input
                     name="password"
                     type="password"
-                    required={!editingUserId}
-                    minLength={editingUserId ? undefined : 6}
+                    required
+                    minLength={6}
                     value={formData.password}
                     onChange={handleInputChange}
-                    placeholder={
-                      editingUserId
-                        ? "Enter new password only if changing"
-                        : "Create a secure password"
-                    }
+                    placeholder="Create a secure password"
                     className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
                   />
-                </div>
+                </div>}
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
                   <button
                     type="button"

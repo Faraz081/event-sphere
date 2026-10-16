@@ -2,7 +2,6 @@ import { LayoutDashboard, CalendarDays, Store, ClipboardList, User, Users, UserC
 
 export const roleLabels = {
   admin: "Admin",
-  organizer: "Organizer",
   attendee: "Attendee",
   exhibitor: "Exhibitor",
 };

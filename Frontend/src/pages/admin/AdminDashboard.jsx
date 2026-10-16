@@ -184,14 +184,19 @@ const AdminDashboard = () => {
             </p>
             <p className="text-xs text-muted mt-1">Manage expos →</p>
           </Link>
-          <Link
-            to="/admin#dashboard-analytics"
+          <button
+            type="button"
+            onClick={() =>
+              document
+                .getElementById("dashboard-analytics")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
             className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
           >
             <p className="text-sm text-muted">Analytics charts</p>
             <p className="text-2xl font-semibold text-foreground mt-1">View</p>
             <p className="text-xs text-muted mt-1">Charts & reports →</p>
-          </Link>
+          </button>
         </div>
 
         <div id="dashboard-analytics" className="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-6">
