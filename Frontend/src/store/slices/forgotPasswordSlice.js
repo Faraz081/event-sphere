@@ -1,10 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api/api";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const sendResetOtp = createAsyncThunk(
   "forgotPassword/sendResetOtp",
   async (email, { rejectWithValue }) => {
@@ -19,10 +15,6 @@ export const sendResetOtp = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const verifyResetOtp = createAsyncThunk(
   "forgotPassword/verifyResetOtp",
   async ({ email, otp }, { rejectWithValue }) => {
@@ -37,10 +29,6 @@ export const verifyResetOtp = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const resetPassword = createAsyncThunk(
   "forgotPassword/resetPassword",
   async ({ email, otp, newPassword }, { rejectWithValue }) => {
@@ -91,7 +79,7 @@ const forgotPasswordSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      
+      // SEND OTP
       .addCase(sendResetOtp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -105,7 +93,7 @@ const forgotPasswordSlice = createSlice({
         state.error = action.payload;
       })
 
-     
+      // VERIFY OTP
       .addCase(verifyResetOtp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -119,7 +107,7 @@ const forgotPasswordSlice = createSlice({
         state.error = action.payload;
       })
 
-      
+      // RESET PASSWORD
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;

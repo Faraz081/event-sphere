@@ -14,10 +14,6 @@ export const fetchExpos = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const fetchAvailableBooths = createAsyncThunk(
   "booth/fetchAvailableBooths",
   async (expoId, { rejectWithValue }) => {
@@ -30,10 +26,6 @@ export const fetchAvailableBooths = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const reserveBooth = createAsyncThunk(
   "booth/reserveBooth",
   async (boothId, { rejectWithValue }) => {
@@ -46,10 +38,6 @@ export const reserveBooth = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const fetchMyBooth = createAsyncThunk(
   "booth/fetchMyBooth",
   async (_, { rejectWithValue }) => {
@@ -62,10 +50,6 @@ export const fetchMyBooth = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const releaseBooth = createAsyncThunk(
   "booth/releaseBooth",
   async (boothId, { rejectWithValue }) => {
@@ -102,15 +86,8 @@ const boothSlice = createSlice({
   reducers: {},
 
   extraReducers: (builder) => {
-<<<<<<< HEAD
-
-    builder
-
-    
-=======
    builder
       // FETCH EXPOS
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
       .addCase(fetchExpos.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -125,8 +102,7 @@ const boothSlice = createSlice({
         state.error = action.payload;
       })
 
-     
-
+      // FETCH AVAILABLE BOOTHS
       .addCase(fetchAvailableBooths.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -141,7 +117,7 @@ const boothSlice = createSlice({
         state.error = action.payload;
       })
 
-   
+      // RESERVE BOOTH
       .addCase(reserveBooth.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -158,8 +134,7 @@ const boothSlice = createSlice({
         state.error = action.payload;
       })
 
-        
-
+        // FETCH MY BOOTH
       .addCase(fetchMyBooth.fulfilled, (state, action) => {
         state.myBooths = action.payload.booths ?? [action.payload.booth].filter(Boolean);
         state.myBooth = state.myBooths[0] ?? null;
@@ -169,8 +144,7 @@ const boothSlice = createSlice({
         state.myBooths = [];
       })
 
-       
-      
+        // RELEASE BOOTH
       .addCase(releaseBooth.fulfilled, (state, action) => {
         state.myBooths = state.myBooths.filter((booth) => booth._id !== action.payload.booth._id);
         state.myBooth = state.myBooths[0] ?? null;

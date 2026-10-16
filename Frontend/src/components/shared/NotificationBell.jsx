@@ -38,10 +38,6 @@ const NotificationBell = () => {
 
   const isAttendee = user?.role === "attendee";
 
-<<<<<<< HEAD
- 
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     if (!isAttendee) return;
 
@@ -60,11 +56,6 @@ const NotificationBell = () => {
     };
   }, [dispatch, isAttendee]);
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     if (!loaded) return;
 
@@ -90,11 +81,6 @@ const NotificationBell = () => {
     seenRef.current = keys;
   }, [items, loaded, dispatch, navigate]);
 
-<<<<<<< HEAD
-  
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     if (!isAttendee) return;
 
@@ -106,11 +92,6 @@ const NotificationBell = () => {
     };
   }, [unreadCount, isAttendee]);
 
-<<<<<<< HEAD
- 
-  
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   useEffect(() => {
     const handler = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);

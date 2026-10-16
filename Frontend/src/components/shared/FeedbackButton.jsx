@@ -3,11 +3,6 @@ import { MessageSquareText } from 'lucide-react'
 
 const FeedbackButton = () => {
   const { pathname } = useLocation()
-<<<<<<< HEAD
-
-  
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   if (
     pathname === '/login' ||
     pathname === '/signup' ||

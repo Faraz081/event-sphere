@@ -8,11 +8,7 @@ import { fetchUnreadCounts } from '@/store/slices/messageSlice'
 import { clearNotifications } from '@/store/slices/notificationSlice'
 import { clearBookmarks } from '@/store/slices/bookmarkSlice'
 import NotificationBell from '@/components/shared/NotificationBell'
-<<<<<<< HEAD
-import LogoImg from '@/assets/Logo.jpg' 
-=======
 import websiteDefaults from '@/data/websiteDefaults'
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -65,13 +61,6 @@ const Navbar = () => {
   const logo = settings?.logo?.trim() || websiteDefaults.logo
 
   const renderLogo = () => {
-<<<<<<< HEAD
-   
-
-    const imageSource = logo || LogoImg
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
     return (
       <img
         src={logo}
@@ -126,7 +115,7 @@ const Navbar = () => {
     <nav className="fixed inset-x-0 top-6 z-50 mx-auto max-w-7xl px-4 font-bold sm:px-6">
       <div className="flex h-16 items-center justify-between rounded-full border border-white/80 bg-white/20 px-6 shadow-[0_8px_32px_0_rgba(196,148,36,0.15)] backdrop-blur-2xl transition-all duration-300 md:px-8">
 
-       
+        {/* Logo */}
         <Link
           to="/"
           className="inline-flex min-w-0 shrink items-center font-serif text-2xl font-medium tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] transition-opacity hover:opacity-80"
@@ -135,8 +124,7 @@ const Navbar = () => {
           {websiteName}
         </Link>
 
-     
-
+        {/* Desktop Navigation */}
         <div className="hidden items-center gap-7 lg:flex whitespace-nowrap">
 
           <button
@@ -235,7 +223,7 @@ const Navbar = () => {
 
         </div>
 
-     
+        {/* Right side: Dashboard (admin/exhibitor), Notifications (attendee), Mobile menu */}
         <div className="flex items-center gap-3">
 
           {user && !isAttendee && (
@@ -259,7 +247,7 @@ const Navbar = () => {
         </div>
       </div>
 
-     
+      {/* Mobile Navigation */}
       {menuOpen && (
         <div className="absolute inset-x-4 top-20 rounded-3xl border border-white/80 bg-white/30 p-6 shadow-[0_16px_48px_0_rgba(196,148,36,0.2)] backdrop-blur-3xl lg:hidden">
           <div className="flex flex-col gap-4 text-center">
@@ -377,8 +365,7 @@ const Navbar = () => {
                 </>
               )}
 
-              
-              
+              {/* Dashboard */}
               {user && !isAttendee && (
                 <Link
                   to="/dashboard"

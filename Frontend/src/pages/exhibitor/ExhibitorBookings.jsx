@@ -31,11 +31,6 @@ const FILTERS = [
   { key: "rejected", label: "Rejected" },
 ];
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 const groupOf = (status) =>
   status === "confirmed" || status === "approved" ? "approved" : status === "cancelled" || status === "rejected"
     ? "rejected" : "pending";

@@ -90,10 +90,6 @@ export const rejectEvent = createAsyncThunk("event/rejectEvent", async ({id, rea
   }
 });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const fetchBookingRequests = createAsyncThunk("event/fetchBookingRequests", async (_, {rejectWithValue}) => {
   try {
     const data = await api.get("/api/attendee-portal/requests");

@@ -1,10 +1,6 @@
 import api from "@/api/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData, { rejectWithValue }) => {
@@ -19,10 +15,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
@@ -64,7 +56,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-    
+      // LOGIN 
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -90,7 +82,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-     
+      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;

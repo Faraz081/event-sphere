@@ -29,11 +29,6 @@ const ExhibitorBooth = () => {
     dispatch(fetchMyBooth());
   }, [dispatch]);
 
-<<<<<<< HEAD
-  
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   const loadPlan = async (expoId) => {
     try {
       const data = await fetchPublicBooths(expoId);
@@ -115,14 +110,6 @@ const ExhibitorBooth = () => {
     }
   };
 
-<<<<<<< HEAD
-  
-  const mineIds = myBooths.map((b) => b._id);
-  const alreadyInExpo = myBooths.some((b) => (b.expo?._id || b.expo) === selectedExpo);
-  const picked =
-    booths.find((b) => b._id === pickedId) ||
-    planBooths.find((b) => b._id === pickedId);
-=======
   const activeBooths = myBooths.filter((b) => !getExpoEndedLabel(b.expo));
   const pastBooths = myBooths.filter((b) => getExpoEndedLabel(b.expo));
   const mineIds = activeBooths.map((b) => b._id);
@@ -185,7 +172,6 @@ const ExhibitorBooth = () => {
       </div>
     );
   };
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 
   return (
     <DashboardLayout role="exhibitor">

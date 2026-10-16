@@ -4,12 +4,6 @@ import { toast } from "sonner";
 import { Bookmark } from "lucide-react";
 import { toggleBookmark, toggleExpoBookmark } from "@/store/slices/bookmarkSlice";
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 const BookmarkButton = ({ event, expo, className = "" }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();

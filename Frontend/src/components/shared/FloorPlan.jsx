@@ -26,11 +26,6 @@ const LABELS = {
 
 const FloorPlan = ({ booths = [], onSelect, selectedId, mineIds = [], variant = "dashboard" }) => {
   const s = STYLES[variant] ?? STYLES.dashboard;
-<<<<<<< HEAD
-
-  
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
   const sorted = [...booths].sort((a, b) =>
     String(a.boothNumber).localeCompare(String(b.boothNumber), undefined, { numeric: true })
   );
@@ -43,11 +38,6 @@ const FloorPlan = ({ booths = [], onSelect, selectedId, mineIds = [], variant = 
 
   return (
     <div>
-<<<<<<< HEAD
-     
-
-=======
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
       <div className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
         {Object.keys(LABELS).map((key) => (
           <span key={key} className="flex items-center gap-2">
@@ -57,8 +47,7 @@ const FloorPlan = ({ booths = [], onSelect, selectedId, mineIds = [], variant = 
         ))}
       </div>
 
-     
-     
+      {/* Hall */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {sorted.map((b) => {
           const selectable = !!onSelect && b.status === "available";

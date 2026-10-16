@@ -132,17 +132,6 @@ const OngoingEvents = () => {
           </p>
         )}
 
-<<<<<<< HEAD
-      
-      
-        {!loading && filteredExpos.length > 0 && (
-          <>
-            <h3 className="mb-5 font-serif text-xl font-bold text-[#2f2a24]">Expos</h3>
-            <div className="grid gap-7 md:grid-cols-2">
-              {filteredExpos.map((expo) => {
-                const badge = getBadge(expo.date)
-                const time = formatTime(expo.date)
-=======
         {/* ---------- EVENTS ---------- */}
         {!loading && filteredEvents.length > 0 && (
           <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
@@ -159,7 +148,6 @@ const OngoingEvents = () => {
                   />
                   <BookmarkButton event={ev} className="absolute right-4 top-4" />
                 </div>
->>>>>>> e8d842d207d4eea1f459d4aa58cbb90136a6856b
 
                 <div className="p-7 text-center">
                   <h3 className="font-serif text-2xl font-bold text-[#c49424]">
