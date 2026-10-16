@@ -90,7 +90,7 @@ const Navbar = () => {
           )}
         </Link>
 
-        <div className="hidden items-center gap-6 lg:flex whitespace-nowrap">
+        <div className="hidden items-center gap-8 xl:flex whitespace-nowrap">
           <button
             onClick={goHome}
             className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
@@ -109,7 +109,7 @@ const Navbar = () => {
             onClick={() => scrollToSection('expos')}
             className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
-            Expo
+            Expos
           </button>
 
           <button
@@ -207,7 +207,7 @@ const Navbar = () => {
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#c49424]/20 bg-white/60 text-[#b48620] shadow-sm transition hover:bg-white lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#c49424]/20 bg-white/60 text-[#b48620] shadow-sm transition hover:bg-white xl:hidden"
             aria-label="Toggle menu"
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -216,8 +216,8 @@ const Navbar = () => {
       </div>
 
       {menuOpen && (
-        <div className="absolute inset-x-4 top-[72px] sm:top-24 rounded-3xl border border-white/80 bg-white/40 p-6 shadow-[0_16px_48px_0_rgba(196,148,36,0.2)] backdrop-blur-3xl lg:hidden">
-          <div className="flex flex-col gap-4 text-center">
+        <div className="absolute inset-x-4 top-[72px] sm:top-24 rounded-3xl border border-white/80 bg-white/40 p-6 shadow-[0_16px_48px_0_rgba(196,148,36,0.2)] backdrop-blur-3xl xl:hidden">
+          <div className="flex flex-col gap-8 text-center">
             <button
               onClick={goHome}
               className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
@@ -236,7 +236,7 @@ const Navbar = () => {
               onClick={() => scrollToSection('expos')}
               className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
-              Expo
+              Expos
             </button>
 
             <button
