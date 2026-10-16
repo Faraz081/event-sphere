@@ -33,6 +33,7 @@ const NewPassword = lazy(() => import("./pages/auth/NewPassword"));
 import { DashboardRedirect, RequireAuth, RequireRole, PublicOnlyRoute } from "./components/shared/RouteGuards";
 import { Toaster } from "sonner";
 import { useSelector } from "react-redux";
+import ExhibitorRegistrationForm from "./pages/exhibitor/ExhibitorRegistrationForm";
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const ExhibitorEvents = lazy(() => import("./pages/exhibitor/ExhibitorEvents"));
 const ExpoDetail = lazy(() => import("./pages/attendee/ExpoDetail"));
@@ -123,6 +124,7 @@ function App() {
           <Route element={<RequireRole allowedRoles={["exhibitor"]} />}>
             <Route path="/exhibitor" element={<ExhibitorPortal />} />
             <Route path="/exhibitor/registration" element={<ExhibitorRegistration />} />
+            <Route path="/exhibitor/registration/new" element={<ExhibitorRegistrationForm />} />
             <Route path="/exhibitor/booth" element={<ExhibitorBooth />} />
             <Route path="/exhibitor/messages" element={<ExhibitorMessages />} />
             <Route path="/exhibitor/profile" element={<ExhibitorProfile />} />
