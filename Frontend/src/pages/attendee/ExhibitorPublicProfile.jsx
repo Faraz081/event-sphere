@@ -70,8 +70,6 @@ const ExhibitorPublicProfile = () => {
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
 
-      
-
         <section className="relative mt-6 rounded-[2rem] border border-[#eadfca] bg-white p-8 shadow-sm sm:p-10">
 
           {showMessageButton && (
@@ -113,8 +111,6 @@ const ExhibitorPublicProfile = () => {
           )}
         </section>
 
-      
-      
         <section className="mt-16">
           <h2 className="font-serif text-3xl font-bold text-neutral-900">
             Events by <span className="text-[#c49424]">{exhibitor.companyName}</span>

@@ -137,8 +137,6 @@ const ContactUs = () => {
 
           </div>
 
-          
-          
           <div className="rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm">
 
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d9]">

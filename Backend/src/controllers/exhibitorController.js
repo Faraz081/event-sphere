@@ -3,7 +3,6 @@ import Booth from "../models/Booth.js";
 import ExhibitorApplication from "../models/ExhibitorApplication.js";
 import mongoose from "mongoose";
 
-// GET all exhibitors (with filter)
 export const getExhibitors = async (req, res) => {
   try {
     const { exhibitorStatus, search } = req.query;
@@ -39,7 +38,6 @@ export const getExhibitors = async (req, res) => {
   }
 };
 
-// APPROVE exhibitor (old account-level flow)
 export const approveExhibitor = async (req, res) => {
   try {
     const { id } = req.params;
@@ -68,7 +66,6 @@ export const approveExhibitor = async (req, res) => {
   }
 };
 
-// REJECT exhibitor (old account-level flow)
 export const rejectExhibitor = async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,7 +99,6 @@ export const rejectExhibitor = async (req, res) => {
   }
 };
 
-// GET all applications (admin) — filters: status, expo, search
 export const getApplications = async (req, res) => {
   try {
     const { status, expo, search } = req.query;
@@ -127,7 +123,6 @@ export const getApplications = async (req, res) => {
   }
 };
 
-// APPROVE application
 export const approveApplication = async (req, res) => {
   try {
     const { id } = req.params;
@@ -149,7 +144,6 @@ export const approveApplication = async (req, res) => {
   }
 };
 
-// REJECT application (adminNote required)
 export const rejectApplication = async (req, res) => {
   try {
     const { id } = req.params;

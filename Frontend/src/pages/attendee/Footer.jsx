@@ -93,8 +93,6 @@ const Footer = () => {
 
         <div className="grid gap-12 border-b border-white/10 pb-16 md:grid-cols-2 lg:grid-cols-12">
 
-          
-          
           <div className="lg:col-span-4">
 
             <Link

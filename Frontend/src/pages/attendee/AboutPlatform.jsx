@@ -221,9 +221,6 @@ export default function AboutPlatform() {
         </div>
       </section>
 
-
-      
-     
       <section className="mx-auto max-w-7xl w-full py-12">
         <div className="text-center mb-12">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
@@ -409,8 +406,6 @@ export default function AboutPlatform() {
         </div>
       </section>
 
-      
-      
       <section className="bg-[#f8f5ef] px-6 py-20 lg:px-10">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">

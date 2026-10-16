@@ -87,7 +87,6 @@ const boothSlice = createSlice({
 
   extraReducers: (builder) => {
    builder
-      // FETCH EXPOS
       .addCase(fetchExpos.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -102,7 +101,6 @@ const boothSlice = createSlice({
         state.error = action.payload;
       })
 
-      // FETCH AVAILABLE BOOTHS
       .addCase(fetchAvailableBooths.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -117,7 +115,6 @@ const boothSlice = createSlice({
         state.error = action.payload;
       })
 
-      // RESERVE BOOTH
       .addCase(reserveBooth.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -134,7 +131,6 @@ const boothSlice = createSlice({
         state.error = action.payload;
       })
 
-        // FETCH MY BOOTH
       .addCase(fetchMyBooth.fulfilled, (state, action) => {
         state.myBooths = action.payload.booths ?? [action.payload.booth].filter(Boolean);
         state.myBooth = state.myBooths[0] ?? null;
@@ -144,7 +140,6 @@ const boothSlice = createSlice({
         state.myBooths = [];
       })
 
-        // RELEASE BOOTH
       .addCase(releaseBooth.fulfilled, (state, action) => {
         state.myBooths = state.myBooths.filter((booth) => booth._id !== action.payload.booth._id);
         state.myBooth = state.myBooths[0] ?? null;
@@ -155,7 +150,6 @@ const boothSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // UPDATE BOOTH
       .addCase(updateBoothDetails.fulfilled, (state, action) => {
         state.myBooths = state.myBooths.map((booth) => booth._id === action.payload.booth._id ? action.payload.booth : booth);
         state.myBooth = state.myBooths[0] ?? null;

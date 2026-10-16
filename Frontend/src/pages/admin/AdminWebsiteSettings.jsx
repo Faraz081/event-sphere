@@ -431,8 +431,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-     
-
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -515,8 +513,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
- 
-
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -578,8 +574,6 @@ const AdminWebsiteSettings = () => {
               </div>
             </div>
           </section>
-
-   
 
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
@@ -674,8 +668,6 @@ const AdminWebsiteSettings = () => {
               </div>
             </div>
           </section>
-
-   
 
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
@@ -791,8 +783,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-    
-
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-foreground">
@@ -847,8 +837,6 @@ const AdminWebsiteSettings = () => {
             </div>
           </section>
 
-       
-       
           <div className="flex justify-end">
             <button
               type="submit"

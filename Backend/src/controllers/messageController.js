@@ -6,7 +6,6 @@ import Notification from "../models/Notification.js";
 
 const CHAT_ROLES = ["admin", "exhibitor", "attendee"];
 
-// protect middleware jis naam se bhi id rakhe, wahi utha lo
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
 
 const canMessage = (senderRole, receiverRole) => {
@@ -53,7 +52,6 @@ const sendMessage = async (req, res) => {
 
     const message = await Message.create({ sender, receiver, content: content.trim() });
 
-    // sirf attendee ko notification, har sender ki ek hi (naya message aaye to wahi update hoti hai)
     if (receiverUser.role === "attendee") {
       await notify(receiverUser._id, {
         type: "message",
@@ -209,7 +207,6 @@ const markAsRead = async (req, res) => {
 
     await Message.updateMany({ sender: userId, receiver: me, read: false }, { read: true });
 
-    // is sender ki message notification bhi read ho jaye
     await Notification.updateOne({ user: me, dedupeKey: `message:${userId}` }, { isRead: true });
 
     return res.status(200).json({ msg: "Messages marked as read" });

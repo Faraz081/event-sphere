@@ -68,8 +68,6 @@ const Service = () => {
     <main className="min-h-screen bg-[#fffdf9] px-4 py-20 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl">
 
-  
-
         <section className="pt-10">
           <div className="grid items-center gap-12 lg:grid-cols-2">
 
@@ -116,8 +114,6 @@ const Service = () => {
 
           </div>
         </section>
-
-   
 
         <section className="mt-24 pb-20">
 
@@ -284,8 +280,6 @@ const Service = () => {
             </div>
           )}
 
-          
-          
           <div className="mx-auto mt-16 max-w-xl rounded-3xl border border-[#eadfca] bg-white p-7 text-center shadow-sm">
             <h3 className="font-serif text-2xl font-bold text-neutral-900">
               Feedback & Support

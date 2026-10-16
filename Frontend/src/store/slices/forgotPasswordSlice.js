@@ -79,7 +79,6 @@ const forgotPasswordSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // SEND OTP
       .addCase(sendResetOtp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -93,7 +92,6 @@ const forgotPasswordSlice = createSlice({
         state.error = action.payload;
       })
 
-      // VERIFY OTP
       .addCase(verifyResetOtp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -107,7 +105,6 @@ const forgotPasswordSlice = createSlice({
         state.error = action.payload;
       })
 
-      // RESET PASSWORD
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;

@@ -46,7 +46,6 @@ export default function BookNow() {
     fetchEvents()
   }, [])
 
-  // name aur phone account se prefill hote hain, lekin user badal sakta hai
   useEffect(() => {
     if (!user) return
     setFormData((prev) => ({

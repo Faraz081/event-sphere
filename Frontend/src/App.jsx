@@ -63,10 +63,8 @@ function App() {
         }}
       />
 
-       
-
       <Routes>
-        {/* PUBLIC WEBSITE */}
+        
         <Route path="/" element={<WebsiteLayout />}>
           <Route index element={<Home />} />
           <Route path="event-gallery" element={<EventGallery />} />
@@ -93,11 +91,11 @@ function App() {
          <Route path="/verify-otp" element={email ? <VerifyOtp /> : <Navigate to="/forgot-password" replace />} />
          <Route path="/new-password" element={ email && otp ? (<NewPassword />) : email ? (<Navigate to="/verify-otp" replace />) : (<Navigate to="/forgot-password" replace />)}/>
         </Route>
-        {/* PROTECTED ROUTES */}
+        
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<DashboardRedirect />} />
 
-          {/* ADMIN */}
+          
           <Route element={<RequireRole allowedRoles={["admin"]} />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUsers />} />
@@ -113,7 +111,7 @@ function App() {
             <Route path="/admin/events" element={<AdminEvents />} />
           </Route>
 
-          {/* EXHIBITOR */}
+          
           <Route element={<RequireRole allowedRoles={["exhibitor"]} />}>
             <Route path="/exhibitor" element={<ExhibitorPortal />} />
             <Route path="/exhibitor/registration" element={<ExhibitorRegistration />} />

@@ -8,7 +8,6 @@ const ACTIVE = ["pending", "reserved", "occupied"];
 
 const isApprovedFor = (userId, expo) => ExhibitorApplication.exists({ userId, expo, status: "approved" });
 
-// GET /available?expo=ID
 export const getAvailableBooths = async (req, res) => {
   try {
     const { expo } = req.query;
@@ -17,7 +16,6 @@ export const getAvailableBooths = async (req, res) => {
       return res.status(403).json({ error: "Your application for this expo is not approved yet" });
     }
 
-    // Closed expo (draft / completed / cancelled / date passed): nothing to reserve
     const expoDoc = await Expo.findById(expo).select("status date");
     if (!isExpoOpenForExhibitors(expoDoc)) {
       return res.status(200).json({ booths: [] });
@@ -30,7 +28,6 @@ export const getAvailableBooths = async (req, res) => {
   }
 };
 
-// GET /mine  (status + date populate zaroori hain, frontend Active/Past split inhi se karta hai)
 export const getMyBooth = async (req, res) => {
   try {
     const booths = await Booth.find({ exhibitor: req.user._id, status: { $in: ACTIVE } })
@@ -41,7 +38,6 @@ export const getMyBooth = async (req, res) => {
   }
 };
 
-// PUT /:id/reserve
 export const reserveBooth = async (req, res) => {
   try {
     const { id } = req.params;
@@ -77,7 +73,6 @@ export const reserveBooth = async (req, res) => {
   }
 };
 
-// PUT /:id/release  (reserved booth chhodna ya pending request cancel karna)
 export const releaseBooth = async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,7 +95,6 @@ export const releaseBooth = async (req, res) => {
   }
 };
 
-// PUT /:id/details  (sirf admin-approved booth ke liye)
 export const updateBoothDetails = async (req, res) => {
   try {
     const { id } = req.params;

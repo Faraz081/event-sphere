@@ -1,8 +1,5 @@
 import api from "./api";
 
-
-
-
 export const fetchAttendees = async (params = {}) => {
   const response = await api.get("/api/attendees", { params });
   return response.data;

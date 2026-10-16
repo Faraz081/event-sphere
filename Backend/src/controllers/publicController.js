@@ -19,7 +19,6 @@ const findPublishedExpo = async (id) => {
   return Expo.findOne({ _id: id, status: { $in: ["published", "ongoing"] } }).select(PUBLIC_EXPO_FIELDS);
 };
 
-// GET /api/public/expos
 
 export const getPublicExpos = async (req, res) => {
   try {
@@ -51,7 +50,6 @@ export const getPublicExpos = async (req, res) => {
   }
 };
 
-// GET /api/public/expos/:id  (expo + schedule)
 
 export const getPublicExpo = async (req, res) => {
   try {
@@ -69,7 +67,6 @@ export const getPublicExpo = async (req, res) => {
   }
 };
 
-// GET /api/public/expos/:id/exhibitors?search=
 
 export const getPublicExhibitors = async (req, res) => {
   try {
@@ -116,7 +113,6 @@ export const getPublicExhibitors = async (req, res) => {
   }
 };
 
-// GET /api/public/expos/:id/booths  (floor plan)
 
 export const getPublicBooths = async (req, res) => {
   try {
@@ -187,7 +183,6 @@ const events = allEvents.filter((e) => e.exhibitor);
   }
 };
 
-// GET /api/public/exhibitors/:id  (exhibitor company details + approved events)
 
 export const getPublicExhibitorProfile = async (req, res) => {
   try {
@@ -221,7 +216,6 @@ export const getPublicExhibitorProfile = async (req, res) => {
   }
 };
 
-// GET /api/public/events/:id/stalls?date=YYYY-MM-DD  (stalls + date booked hai ya nahi)
 
 export const getPublicEventStalls = async (req, res) => {
   try {

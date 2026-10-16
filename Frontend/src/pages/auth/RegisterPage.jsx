@@ -40,12 +40,8 @@ const labelClass = "mb-2 block text-sm font-semibold text-[#2f2a24]";
 const countLetters = (str) => (str.match(/\p{L}/gu) || []).length;
 const lettersOnly = /^[\p{L}\s]+$/u;
 
-
-
 const emailRegex =
   /^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
-
-
 
 const phoneRegex = /^(\+92|0)(3\d{9}|21\d{8})$/;
 
@@ -58,8 +54,6 @@ const RegisterPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-
-
     if (name === "phone") {
       let cleaned = value.replace(/[^\d+]/g, "");
       const hasPlus = cleaned.startsWith("+");
@@ -69,8 +63,6 @@ const RegisterPage = () => {
       setFormData((prev) => ({ ...prev, phone: cleaned }));
       return;
     }
-
-   
 
     if (name === "name" || name === "companyName") {
       setFormData((prev) => ({
@@ -164,7 +156,7 @@ const RegisterPage = () => {
     >
       <div className="grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#eadfca] bg-white shadow-xl lg:grid-cols-2">
 
-        {/* Left Side - Branding */}
+        
         <div className="relative hidden overflow-hidden bg-[#f8f5ef] p-12 lg:flex lg:flex-col lg:justify-center">
           <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#c49424]/10" />
           <div className="absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-[#c49424]/10" />
@@ -280,8 +272,6 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-     
-
               <div>
                 <label htmlFor="email" className={labelClass}>
                   Email Address
@@ -301,8 +291,6 @@ const RegisterPage = () => {
                   />
                 </div>
               </div>
-
-            
 
               <div>
                 <label className={labelClass}>Role</label>
@@ -324,8 +312,6 @@ const RegisterPage = () => {
                 </Select>
               </div>
 
-         
-
               <div>
                 <label htmlFor="password" className={labelClass}>
                   Password
@@ -346,8 +332,6 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-           
-
               <div>
                 <label htmlFor="confirmPassword" className={labelClass}>
                   Confirm Password
@@ -367,8 +351,6 @@ const RegisterPage = () => {
                   />
                 </div>
               </div>
-
-         
 
               <div className="md:col-span-2">
                 <label htmlFor="phone" className={labelClass}>

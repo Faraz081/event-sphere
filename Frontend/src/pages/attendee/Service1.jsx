@@ -108,8 +108,6 @@ const Service1 = () => {
           </div>
         </section>
 
-       
-       
         <section className="mt-24 pb-20">
 
           <div className="mb-14 text-center">

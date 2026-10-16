@@ -75,7 +75,6 @@ const applyForExpo = async (req, res) => {
   }
 };
 
-// all applications of the logged-in exhibitor
 const getMyApplications = async (req, res) => {
   try {
     const applications = await ExhibitorApplication.find({ userId: req.user._id })
@@ -88,7 +87,6 @@ const getMyApplications = async (req, res) => {
   }
 };
 
-// all expo-specific registrations for the shared exhibitor profile
 const getProfile = async (req, res) => {
   try {
     const applications = await ExhibitorApplication.find({ userId: req.user._id })
@@ -132,7 +130,6 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// expos list for the apply dropdown (exhibitor-safe)
 const getExpos = async (req, res) => {
   try {
     const expos = await Expo.find().sort({ createdAt: -1 });

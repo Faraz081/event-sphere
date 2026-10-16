@@ -69,7 +69,7 @@ const AdminBooths = () => {
   const [expoFilter, setExpoFilter] = useState("");
   const [expoCapacity, setExpoCapacity] = useState(null);
   const boothRequestId = useRef(0);
-  const [viewMode, setViewMode] = useState("table"); // table | grid
+  const [viewMode, setViewMode] = useState("table"); 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
@@ -352,8 +352,6 @@ const AdminBooths = () => {
           </div>
         )}
 
-     
-
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
@@ -391,8 +389,6 @@ const AdminBooths = () => {
           </select>
         </div>
 
-       
-
         {viewMode === "grid" && (
           <div className="flex flex-wrap gap-4 mb-4 text-xs text-muted">
             <span className="inline-flex items-center gap-1.5">
@@ -414,8 +410,6 @@ const AdminBooths = () => {
             <span>{error}</span>
           </div>
         )}
-
-  
 
         {viewMode === "table" && (
           <ResponsiveTable>
@@ -529,8 +523,6 @@ const AdminBooths = () => {
           </ResponsiveTable>
         )}
 
-  
-
         {viewMode === "grid" && (
           <div>
             {loading ? (
@@ -594,8 +586,6 @@ const AdminBooths = () => {
             )}
           </div>
         )}
-
-
 
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -707,8 +697,6 @@ const AdminBooths = () => {
             </div>
           </div>
         )}
-
-   
 
         {assignBooth && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">

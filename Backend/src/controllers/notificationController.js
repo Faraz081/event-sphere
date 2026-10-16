@@ -57,7 +57,6 @@ const generateReminders = async (userId) => {
   });
 
   expoBookmarks.forEach((bm) => {
-    // jis expo ka ticket hai uska reminder upar aa chuka
     if (!bm.expo?.date || ticketedExpoIds.has(String(bm.expo._id))) return;
     candidates.push({
       id: `bookmark:${bm.expo._id}`,
@@ -86,7 +85,6 @@ const generateReminders = async (userId) => {
   );
 };
 
-// GET /notifications
 export const getMyNotifications = async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -97,7 +95,6 @@ export const getMyNotifications = async (req, res) => {
 
     const user = await User.findById(userId).select("role");
 
-    // sirf attendee ke liye
     if (!user || user.role !== "attendee") {
       return res.status(200).json({ notifications: [], unreadCount: 0 });
     }
@@ -115,7 +112,6 @@ export const getMyNotifications = async (req, res) => {
   }
 };
 
-// PUT /notifications/:id/read
 export const markNotificationRead = async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -133,7 +129,6 @@ export const markNotificationRead = async (req, res) => {
   }
 };
 
-// PUT /notifications/read-all
 export const markAllNotificationsRead = async (req, res) => {
   try {
     const userId = getMyId(req);

@@ -132,7 +132,7 @@ const OngoingEvents = () => {
           </p>
         )}
 
-        {/* ---------- EVENTS ---------- */}
+        
         {!loading && filteredEvents.length > 0 && (
           <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((ev) => (

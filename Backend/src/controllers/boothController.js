@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import Expo from "../models/Expo.js";
 import { isExpoEnded } from "../utils/expoStatus.js";
 
-// CREATE Booth
 export const createBooth = async (req, res) => {
   try {
     const { expo, boothNumber, size, price, status, exhibitor, location } = req.body;
@@ -25,7 +24,6 @@ export const createBooth = async (req, res) => {
       return res.status(400).json({ error: "Cannot assign an exhibitor to a completed, cancelled or past expo" });
     }
 
-    // Check duplicate booth number in same expo
     const existing = await Booth.findOne({ expo, boothNumber: boothNumber.trim() });
     if (existing) {
       return res.status(409).json({ error: "Booth number already exists in this expo" });
@@ -67,7 +65,6 @@ export const createBooth = async (req, res) => {
   }
 };
 
-// GET All Booths (with filters)
 export const getAllBooths = async (req, res) => {
   try {
     const { expo, status, search, sortBy = "createdAt", sortOrder = "desc" } = req.query;
@@ -121,7 +118,6 @@ export const getAllBooths = async (req, res) => {
   }
 };
 
-// GET Single Booth
 export const getBoothById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -148,7 +144,6 @@ export const getBoothById = async (req, res) => {
   }
 };
 
-// UPDATE Booth
 export const updateBooth = async (req, res) => {
   try {
     const { id } = req.params;
@@ -173,7 +168,6 @@ export const updateBooth = async (req, res) => {
     if (!targetExpo) {
       return res.status(404).json({ error: "Expo not found" });
     }
-    // Unassigning / status cleanup stays allowed; only new assignment or moving into an ended expo is blocked.
     const assigningExhibitor = exhibitor !== undefined && exhibitor;
     if (isExpoEnded(targetExpo) && (assigningExhibitor || isMovingToAnotherExpo)) {
       return res.status(400).json({ error: "This expo has ended. Booths cannot be assigned or moved into it" });
@@ -187,7 +181,6 @@ export const updateBooth = async (req, res) => {
       return res.status(409).json({ error: "This exhibitor already has an active booth for this expo" });
     }
 
-    // If booth number is changing, check duplicate
     if (boothNumber && boothNumber.trim() !== booth.boothNumber) {
       const existing = await Booth.findOne({
         expo: expo || booth.expo,
@@ -213,10 +206,8 @@ export const updateBooth = async (req, res) => {
     if (location !== undefined) booth.location = location;
     if (expo !== undefined) booth.expo = expo;
 
-    // Handle exhibitor assignment
     if (exhibitor !== undefined) {
       booth.exhibitor = exhibitor || null;
-      // Auto status change logic (optional)
       if (exhibitor && booth.status === "available") {
         booth.status = "reserved";
       }
@@ -243,7 +234,6 @@ export const updateBooth = async (req, res) => {
   }
 };
 
-// DELETE Booth
 export const deleteBooth = async (req, res) => {
   try {
     const { id } = req.params;

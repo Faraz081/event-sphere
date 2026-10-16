@@ -14,12 +14,10 @@ function WebsiteSettingsLoader() {
         const response = await api.get('/api/website-settings')
         const settings = response.data.settings
 
-        // Browser tab title
         if (settings?.websiteName) {
           document.title = settings.websiteName
         }
 
-        // Browser favicon
         const faviconUrl = settings?.favicon
 
         if (faviconUrl) {

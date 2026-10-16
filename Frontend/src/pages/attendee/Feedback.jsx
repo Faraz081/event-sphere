@@ -108,8 +108,6 @@ const Feedback = () => {
 
         <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-6 shadow-xl sm:p-10">
 
-        
-
           {!user && (
             <div className="py-6 text-center">
               <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">
@@ -128,8 +126,6 @@ const Feedback = () => {
               </div>
             </div>
           )}
-
-      
 
           {user && sent && (
             <div className="py-6 text-center">
@@ -155,12 +151,10 @@ const Feedback = () => {
             </div>
           )}
 
-         
-
           {user && !sent && (
             <form onSubmit={handleSubmit} className="space-y-6">
 
-              {/* Name + Email */}
+              
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
@@ -182,8 +176,6 @@ const Feedback = () => {
                   </div>
                 </div>
               </div>
-
-             
 
               <div>
                 <label className="mb-3 block text-sm font-semibold text-[#4d473f]">
@@ -224,8 +216,6 @@ const Feedback = () => {
                 </select>
               </div>
 
-             
-
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Subject <span className="font-normal text-[#8a8379]">(optional)</span>
@@ -240,8 +230,6 @@ const Feedback = () => {
                   className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
                 />
               </div>
-
-          
 
               <div>
                 <label className="mb-3 block text-sm font-semibold text-[#4d473f]">
@@ -292,8 +280,6 @@ const Feedback = () => {
                 <p className="mt-1 text-right text-xs text-[#8a8379]">{message.length}/2000</p>
               </div>
 
-            
-            
               <button
                 type="submit"
                 disabled={submitting}

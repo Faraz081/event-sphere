@@ -5,10 +5,8 @@ import Expo from "../models/Expo.js";
 const TYPES = ["suggestion", "issue", "other"];
 const STATUSES = ["new", "reviewed", "resolved"];
 
-// protect middleware jis naam se bhi id rakhe, wahi utha lo
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
 
-// POST /  (koi bhi logged-in user)
 export const createFeedback = async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -53,7 +51,6 @@ export const createFeedback = async (req, res) => {
   }
 };
 
-// GET /  (admin)
 export const getAllFeedback = async (req, res) => {
   try {
     const { status, type, search } = req.query;
@@ -76,7 +73,6 @@ export const getAllFeedback = async (req, res) => {
   }
 };
 
-// PUT /:id  (admin)  { status, adminNote }
 export const updateFeedback = async (req, res) => {
   try {
     const { id } = req.params;

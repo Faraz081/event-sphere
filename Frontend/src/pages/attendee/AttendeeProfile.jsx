@@ -76,8 +76,6 @@ const AttendeeProfile = () => {
     <main className="min-h-screen bg-[#f8f5ef] px-4 pb-20 pt-28 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-6xl space-y-8">
 
-       
-
         <div className="relative overflow-hidden rounded-3xl border border-[#eadfc9] bg-[#fffdf9] p-6 shadow-sm sm:p-8">
           <div className="absolute left-0 top-0 h-2 w-full bg-linear-to-r from-[#2f2a24] via-[#c49424] to-[#2f2a24]" />
 
@@ -103,8 +101,6 @@ const AttendeeProfile = () => {
               </div>
             </div>
 
-          
-
             <div className="flex items-center justify-center gap-3 rounded-2xl border border-[#eadfc9] bg-[#f8f5ef] p-3">
               <div className="border-r border-[#eadfc9] px-4 text-center">
                 <p className="font-serif text-xl font-bold text-[#2f2a24]">{bookings.length}</p>
@@ -128,9 +124,6 @@ const AttendeeProfile = () => {
             <ProfileDetail icon={Building2} label="Organization" value={user?.companyName} />
           </div>
         </div>
-
-      
-
 
         <div className="space-y-4">
           <div className="flex items-center gap-2 px-1">

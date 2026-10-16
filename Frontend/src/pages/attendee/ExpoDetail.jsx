@@ -81,8 +81,6 @@ const ExpoDetail = () => {
     load()
   }, [id])
 
-
-
   useEffect(() => {
     const timer = setTimeout(async () => {
       try {
@@ -135,8 +133,6 @@ const ExpoDetail = () => {
           <ArrowLeft className="h-4 w-4" />
           All Expos
         </Link>
-
-    
 
         <section className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-sm">
           <div className="relative h-60 sm:h-72">
@@ -192,8 +188,6 @@ const ExpoDetail = () => {
 
         <section className="mt-8">
 
-        
-        
           {tab === 'Schedule' && (
             <div className="space-y-8">
               {schedules.length === 0 && <p className="text-[#5d574f]">The schedule has not been published yet.</p>}
@@ -223,8 +217,6 @@ const ExpoDetail = () => {
               ))}
             </div>
           )}
-
-         
 
           {tab === 'Exhibitors' && (
             <div>
@@ -295,8 +287,6 @@ const ExpoDetail = () => {
             </div>
           )}
 
-      
-      
           {tab === 'Floor Plan' && (
             <div>
               <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#5d574f]">

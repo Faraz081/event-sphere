@@ -32,7 +32,6 @@ const userSchema = new mongoose.Schema(
       default: "active",
       required: true,
     },
-    // New field for exhibitor approval flow
     exhibitorStatus: {
       type: String,
       enum: ["pending", "approved", "rejected", null],
