@@ -17,12 +17,6 @@ export const fetchAttendeeById = async (id) => {
   return response.data;
 };
 
-export const checkInAttendee = async (passCode) => {
-  const response = await api.post("/api/attendees/check-in", { passCode });
-  return response.data;
-};
-
-
 export const createAttendee = async (attendeeData) => {
   const response = await api.post("/api/attendees", attendeeData);
   return response.data;

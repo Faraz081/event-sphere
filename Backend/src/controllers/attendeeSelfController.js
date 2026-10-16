@@ -324,7 +324,6 @@ export const getMyRegistrations = async (req, res) => {
   }
 };
 
-
 export const getBookingRequests = async (req, res) => {
   try {
     const events = await Event.find({
@@ -412,17 +411,6 @@ export const approveBooking = async (req, res) => {
 
     booking.bookingStatus = "confirmed";
     booking.registrationStatus = "confirmed";
-    booking.passStatus = "issued";
-    if (!booking.passCode) {
-      const passCode = await generatePassCode();
-      if (!passCode) {
-        return res.status(503).json({ error: "Could not generate entry pass. Please try again" });
-      }
-      booking.passCode = passCode;
-      booking.entryPassId = passCode;
-    } else if (!booking.entryPassId) {
-      booking.entryPassId = booking.passCode;
-    }
     booking.checkedInAt = undefined;
     booking.decisionNote = "";
     booking.reviewedAt = new Date();

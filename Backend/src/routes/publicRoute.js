@@ -1,5 +1,15 @@
 import express from "express";
-import { getPublicExpos, getPublicExpo, getPublicExhibitors, getPublicBooths, getPublicEvents, getPublicExhibitorProfile, getPublicExhibitorList, getPublicEventStalls } from "../controllers/publicController.js";
+import {
+  getPublicExpos,
+  getPublicExpo,
+  getPublicExhibitors,
+  getPublicBooths,
+  getPublicEvents,
+  getPublicExhibitorProfile,
+  getPublicExhibitorList,
+  getPublicEventStalls,
+  publicCheckIn,
+} from "../controllers/publicController.js";
 
 const publicRoute = express.Router();
 
@@ -11,5 +21,6 @@ publicRoute.get("/events", getPublicEvents);
 publicRoute.get("/exhibitors", getPublicExhibitorList);
 publicRoute.get("/exhibitors/:id", getPublicExhibitorProfile);
 publicRoute.get("/events/:id/stalls", getPublicEventStalls);
+publicRoute.post("/check-in/:passCode", publicCheckIn);
 
 export default publicRoute;

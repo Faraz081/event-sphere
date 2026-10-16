@@ -94,7 +94,6 @@ export const getMyNotifications = async (req, res) => {
     }
 
     const user = await User.findById(userId).select("role");
-
     if (!user || user.role !== "attendee") {
       return res.status(200).json({ notifications: [], unreadCount: 0 });
     }

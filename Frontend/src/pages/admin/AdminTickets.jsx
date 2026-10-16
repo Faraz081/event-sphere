@@ -186,7 +186,7 @@ const TicketCard = ({ ticket }) => {
           <TicketCheck size={18} className="text-gold" />
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
-              Pass code · {ticket.passStatus || "issued"}
+              Pass code · {ticket.passStatus === "scanned" ? "Checked in" : ticket.passStatus || "issued"}
             </p>
             <p className="font-mono text-sm font-bold tracking-widest text-gold">
               {ticket.passCode || ticket.entryPassId}

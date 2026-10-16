@@ -74,6 +74,7 @@ const AdminDashboard = () => {
         occupancyRate: overview.occupancyRate ?? 0,
         pendingRegistrations: attendeeStats.pendingRegistrations ?? 0,
         confirmedBookings: attendeeStats.confirmedBookings ?? 0,
+        checkedIn: attendeeStats.scannedPasses ?? 0,
       });
     } catch (err) {
       console.error("Error loading dashboard statistics:", err);
@@ -104,6 +105,7 @@ const AdminDashboard = () => {
     { label: "Pending Exhibitors", value: v(stats.pendingExhibitors) },
     { label: "Total Attendees", value: v(stats.totalAttendees) },
     { label: "Total Users", value: v(stats.totalUsers) },
+    { label: "Checked In", value: v(stats.checkedIn) },
   ];
 
   return (

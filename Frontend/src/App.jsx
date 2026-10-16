@@ -1,47 +1,48 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import WebsiteLayout from "./layouts/WebsiteLayout";
-import Home from "./pages/attendee/Home";
-import EventGallery from "./pages/attendee/EventGallery";
-import Service from "./pages/attendee/Service";
-import Service1 from "./pages/attendee/Service1";
-import AboutPlatform from "./pages/attendee/AboutPlatform";
-import ContactUs from "./pages/attendee/ContactUs";
-import OngoingEvents from "./pages/attendee/OngoingEvents";
-import BookNow from "./pages/attendee/BookNow";
-import BookTicket from "./pages/attendee/BookTicket";
-import Feedback from "./pages/attendee/Feedback";
-import AttendeeProfile from "./pages/attendee/AttendeeProfile";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminAttendees from "./pages/admin/AdminAttendees";
-import AdminExpos from "./pages/admin/AdminExpos";
-import AdminBooths from "./pages/admin/AdminBooths";
-import AdminSchedule from "./pages/admin/AdminSchedule";
-import AdminWebsiteSettings from "./pages/admin/AdminWebsiteSettings";
-import AdminExhibitors from "./pages/admin/AdminExhibitors";
-import ExhibitorPortal from "./pages/exhibitor/ExhibitorPortal";
-import ExhibitorRegistration from "./pages/exhibitor/ExhibitorRegistration";
-import ExhibitorBooth from "./pages/exhibitor/ExhibitorBooth";
-import ExhibitorMessages from "./pages/exhibitor/ExhibitorMessages";
-import ExhibitorProfile from "./pages/exhibitor/ExhibitorProfile";
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import VerifyOtp from "./pages/auth/VerifyOtp";
-import NewPassword from "./pages/auth/NewPassword";
+const WebsiteLayout = lazy(() => import("./layouts/WebsiteLayout"));
+const Home = lazy(() => import("./pages/attendee/Home"));
+const EventGallery = lazy(() => import("./pages/attendee/EventGallery"));
+const Service = lazy(() => import("./pages/attendee/Service"));
+const Service1 = lazy(() => import("./pages/attendee/Service1"));
+const AboutPlatform = lazy(() => import("./pages/attendee/AboutPlatform"));
+const ContactUs = lazy(() => import("./pages/attendee/ContactUs"));
+const OngoingEvents = lazy(() => import("./pages/attendee/OngoingEvents"));
+const BookNow = lazy(() => import("./pages/attendee/BookNow"));
+const BookTicket = lazy(() => import("./pages/attendee/BookTicket"));
+const Feedback = lazy(() => import("./pages/attendee/Feedback"));
+const AttendeeProfile = lazy(() => import("./pages/attendee/AttendeeProfile"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminAttendees = lazy(() => import("./pages/admin/AdminAttendees"));
+const AdminExpos = lazy(() => import("./pages/admin/AdminExpos"));
+const AdminBooths = lazy(() => import("./pages/admin/AdminBooths"));
+const AdminSchedule = lazy(() => import("./pages/admin/AdminSchedule"));
+const AdminWebsiteSettings = lazy(() => import("./pages/admin/AdminWebsiteSettings"));
+const AdminExhibitors = lazy(() => import("./pages/admin/AdminExhibitors"));
+const ExhibitorPortal = lazy(() => import("./pages/exhibitor/ExhibitorPortal"));
+const ExhibitorRegistration = lazy(() => import("./pages/exhibitor/ExhibitorRegistration"));
+const ExhibitorBooth = lazy(() => import("./pages/exhibitor/ExhibitorBooth"));
+const ExhibitorMessages = lazy(() => import("./pages/exhibitor/ExhibitorMessages"));
+const ExhibitorProfile = lazy(() => import("./pages/exhibitor/ExhibitorProfile"));
+const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const VerifyOtp = lazy(() => import("./pages/auth/VerifyOtp"));
+const NewPassword = lazy(() => import("./pages/auth/NewPassword"));
 import { DashboardRedirect, RequireAuth, RequireRole, PublicOnlyRoute } from "./components/shared/RouteGuards";
 import { Toaster } from "sonner";
 import { useSelector } from "react-redux";
-import AdminMessages from "./pages/admin/AdminMessages";
-import ExhibitorEvents from "./pages/exhibitor/ExhibitorEvents";
-import ExpoDetail from "./pages/attendee/ExpoDetail";
-import AdminFeedback from "./pages/admin/AdminFeedback";
-import AdminTickets from "./pages/admin/AdminTickets";
-import AttendeeMessages from "./pages/attendee/AttendeeMessages";
-import AdminEvents from "./pages/admin/AdminEvents";
-import ExhibitorPublicProfile from "./pages/attendee/ExhibitorPublicProfile";
-import ExhibitorBookings from "./pages/exhibitor/ExhibitorBookings";
+const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
+const ExhibitorEvents = lazy(() => import("./pages/exhibitor/ExhibitorEvents"));
+const ExpoDetail = lazy(() => import("./pages/attendee/ExpoDetail"));
+const AdminFeedback = lazy(() => import("./pages/admin/AdminFeedback"));
+const AdminTickets = lazy(() => import("./pages/admin/AdminTickets"));
+const AttendeeMessages = lazy(() => import("./pages/attendee/AttendeeMessages"));
+const AdminEvents = lazy(() => import("./pages/admin/AdminEvents"));
+const ExhibitorPublicProfile = lazy(() => import("./pages/attendee/ExhibitorPublicProfile"));
+const ExhibitorBookings = lazy(() => import("./pages/exhibitor/ExhibitorBookings"));
+const CheckInPage = lazy(() => import("./pages/admin/CheckInPage"));
 
 function App() {
   const { email, otp } = useSelector((state) => state.forgotPassword);
@@ -64,6 +65,7 @@ function App() {
 
        
 
+      <Suspense fallback={null}>
       <Routes>
      
         <Route path="/" element={<WebsiteLayout />}>
@@ -82,6 +84,7 @@ function App() {
           <Route path="profile" element={<AttendeeProfile />} />
           <Route path="expos/:id" element={<ExpoDetail />} />
           <Route path="attendee/messages" element={<AttendeeMessages />} />
+
           </Route>
         </Route>
 
@@ -93,6 +96,8 @@ function App() {
          <Route path="/new-password" element={ email && otp ? (<NewPassword />) : email ? (<Navigate to="/verify-otp" replace />) : (<Navigate to="/forgot-password" replace />)}/>
         </Route>
 
+             <Route path="/check-in/:passCode" element={<CheckInPage />} />
+        {/* PROTECTED ROUTES */}
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<DashboardRedirect />} />
 
@@ -126,6 +131,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </Suspense>
     </>
   );
 }

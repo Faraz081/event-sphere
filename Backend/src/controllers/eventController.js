@@ -418,15 +418,4 @@ const updateEvent = async (req, res) => {
   }
 };
 
-export {
-  createEvent,
-  getMyEvents,
-  getAllEvents,
-  getPendingEvents,
-  getAdminEvents,
-  approveEvent,
-  rejectEvent,
-  deleteEvent,
-  deleteAdminEvent,
-  updateEvent,
-};
+export { createEvent, getMyEvents, getAllEvents, getPendingEvents, getAdminEvents, approveEvent, rejectEvent, deleteEvent, deleteAdminEvent, updateEvent};

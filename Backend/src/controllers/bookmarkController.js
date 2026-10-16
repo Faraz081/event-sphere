@@ -6,7 +6,6 @@ import Expo from "../models/Expo.js";
 import User from "../models/User.js";
 
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
-
 const makeToggle = (BookmarkModel, TargetModel, field, targetFilter, label) => async (req, res) => {
   try {
     const userId = getMyId(req);

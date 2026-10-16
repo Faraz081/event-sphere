@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   fetchAttendees,
-  checkInAttendee,
   createAttendee,
   updateAttendee,
   deleteAttendee,
@@ -88,8 +87,6 @@ const AdminAttendees = () => {
   const [selectedRegStatus, setSelectedRegStatus] = useState("all");
   const [selectedBookingStatus, setSelectedBookingStatus] = useState("all");
   const [selectedPassStatus, setSelectedPassStatus] = useState("all");
-  const [checkInCode, setCheckInCode] = useState("");
-  const [isCheckingIn, setIsCheckingIn] = useState(false);
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -265,27 +262,6 @@ const AdminAttendees = () => {
     }
   };
 
-  const handleCheckIn = async (e) => {
-    e.preventDefault();
-    if (!checkInCode.trim()) {
-      toast.error("Enter a pass code to check in.");
-      return;
-    }
-
-    setIsCheckingIn(true);
-    try {
-      const response = await checkInAttendee(checkInCode);
-      const attendeeName = response.attendee?.user?.name || "Attendee";
-      toast.success(`${attendeeName} checked in successfully.`);
-      setCheckInCode("");
-      loadAttendees();
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Could not check in this pass.");
-    } finally {
-      setIsCheckingIn(false);
-    }
-  };
-
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8 space-y-6">
@@ -307,32 +283,6 @@ const AdminAttendees = () => {
             <span>Register Attendee</span>
           </button>
         </div>
-
-        <form
-          onSubmit={handleCheckIn}
-          className="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4 sm:flex-row sm:items-center"
-        >
-          <div className="flex-1">
-            <label htmlFor="attendee-pass-check-in" className="mb-1 block text-sm font-semibold text-foreground">
-              Check in attendee
-            </label>
-            <input
-              id="attendee-pass-check-in"
-              value={checkInCode}
-              onChange={(e) => setCheckInCode(e.target.value)}
-              placeholder="Enter or scan pass code"
-              autoComplete="off"
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground placeholder:font-sans placeholder:text-muted focus:border-gold focus:outline-none"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isCheckingIn}
-            className="rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-50"
-          >
-            {isCheckingIn ? "Checking in..." : "Check in"}
-          </button>
-        </form>
 
         <div className="bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
@@ -608,7 +558,7 @@ const AdminAttendees = () => {
                           passStatusStyles[item.passStatus] || "bg-muted/20 text-muted"
                         }`}
                       >
-                        {item.passStatus}
+                        {item.passStatus === "scanned" ? "Checked in" : item.passStatus}
                       </span>
                       {(item.passCode || item.entryPassId) && (
                         <span className="text-xs text-muted font-mono flex items-center gap-1">
@@ -616,6 +566,11 @@ const AdminAttendees = () => {
                           {item.passCode || item.entryPassId}
                         </span>
                       )}
+                      {item.checkedInAt && (
+  <span className="text-xs text-muted">
+    Checked in: {new Date(item.checkedInAt).toLocaleString()}
+  </span>
+)}
                     </div>
                   </td>
 
@@ -735,7 +690,7 @@ const AdminAttendees = () => {
                       passStatusStyles[attendeeToView.passStatus] || "bg-muted/20 text-muted"
                     }`}
                   >
-                    {attendeeToView.passStatus}
+                    {attendeeToView.passStatus === "scanned" ? "Checked in" : attendeeToView.passStatus}
                   </span>
                 </div>
 
@@ -748,6 +703,15 @@ const AdminAttendees = () => {
                     {attendeeToView.passCode || attendeeToView.entryPassId || "None issued"}
                   </p>
                 </div>
+
+                {attendeeToView.checkedInAt && (
+  <div className="bg-background border border-border rounded-xl p-3">
+    <p className="text-xs text-muted mb-1">Checked In At</p>
+    <p className="text-sm text-foreground">
+      {new Date(attendeeToView.checkedInAt).toLocaleString()}
+    </p>
+  </div>
+)}
 
                 <div className="bg-background border border-border rounded-xl p-3 sm:col-span-2">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
@@ -891,7 +855,7 @@ const AdminAttendees = () => {
                     >
                       <option value="registered">Registered</option>
                       <option value="confirmed">Confirmed</option>
-                      <option value="attended">Attended</option>
+                      {formData.registrationStatus === "attended" && <option value="attended" disabled>Attended (QR check-in)</option>}
                       <option value="cancelled">Cancelled</option>
                     </select>
                   </div>
@@ -925,7 +889,7 @@ const AdminAttendees = () => {
                     >
                       <option value="issued">Issued</option>
                       <option value="claimed">Claimed</option>
-                      <option value="scanned">Scanned</option>
+                      {formData.passStatus === "scanned" && <option value="scanned" disabled>Scanned (QR check-in)</option>}
                       <option value="revoked">Revoked</option>
                     </select>
                   </div>

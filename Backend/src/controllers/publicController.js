@@ -8,7 +8,6 @@ import Attendee from "../models/Attendee.js";
 import ExhibitorApplication from "../models/ExhibitorApplication.js";
 
 const PUBLIC_EXPO_FIELDS = "title description theme date location status banner";
-
 const PUBLIC_EVENT_FIELDS = "title description eventType location images banner exhibitor date endDate";
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -18,7 +17,6 @@ const findPublishedExpo = async (id) => {
   await Expo.updateLifecycleStatuses();
   return Expo.findOne({ _id: id, status: { $in: ["published", "ongoing"] } }).select(PUBLIC_EXPO_FIELDS);
 };
-
 
 export const getPublicExpos = async (req, res) => {
   try {
@@ -50,7 +48,6 @@ export const getPublicExpos = async (req, res) => {
   }
 };
 
-
 export const getPublicExpo = async (req, res) => {
   try {
     const expo = await findPublishedExpo(req.params.id);
@@ -66,7 +63,6 @@ export const getPublicExpo = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 export const getPublicExhibitors = async (req, res) => {
   try {
@@ -112,7 +108,6 @@ export const getPublicExhibitors = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 export const getPublicBooths = async (req, res) => {
   try {
@@ -182,7 +177,6 @@ const events = allEvents.filter((e) => e.exhibitor);
     res.status(500).json({ error: error.message });
   }
 };
-
 
 export const getPublicExhibitorProfile = async (req, res) => {
   try {
@@ -266,6 +260,44 @@ export const getPublicEventStalls = async (req, res) => {
     }));
 
     return res.status(200).json({ stalls, dateBooked });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const publicCheckIn = async (req, res) => {
+  try {
+    const passCode = String(req.params.passCode || "").trim().toUpperCase();
+    if (!passCode) return res.status(400).json({ error: "Pass code is required." });
+
+    const filter = { $or: [{ passCode }, { entryPassId: passCode }], expo: { $ne: null } };
+
+    const attendee = await Attendee.findOneAndUpdate(
+      { ...filter, bookingStatus: "confirmed", passStatus: { $in: ["issued", "claimed"] } },
+      { $set: { passStatus: "scanned", registrationStatus: "attended", checkedInAt: new Date() } },
+      { new: true }
+    )
+      .populate("user", "name")
+      .populate("expo", "title");
+
+    if (attendee) {
+      return res.status(200).json({
+        msg: "Check-in successful",
+        attendee: { user: attendee.user, expo: attendee.expo, passCode, checkedInAt: attendee.checkedInAt },
+      });
+    }
+
+    const existing = await Attendee.findOne(filter).populate("user", "name").populate("expo", "title");
+    if (!existing) return res.status(404).json({ error: "Pass not found." });
+
+    if (existing.passStatus === "scanned") {
+      return res.status(409).json({
+        error: "Pass already used.",
+        attendee: { user: existing.user, expo: existing.expo, passCode, checkedInAt: existing.checkedInAt },
+      });
+    }
+
+    return res.status(400).json({ error: "This pass is not valid for check-in." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
