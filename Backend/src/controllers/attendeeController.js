@@ -397,7 +397,7 @@ export const checkInAttendee = async (req, res) => {
 
     const passFilter = {
       $or: [{ passCode }, { entryPassId: passCode }],
-      ...(expoId && { expo: expoId }),
+      expo: expoId || { $ne: null },
     };
     const attendee = await Attendee.findOneAndUpdate(
       {
@@ -434,9 +434,9 @@ export const checkInAttendee = async (req, res) => {
       return res.status(404).json({ error: "Pass not found." });
     }
 
-    if (existingAttendee.passStatus === "scanned") {
-      return res.status(409).json({ error: "Pass already used." });
-    }
+   if (existingAttendee.passStatus === "scanned") {
+  return res.status(409).json({ error: "Pass already used.", attendee: existingAttendee });
+}
 
     if (existingAttendee.passStatus === "revoked" || existingAttendee.bookingStatus === "cancelled") {
       return res.status(400).json({ error: "This pass has been revoked or cancelled." });

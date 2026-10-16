@@ -5,7 +5,6 @@ import User from "../models/User.js";
 
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
 
-// event load karo, sirf uska owner aur active exhibitor
 const loadMyEvent = async (req, res) => {
   const exhibitor = getMyId(req);
   const { id } = req.params;

@@ -6,8 +6,6 @@ import Expo from "../models/Expo.js";
 import User from "../models/User.js";
 
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
-
-// bookmark hai to hata do, nahi hai to laga do
 const makeToggle = (BookmarkModel, TargetModel, field, targetFilter, label) => async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -48,7 +46,6 @@ const makeToggle = (BookmarkModel, TargetModel, field, targetFilter, label) => a
 export const toggleBookmark = makeToggle(Bookmark, Event, "event", { status: "approved" }, "event");
 export const toggleExpoBookmark = makeToggle(ExpoBookmark, Expo, "expo", { status: "published" }, "expo");
 
-// GET /bookmarks
 export const getMyBookmarks = async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -66,7 +63,6 @@ export const getMyBookmarks = async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
-    // delete ya reject ho chuke events (populate ke baad null) nikal do
     const bookmarks = rows.map((row) => row.event).filter(Boolean);
 
     return res.status(200).json({ bookmarks });
@@ -75,7 +71,6 @@ export const getMyBookmarks = async (req, res) => {
   }
 };
 
-// GET /expo-bookmarks
 export const getMyExpoBookmarks = async (req, res) => {
   try {
     const userId = getMyId(req);

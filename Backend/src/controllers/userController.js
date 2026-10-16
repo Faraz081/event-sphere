@@ -58,14 +58,7 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserStats = async (req, res) => {
   try {
-    const [
-      total,
-      attendees,
-      exhibitors,
-      active,
-      inactive,
-      suspended,
-    ] = await Promise.all([
+    const [total, attendees, exhibitors, active, inactive, suspended] = await Promise.all([
       User.countDocuments({ role: { $ne: "admin" } }),
       User.countDocuments({ role: "attendee" }),
       User.countDocuments({ role: "exhibitor" }),

@@ -164,7 +164,6 @@ if (email.includes("..")) {
 
     const isExhibitor = publicRole === "exhibitor";
 
-    // Company name: only letters and spaces, at least 3 letters, max 100
     if (isExhibitor) {
       if (!companyName) {
         return res.status(400).json({

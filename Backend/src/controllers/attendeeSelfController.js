@@ -5,7 +5,6 @@ import User from "../models/User.js";
 import Expo from "../models/Expo.js";
 import { generatePassCode } from "../utils/passCode.js";
 
-// protect middleware jis naam se bhi id rakhe, wahi utha lo
 const getMyId = (req) => String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
 
 const eventPopulate = {
@@ -13,13 +12,11 @@ const eventPopulate = {
   select: "title location eventType images",
 };
 
-// date ko UTC din ki range mein badlo ("2026-10-20" -> 00:00Z se agle din 00:00Z)
 const toDayRange = (date) => {
   const start = new Date(`${new Date(date).toISOString().slice(0, 10)}T00:00:00.000Z`);
   return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
 };
 
-// is event pe us din koi CONFIRMED booking pehle se hai?
 const isDateBooked = async (eventId, date, excludeId) => {
   const { start, end } = toDayRange(date);
   const query = { event: eventId, bookingStatus: "confirmed", eventDate: { $gte: start, $lt: end } };
@@ -27,10 +24,7 @@ const isDateBooked = async (eventId, date, excludeId) => {
   return !!(await Attendee.exists(query));
 };
 
-// ---------- ATTENDEE ----------
 
-// POST /book
-// { event, eventDate, guests, phone, message, stalls: [stallId] }
 export const bookEvent = async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -96,14 +90,12 @@ if (!exhibitorActive) {
     const dateKey = parsedDate.toISOString().slice(0, 10);
     const dayStart = new Date(`${dateKey}T00:00:00.000Z`);
 
-    // ek din mein ek event ki sirf ek confirmed booking
     if (await isDateBooked(eventDoc._id, dayStart)) {
       return res.status(409).json({
         error: "This event is already booked for that date. Please choose another date",
       });
     }
 
-    // ---- stalls validation ----
     const requested = Array.isArray(stalls) ? [...new Set(stalls.map(String))] : [];
 
     if (requested.some((id) => !mongoose.isValidObjectId(id))) {
@@ -113,7 +105,6 @@ if (!exhibitorActive) {
     const eventStalls = eventDoc.stalls ?? [];
     const chosen = eventStalls.filter((s) => requested.includes(String(s._id)));
 
-    // har stall isi event ka hona chahiye
     if (chosen.length !== requested.length) {
       return res.status(400).json({ error: "Selected stall does not belong to this event" });
     }
@@ -173,8 +164,6 @@ if (!exhibitorActive) {
   }
 };
 
-// POST /book-expo
-// { expo }
 export const bookExpoTicket = async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -249,7 +238,6 @@ export const bookExpoTicket = async (req, res) => {
   }
 };
 
-// GET /my
 export const getMyRegistrations = async (req, res) => {
   try {
     const userId = getMyId(req);
@@ -269,10 +257,6 @@ export const getMyRegistrations = async (req, res) => {
   }
 };
 
-// ---------- EXHIBITOR ----------
-
-// GET /requests
-// Mere events ki bookings
 export const getBookingRequests = async (req, res) => {
   try {
     const events = await Event.find({
@@ -318,7 +302,6 @@ const findOwnedBooking = async (req) => {
   return { booking };
 };
 
-// PUT /requests/:id/approve
 export const approveBooking = async (req, res) => {
   try {
     const found = await findOwnedBooking(req);
@@ -339,7 +322,6 @@ export const approveBooking = async (req, res) => {
       });
     }
 
-    // approve ke waqt dobara check: us din koi aur booking pehle confirm ho chuki ho sakti hai
     if (await isDateBooked(booking.event._id, booking.eventDate, booking._id)) {
       return res.status(409).json({
         error: "Another booking is already confirmed for this event on that date",
@@ -348,17 +330,6 @@ export const approveBooking = async (req, res) => {
 
     booking.bookingStatus = "confirmed";
     booking.registrationStatus = "confirmed";
-    booking.passStatus = "issued";
-    if (!booking.passCode) {
-      const passCode = await generatePassCode();
-      if (!passCode) {
-        return res.status(503).json({ error: "Could not generate entry pass. Please try again" });
-      }
-      booking.passCode = passCode;
-      booking.entryPassId = passCode;
-    } else if (!booking.entryPassId) {
-      booking.entryPassId = booking.passCode;
-    }
     booking.checkedInAt = undefined;
     booking.decisionNote = "";
     booking.reviewedAt = new Date();
@@ -382,8 +353,6 @@ export const approveBooking = async (req, res) => {
   }
 };
 
-// PUT /requests/:id/reject
-// { note }
 export const rejectBooking = async (req, res) => {
   try {
     const note = req.body.note?.trim();
