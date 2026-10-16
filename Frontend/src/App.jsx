@@ -65,8 +65,10 @@ function App() {
         }}
       />
 
+       
+
       <Routes>
-        
+     
         <Route path="/" element={<WebsiteLayout />}>
           <Route index element={<Home />} />
           <Route path="event-gallery" element={<EventGallery />} />
@@ -100,7 +102,7 @@ function App() {
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<DashboardRedirect />} />
 
-          
+
           <Route element={<RequireRole allowedRoles={["admin"]} />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUsers />} />
@@ -117,7 +119,7 @@ function App() {
             <Route path="/admin/check-in/:passCode" element={<AdminCheckIn />} />
           </Route>
 
-          
+      
           <Route element={<RequireRole allowedRoles={["exhibitor"]} />}>
             <Route path="/exhibitor" element={<ExhibitorPortal />} />
             <Route path="/exhibitor/registration" element={<ExhibitorRegistration />} />
@@ -126,7 +128,6 @@ function App() {
             <Route path="/exhibitor/profile" element={<ExhibitorProfile />} />
             <Route path="/exhibitor/events" element={<ExhibitorEvents />} />
             <Route path="/exhibitor/bookings" element={<ExhibitorBookings />} />
-            <Route path="/exhibitor/registration/new" element={<ExhibitorRegistrationForm />} />
           </Route>
         </Route>
 
