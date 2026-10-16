@@ -116,7 +116,14 @@ const Navbar = () => {
             onClick={() => scrollToSection('expos')}
             className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
           >
-            Services
+            Expo
+          </button>
+
+          <button
+            onClick={() => scrollToSection('events')}
+            className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
+          >
+            Events
           </button>
 
           <button
@@ -236,7 +243,14 @@ const Navbar = () => {
               onClick={() => scrollToSection('expos')}
               className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
             >
-              Services
+              Expo
+            </button>
+
+            <button
+              onClick={() => scrollToSection('events')}
+              className="text-sm font-semibold text-[#c49424] transition-opacity hover:opacity-75"
+            >
+              Events
             </button>
 
             <button
