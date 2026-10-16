@@ -617,6 +617,11 @@ const AdminAttendees = () => {
                           {item.passCode || item.entryPassId}
                         </span>
                       )}
+                      {item.checkedInAt && (
+  <span className="text-xs text-muted">
+    Checked in: {new Date(item.checkedInAt).toLocaleString()}
+  </span>
+)}
                     </div>
                   </td>
 
@@ -749,6 +754,15 @@ const AdminAttendees = () => {
                     {attendeeToView.passCode || attendeeToView.entryPassId || "None issued"}
                   </p>
                 </div>
+
+                {attendeeToView.checkedInAt && (
+  <div className="bg-background border border-border rounded-xl p-3">
+    <p className="text-xs text-muted mb-1">Checked In At</p>
+    <p className="text-sm text-foreground">
+      {new Date(attendeeToView.checkedInAt).toLocaleString()}
+    </p>
+  </div>
+)}
 
                 <div className="bg-background border border-border rounded-xl p-3 sm:col-span-2">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">

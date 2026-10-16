@@ -43,6 +43,8 @@ import AdminEvents from "./pages/admin/AdminEvents";
 import ExhibitorPublicProfile from "./pages/attendee/ExhibitorPublicProfile";
 import ExhibitorBookings from "./pages/exhibitor/ExhibitorBookings";
 import ExhibitorRegistrationForm from "./pages/exhibitor/ExhibitorRegistrationForm";
+import AdminCheckIn from "./pages/admin/AdminCheckIn";
+import CheckInPage from "./pages/admin/CheckInPage";
 
 function App() {
   const { email, otp } = useSelector((state) => state.forgotPassword);
@@ -83,6 +85,7 @@ function App() {
           <Route path="profile" element={<AttendeeProfile />} />
           <Route path="expos/:id" element={<ExpoDetail />} />
           <Route path="attendee/messages" element={<AttendeeMessages />} />
+
           </Route>
         </Route>
 
@@ -93,6 +96,8 @@ function App() {
          <Route path="/verify-otp" element={email ? <VerifyOtp /> : <Navigate to="/forgot-password" replace />} />
          <Route path="/new-password" element={ email && otp ? (<NewPassword />) : email ? (<Navigate to="/verify-otp" replace />) : (<Navigate to="/forgot-password" replace />)}/>
         </Route>
+
+             <Route path="/check-in/:passCode" element={<CheckInPage />} />
         {/* PROTECTED ROUTES */}
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<DashboardRedirect />} />
@@ -111,6 +116,7 @@ function App() {
             <Route path="/admin/feedback" element={<AdminFeedback />}/>
             <Route path="/admin/tickets" element={<AdminTickets />} />
             <Route path="/admin/events" element={<AdminEvents />} />
+            <Route path="/admin/check-in/:passCode" element={<AdminCheckIn />} />
           </Route>
 
           {/* EXHIBITOR */}

@@ -69,6 +69,24 @@ const AttendeeProfile = () => {
     load();
   }, []);
 
+  const waitingForCheckIn = bookings.some(
+  (b) => b.bookingStatus === "confirmed" && b.passStatus === "issued" && (b.passCode || b.entryPassId)
+);
+
+useEffect(() => {
+  if (!waitingForCheckIn) return;
+
+  const timer = setInterval(async () => {
+    try {
+      const data = await fetchMyRegistrations();
+      setBookings(data.registrations ?? []);
+    } catch {
+    }
+  }, 10000);
+
+  return () => clearInterval(timer);
+}, [waitingForCheckIn]);
+
   const confirmedCount = bookings.filter((b) => b.bookingStatus === "confirmed").length;
   const pendingCount = bookings.filter((b) => b.bookingStatus === "pending").length;
 
@@ -218,7 +236,7 @@ const AttendeeProfile = () => {
                       </p>
                     )}
 
-                    {b.bookingStatus === "confirmed" && (b.passCode || b.entryPassId) && (
+                    {b.bookingStatus === "confirmed" && isExpoTicket && (b.passCode || b.entryPassId) && (
                       <div className="mt-4 pt-2">
                         <EntryPass booking={b} user={user} />
                       </div>

@@ -6,6 +6,10 @@ import jsPDF from "jspdf";
 
 const EntryPass = ({ booking, user }) => {
   const passCode = booking.passCode || booking.entryPassId;
+ const SITE_URL = "https://event-sphere-z3ci-gold.vercel.app";
+const checkInUrl = passCode
+  ? `${SITE_URL}/check-in/${encodeURIComponent(passCode)}`
+  : "";
   const isCheckedIn = booking.passStatus === "scanned";
   const isRevoked = booking.passStatus === "revoked" || booking.bookingStatus === "cancelled";
 
@@ -139,7 +143,7 @@ const EntryPass = ({ booking, user }) => {
           <p className="mt-1 font-mono text-lg font-bold tracking-wider text-[#2f2a24]">{passCode || "Not issued"}</p>
           {isCheckedIn ? (
             <p className="mt-2 text-sm font-semibold text-emerald-800">
-              Checked in — pass used{booking.checkedInAt ? ` on ${new Date(booking.checkedInAt).toLocaleString()}` : ""}
+              Approved — checked in{booking.checkedInAt ? ` on ${new Date(booking.checkedInAt).toLocaleString()}` : ""}
             </p>
           ) : isRevoked ? (
             <p className="mt-2 text-sm font-semibold text-rose-700">Pass expired or revoked</p>
@@ -156,10 +160,10 @@ const EntryPass = ({ booking, user }) => {
             </button>
           )}
         </div>
-        {passCode && (
+        {passCode && !isCheckedIn && (
           <div id={`entry-pass-${booking._id}`} className="self-center rounded-lg bg-white p-2">
             <QRCodeCanvas
-              value={passCode}
+              value={checkInUrl}
               size={128}
               bgColor="#ffffff"
               fgColor="#2f2a24"
