@@ -25,6 +25,8 @@ export const getExpoTicketRequests = async (req, res) => {
       filter.event = null;
     } else if (req.query.type === "event") {
       filter.event = { $ne: null };
+    } else if (req.query.type === "custom") {
+      filter.isCustomEvent = true;
     }
 
     if (req.query.search && req.query.search.trim()) {

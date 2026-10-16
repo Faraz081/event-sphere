@@ -19,6 +19,19 @@ const attendeeSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    isCustomEvent: {
+      type: Boolean,
+      default: false,
+    },
+    customEventName: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+    },
+    customEventImage: {
+      type: String,
+      trim: true,
+    },
     registrationEventKey: { type: String, select: false },
     registrationStatus: {
       type: String,

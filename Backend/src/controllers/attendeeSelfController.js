@@ -28,13 +28,25 @@ const isDateBooked = async (eventId, date, excludeId) => {
 export const bookEvent = async (req, res) => {
   try {
     const userId = getMyId(req);
-        const { event, eventDate, guests, phone, message, stalls, name } = req.body;
+    const {
+      event,
+      isCustomEvent,
+      customEventName,
+      customEventImage,
+      eventDate,
+      guests,
+      phone,
+      message,
+      stalls,
+      name,
+    } = req.body;
+    const isCustom = isCustomEvent === true;
 
     if (!mongoose.isValidObjectId(userId)) {
       return res.status(401).json({ error: "Please login again" });
     }
 
-    if (!event || !mongoose.isValidObjectId(event)) {
+    if (!isCustom && (!event || !mongoose.isValidObjectId(event))) {
       return res.status(400).json({ error: "Please select an event" });
     }
 
@@ -54,19 +66,34 @@ export const bookEvent = async (req, res) => {
       return res.status(400).json({ error: "Please enter your name" });
     }
 
-    const eventDoc = await Event.findOne({
-  _id: event,
-  status: "approved",
-}).select("title location eventType images price stalls exhibitor");
+    const trimmedCustomEventName =
+      typeof customEventName === "string" ? customEventName.trim() : "";
+    const trimmedCustomEventImage =
+      typeof customEventImage === "string" ? customEventImage.trim() : "";
+    if (isCustom && !trimmedCustomEventName) {
+      return res.status(400).json({ error: "Please enter a custom event name" });
+    }
 
-if (!eventDoc) {
-  return res.status(404).json({ error: "Event not found" });
-}
+    const eventDoc = isCustom
+      ? null
+      : await Event.findOne({
+          _id: event,
+          status: "approved",
+        }).select("title location eventType images price stalls exhibitor");
 
-const exhibitorActive = await User.exists({ _id: eventDoc.exhibitor, status: "active" });
-if (!exhibitorActive) {
-  return res.status(404).json({ error: "Event not found" });
-}
+    if (!isCustom && !eventDoc) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    if (eventDoc) {
+      const exhibitorActive = await User.exists({
+        _id: eventDoc.exhibitor,
+        status: "active",
+      });
+      if (!exhibitorActive) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+    }
 
     const parsedDate = new Date(eventDate);
 
@@ -90,47 +117,56 @@ if (!exhibitorActive) {
     const dateKey = parsedDate.toISOString().slice(0, 10);
     const dayStart = new Date(`${dateKey}T00:00:00.000Z`);
 
-    if (await isDateBooked(eventDoc._id, dayStart)) {
+    if (eventDoc && (await isDateBooked(eventDoc._id, dayStart))) {
       return res.status(409).json({
         error: "This event is already booked for that date. Please choose another date",
       });
     }
 
-    const requested = Array.isArray(stalls) ? [...new Set(stalls.map(String))] : [];
+    const requested = isCustom
+      ? []
+      : Array.isArray(stalls)
+        ? [...new Set(stalls.map(String))]
+        : [];
 
-    if (requested.some((id) => !mongoose.isValidObjectId(id))) {
+    if (!isCustom && requested.some((id) => !mongoose.isValidObjectId(id))) {
       return res.status(400).json({ error: "Invalid stall selected" });
     }
 
-    const eventStalls = eventDoc.stalls ?? [];
+    const eventStalls = eventDoc?.stalls ?? [];
     const chosen = eventStalls.filter((s) => requested.includes(String(s._id)));
 
     if (chosen.length !== requested.length) {
       return res.status(400).json({ error: "Selected stall does not belong to this event" });
     }
 
-    if (eventStalls.length && !chosen.length) {
-      return res.status(400).json({ error: "Please select at least one stall" });
-    }
-
     if (
-      await Attendee.exists({
+      !isCustom &&
+      (await Attendee.exists({
         user: userId,
         event: eventDoc._id,
         registrationEventKey: `event:${eventDoc._id}:${dateKey}`,
-      })
+      }))
     ) {
       return res.status(409).json({
         error: "You have already requested this event for that date",
       });
     }
 
-    const totalAmount = (eventDoc.price ?? 0) + chosen.reduce((sum, s) => sum + (s.price ?? 0), 0);
+    const totalAmount =
+      (eventDoc?.price ?? 0) + chosen.reduce((sum, s) => sum + (s.price ?? 0), 0);
 
     const attendee = await Attendee.create({
       user: userId,
-      event: eventDoc._id,
-      eventName: eventDoc.title,
+      ...(eventDoc ? { event: eventDoc._id } : {}),
+      eventName: isCustom ? trimmedCustomEventName : eventDoc.title,
+      isCustomEvent: isCustom,
+      ...(isCustom
+        ? {
+            customEventName: trimmedCustomEventName,
+            customEventImage: trimmedCustomEventImage || undefined,
+          }
+        : {}),
       ticketType: "Event Booking",
       registrationStatus: "registered",
       bookingStatus: "pending",
@@ -143,14 +179,20 @@ if (!exhibitorActive) {
       totalAmount,
       contactPhone: phone?.trim() || undefined,
       notes: message?.trim() || undefined,
-      registrationEventKey: `event:${eventDoc._id}:${dateKey}`,
-      uniqueKeysEnforced: true,
+      ...(!isCustom
+        ? {
+            registrationEventKey: `event:${eventDoc._id}:${dateKey}`,
+            uniqueKeysEnforced: true,
+          }
+        : {}),
     });
 
     await attendee.populate(eventPopulate);
 
     return res.status(201).json({
-      msg: "Booking request sent to the exhibitor",
+      msg: isCustom
+        ? "Custom event request sent for admin review"
+        : "Booking request sent to the exhibitor",
       attendee,
     });
   } catch (error) {
