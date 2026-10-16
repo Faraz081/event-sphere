@@ -174,6 +174,10 @@ export const createAttendee = async (req, res) => {
       });
     }
 
+    if (passStatus === "scanned" || registrationStatus === "attended") {
+      return res.status(400).json({ error: "Check-in status is set only by scanning the pass QR code." });
+    }
+
     if (expoId && mongoose.Types.ObjectId.isValid(expoId)) {
       const duplicate = await Attendee.findOne({ user: userId, expo: expoId });
       if (duplicate) {
@@ -292,6 +296,9 @@ export const updateAttendee = async (req, res) => {
           error: `Invalid registration status. Must be one of: ${VALID_REGISTRATION_STATUSES.join(", ")}`,
         });
       }
+      if (registrationStatus === "attended" && attendee.registrationStatus !== "attended") {
+        return res.status(400).json({ error: "Check-in status is set only by scanning the pass QR code." });
+      }
       attendee.registrationStatus = registrationStatus;
     }
 
@@ -309,6 +316,9 @@ export const updateAttendee = async (req, res) => {
         return res.status(400).json({
           error: `Invalid pass status. Must be one of: ${VALID_PASS_STATUSES.join(", ")}`,
         });
+      }
+      if (passStatus === "scanned" && attendee.passStatus !== "scanned") {
+        return res.status(400).json({ error: "Check-in status is set only by scanning the pass QR code." });
       }
       if (attendee.passStatus === "scanned" && passStatus !== "scanned") {
         return res.status(409).json({ error: "A checked-in pass cannot be reactivated." });
@@ -377,75 +387,6 @@ export const updateAttendee = async (req, res) => {
     console.error("Error updating attendee:", error);
     if (isDuplicateKeyError(error)) return duplicateResponse(res, error);
     res.status(500).json({ error: error.message || "Failed to update attendee" });
-  }
-};
-
-export const checkInAttendee = async (req, res) => {
-  try {
-    const passCode = typeof req.body.passCode === "string"
-      ? req.body.passCode.trim().toUpperCase()
-      : "";
-    const { expoId } = req.body;
-
-    if (!passCode) {
-      return res.status(400).json({ error: "Pass code is required." });
-    }
-
-    if (expoId && !mongoose.Types.ObjectId.isValid(expoId)) {
-      return res.status(400).json({ error: "Invalid expo ID." });
-    }
-
-    const passFilter = {
-      $or: [{ passCode }, { entryPassId: passCode }],
-      expo: expoId || { $ne: null },
-    };
-    const attendee = await Attendee.findOneAndUpdate(
-      {
-        ...passFilter,
-        bookingStatus: "confirmed",
-        passStatus: { $in: ["issued", "claimed"] },
-      },
-      {
-        $set: {
-          passStatus: "scanned",
-          registrationStatus: "attended",
-          checkedInAt: new Date(),
-        },
-      },
-      { new: true }
-    )
-      .populate("user", "name email")
-      .populate("expo", "title")
-      .populate("event", "title");
-
-    if (attendee) {
-      return res.status(200).json({
-        msg: "Check-in successful",
-        attendee,
-      });
-    }
-
-    const existingAttendee = await Attendee.findOne(passFilter)
-      .populate("user", "name email")
-      .populate("expo", "title")
-      .populate("event", "title");
-
-    if (!existingAttendee) {
-      return res.status(404).json({ error: "Pass not found." });
-    }
-
-   if (existingAttendee.passStatus === "scanned") {
-  return res.status(409).json({ error: "Pass already used.", attendee: existingAttendee });
-}
-
-    if (existingAttendee.passStatus === "revoked" || existingAttendee.bookingStatus === "cancelled") {
-      return res.status(400).json({ error: "This pass has been revoked or cancelled." });
-    }
-
-    return res.status(400).json({ error: "This pass is not valid for check-in." });
-  } catch (error) {
-    console.error("Error checking in attendee:", error);
-    return res.status(500).json({ error: error.message || "Failed to check in attendee." });
   }
 };
 

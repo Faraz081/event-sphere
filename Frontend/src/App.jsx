@@ -43,7 +43,6 @@ import AdminEvents from "./pages/admin/AdminEvents";
 import ExhibitorPublicProfile from "./pages/attendee/ExhibitorPublicProfile";
 import ExhibitorBookings from "./pages/exhibitor/ExhibitorBookings";
 import ExhibitorRegistrationForm from "./pages/exhibitor/ExhibitorRegistrationForm";
-import AdminCheckIn from "./pages/admin/AdminCheckIn";
 import CheckInPage from "./pages/admin/CheckInPage";
 
 function App() {
@@ -116,7 +115,6 @@ function App() {
             <Route path="/admin/feedback" element={<AdminFeedback />}/>
             <Route path="/admin/tickets" element={<AdminTickets />} />
             <Route path="/admin/events" element={<AdminEvents />} />
-            <Route path="/admin/check-in/:passCode" element={<AdminCheckIn />} />
           </Route>
 
       

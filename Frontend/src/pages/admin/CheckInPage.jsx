@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import api from "@/api/api";
 
@@ -38,8 +38,8 @@ const AdminCheckIn = () => {
         {state.status === "success" && (
           <>
             <CheckCircle2 className="mx-auto text-emerald-400" size={52} />
-            <h1 className="mt-3 text-2xl font-bold text-foreground">Approved</h1>
-            <p className="text-muted">Check-in successful</p>
+            <h1 className="mt-3 text-2xl font-bold text-foreground">Check-in approved</h1>
+            <p className="text-muted">This attendee is checked in.</p>
           </>
         )}
 
@@ -70,9 +70,6 @@ const AdminCheckIn = () => {
           </div>
         )}
 
-        <Link to="/admin/attendees" className="mt-6 inline-block text-sm text-gold underline">
-          Back to attendees
-        </Link>
       </div>
     </div>
   );
