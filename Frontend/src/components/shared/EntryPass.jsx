@@ -15,7 +15,8 @@ const EntryPass = ({ booking, user }) => {
 const checkInUrl = passCode
   ? `${SITE_URL}/check-in/${encodeURIComponent(passCode)}`
   : "";
-  const isCheckedIn = booking.passStatus === "scanned";
+  const isCheckedIn =
+    booking.passStatus === "scanned" || booking.registrationStatus === "attended";
   const isRevoked = booking.passStatus === "revoked" || booking.bookingStatus === "cancelled";
 
   const handleDownloadPass = async () => {

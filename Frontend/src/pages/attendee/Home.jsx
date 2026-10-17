@@ -416,7 +416,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
         Live & Upcoming
       </p>
       <h2 className="mt-3 font-serif text-4xl font-bold sm:text-5xl">
-        Ongoing <span className="text-[#c49424]">Events</span>
+        Our <span className="text-[#c49424]">Events</span>
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-[#5d574f]">
         Discover exhibitor events currently happening or coming soon and reserve your spot.

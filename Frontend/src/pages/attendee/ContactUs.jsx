@@ -185,7 +185,7 @@ const ContactUs = () => {
 
               
               <div>
-                <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
+                <label className="mb-2 block text-sm font-semibold text-[#2f2a24]">
                   Full Name
                 </label>
 
@@ -196,7 +196,7 @@ const ContactUs = () => {
                   onChange={handleChange}
                   placeholder="Enter your name"
                   required
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
                 />
               </div>
 
@@ -215,7 +215,7 @@ const ContactUs = () => {
                     onChange={handleChange}
                     placeholder="Your email"
                     required
-                    className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                    className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
                   />
                 </div>
 
@@ -230,7 +230,7 @@ const ContactUs = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="Your phone"
-                    className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                    className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
                   />
                 </div>
 
@@ -248,7 +248,7 @@ const ContactUs = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   placeholder="What is this about?"
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
                 />
               </div>
 
@@ -265,7 +265,7 @@ const ContactUs = () => {
                   rows="6"
                   placeholder="Write your message..."
                   required
-                  className="w-full resize-none rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
+                  className="w-full resize-none rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
                 />
               </div>
 

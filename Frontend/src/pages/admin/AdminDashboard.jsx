@@ -274,21 +274,21 @@ const AdminDashboard = () => {
               {loading ? "Loading analytics..." : "No expos created yet."}
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className="w-full min-w-0">
+              <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-border text-muted">
-                    <th className="text-left py-2 pr-4 font-medium">Title</th>
-                    <th className="text-left py-2 pr-4 font-medium">Date</th>
-                    <th className="text-left py-2 pr-4 font-medium">Location</th>
-                    <th className="text-left py-2 font-medium">Status</th>
+                    <th className="break-words py-2 pr-2 text-left font-medium sm:pr-4">Title</th>
+                    <th className="break-words py-2 pr-2 text-left font-medium sm:pr-4">Date</th>
+                    <th className="hidden break-words py-2 pr-2 text-left font-medium sm:pr-4 md:table-cell">Location</th>
+                    <th className="break-words py-2 text-left font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {analytics.recentExpos.map((expo) => (
                     <tr key={expo._id} className="border-b border-border last:border-0">
-                      <td className="py-3 pr-4 text-foreground font-medium">{expo.title}</td>
-                      <td className="py-3 pr-4 text-muted">
+                      <td className="break-words py-3 pr-2 font-medium text-foreground sm:pr-4">{expo.title}</td>
+                      <td className="break-words py-3 pr-2 text-muted sm:pr-4">
                         {expo.date
                           ? new Date(expo.date).toLocaleDateString("en-US", {
                               month: "short",
@@ -297,8 +297,8 @@ const AdminDashboard = () => {
                             })
                           : "—"}
                       </td>
-                      <td className="py-3 pr-4 text-muted">{expo.location || "—"}</td>
-                      <td className="py-3 text-muted capitalize">{expo.status}</td>
+                      <td className="hidden break-words py-3 pr-2 text-muted sm:pr-4 md:table-cell">{expo.location || "—"}</td>
+                      <td className="break-words py-3 text-muted capitalize">{expo.status}</td>
                     </tr>
                   ))}
                 </tbody>

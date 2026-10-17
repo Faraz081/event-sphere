@@ -161,7 +161,7 @@ const Footer = () => {
                   to="/service"
                   className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
                 >
-                  Our Services
+                  Our Expos
                 </Link>
               </li>
 

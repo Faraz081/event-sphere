@@ -23,8 +23,12 @@ expoSchema.statics.updateLifecycleStatuses = async function (now = new Date()) {
             { $set: { status: "completed" } }
         ),
         this.updateMany(
-            { status: "published", date: { $gte: startOfToday, $lt: startOfTomorrow } },
+            { status: { $in: ["published", "ongoing"] }, date: { $gte: startOfToday, $lt: startOfTomorrow } },
             { $set: { status: "ongoing" } }
+        ),
+        this.updateMany(
+            { status: { $in: ["published", "ongoing"] }, date: { $gte: startOfTomorrow } },
+            { $set: { status: "published" } }
         ),
     ]);
 };
