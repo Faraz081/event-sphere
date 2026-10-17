@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import servicesImage from '../../assets/service-gallery/service.jpg'
 import gallery1 from '../../assets/gallery-1.jpg'
-import { API_BASE_URL } from '../../api/api'
-import { fetchPublicExpos } from '@/api/publicService'
+import { API_BASE_URL } from '../../api/api';
+import { fetchPublicExpos } from '@/api/publicService';
 import BookmarkButton from '@/components/shared/BookmarkButton'
-import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks';
 
-import { ArrowUpRight, CalendarDays, Clock3, MapPin, Sparkles, Search, X } from 'lucide-react'
+import { ArrowUpRight, CalendarDays, Clock3, MapPin, Sparkles, Search, X } from 'lucide-react';
 
 const getImage = (banner) => {
   if (!banner) return gallery1
@@ -109,12 +109,8 @@ const Service = () => {
               </div>
             </div>
 
-            <div className="group overflow-hidden rounded-[2rem] shadow-xl">
-              <img
-                src={servicesImage}
-                alt="Event management services"
-                className="h-[420px] w-full object-cover transition duration-700 group-hover:scale-105 sm:h-[450px]"
-              />
+            <div className="group overflow-hidden rounded-4xl shadow-xl">
+              <img src={servicesImage} alt="Event management services" className="h-105 w-full object-cover transition duration-700 group-hover:scale-105 sm:h-112.5" />
             </div>
 
           </div>
@@ -138,34 +134,15 @@ const Service = () => {
             </p>
           </div>
 
-          <form
-            className="mx-auto mb-10 flex w-full max-w-xl items-center gap-3 rounded-full border border-[#eadfc9] bg-white p-2 shadow-sm"
-            onSubmit={(e) => e.preventDefault()}
-            role="search"
-          >
+          <form className="mx-auto mb-10 flex w-full max-w-xl items-center gap-3 rounded-full border border-[#eadfc9] bg-white p-2 shadow-sm" onSubmit={(e) => e.preventDefault()} role="search">
             <Search className="ml-3 h-5 w-5 shrink-0 text-[#c49424]" aria-hidden="true" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by title, category, exhibitor or company"
-              aria-label="Search expos"
-              className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]"
-            />
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by title, category, exhibitor or company" aria-label="Search expos" className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]" />
             {search && (
-              <button
-                type="button"
-                onClick={() => setSearch('')}
-                aria-label="Clear search"
-                className="rounded-full p-2 text-[#8a8379] transition hover:bg-[#fff4d9] hover:text-[#9a721c]"
-              >
+              <button type="button" onClick={() => setSearch('')} aria-label="Clear search" className="rounded-full p-2 text-[#8a8379] transition hover:bg-[#fff4d9] hover:text-[#9a721c]">
                 <X className="h-4 w-4" />
               </button>
             )}
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-            >
+            <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
               <Search className="h-4 w-4" aria-hidden="true" />
               Search
             </button>
@@ -186,16 +163,9 @@ const Service = () => {
                 const time = formatTime(expo.date)
 
                 return (
-                  <div
-                    key={expo._id}
-                    className="group overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-                  >
+                  <div key={expo._id} className="group overflow-hidden rounded-4xl border border-[#eadfc9] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div className="relative h-56 overflow-hidden">
-                      <img
-                        src={getImage(expo.banner)}
-                        alt={expo.title}
-                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                      />
+                      <img src={getImage(expo.banner)} alt={expo.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-black/20" />
                       <BookmarkButton expo={expo} className="absolute left-5 top-5" />
                       <span
@@ -295,10 +265,7 @@ const Service = () => {
               support for an outstanding event experience.
             </p>
 
-            <Link
-              to="/feedback"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-            >
+            <Link to="/feedback" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg">
               Get in Touch
               <ArrowUpRight className="h-4 w-4" />
             </Link>

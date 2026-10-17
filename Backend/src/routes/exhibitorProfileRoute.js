@@ -21,11 +21,8 @@ router.post(
 );
 
 router.get("/expos", identifyUser, getExpos);
-
 router.get("/applications", identifyUser, getMyApplications);
-
 router.get("/profile", identifyUser, getProfile);
-
 router.put("/profile", identifyUser, upload.single("logo"), updateProfile);
 
 export default router;

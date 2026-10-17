@@ -45,8 +45,7 @@ const FeedbackCard = ({ item, onSaved }) => {
             <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${statusStyles[item.status]}`}>{item.status}</span>
             {item.rating && (
               <span className="inline-flex items-center gap-1 text-xs text-gold">
-                <Star size={12} className="fill-gold" /> {item.rating}/5
-              </span>
+                <Star size={12} className="fill-gold" /> {item.rating}/5 </span>
             )}
           </div>
           {item.subject && <h3 className="mt-3 font-semibold text-foreground">{item.subject}</h3>}
@@ -67,29 +66,15 @@ const FeedbackCard = ({ item, onSaved }) => {
       </p>
 
       <div className="mt-4 grid gap-3 border-t border-border pt-4 md:grid-cols-[180px_1fr_auto] md:items-start">
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-        >
+        <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
           <option value="new">New</option>
           <option value="reviewed">Reviewed</option>
           <option value="resolved">Resolved</option>
         </select>
 
-        <textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          rows={2}
-          placeholder="Internal note (optional)"
-          className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-        />
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="Internal note (optional)" className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
 
-        <button
-          onClick={handleSave}
-          disabled={!dirty || saving}
-          className="rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-40"
-        >
+        <button onClick={handleSave} disabled={!dirty || saving} className="rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-40">
           {saving ? "Saving..." : "Save"}
         </button>
       </div>
@@ -141,11 +126,7 @@ const AdminFeedback = () => {
             </p>
           </div>
 
-          <button
-            onClick={load}
-            disabled={loading}
-            className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
-          >
+          <button onClick={load} disabled={loading} className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground">
             <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
             Refresh
           </button>
@@ -154,31 +135,17 @@ const AdminFeedback = () => {
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-            <input
-              type="text"
-              placeholder="Search subject or message..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-            />
+            <input type="text" placeholder="Search subject or message..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-xl border border-border bg-background px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-          >
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-xl border border-border bg-background px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
             <option value="all">All Status</option>
             <option value="new">New</option>
             <option value="reviewed">Reviewed</option>
             <option value="resolved">Resolved</option>
           </select>
 
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="rounded-xl border border-border bg-background px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-          >
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="rounded-xl border border-border bg-background px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
             <option value="all">All Types</option>
             <option value="suggestion">Suggestions</option>
             <option value="issue">Issues</option>

@@ -5,7 +5,7 @@ import { Plus, Trash2, Pencil } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
 import EventStalls from "@/components/shared/EventStalls";
-import {fetchMyEvents, createEvent, updateEvent, deleteEvent, uploadEventImage} from "@/store/slices/eventSlice";
+import { fetchMyEvents, createEvent, updateEvent, deleteEvent, uploadEventImage } from "@/store/slices/eventSlice";
 
 const BASE = import.meta.env.VITE_API_URL || "";
 const img = (url) => url?.startsWith("http") ? url : `${BASE}${url || ""}`;
@@ -161,18 +161,13 @@ const ExhibitorEvents = () => {
       <DashboardSectionPage title="My Events" description="Create and manage your events. New and edited events go to the admin for approval.">
         <div className="mb-6">
           <button type="button" onClick={handleNewEvent} className="flex items-center gap-2 rounded-lg bg-gold px-4 py-2 text-sm font-medium text-background">
-            <Plus size={16} /> New Event </button>
+            <Plus size={16} /> New Event
+          </button>
         </div>
 
       {formOpen && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-    onClick={() => !uploadingImages && resetForm()}
-  >
-    <div
-      className="max-h-[90vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl border border-border bg-surface p-5"
-      onClick={(e) => e.stopPropagation()}
-    >
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => !uploadingImages && resetForm()}>
+    <div className="max-h-[90vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl border border-border bg-surface p-5" onClick={(e) => e.stopPropagation()}>
       <h3 className="text-base font-semibold text-foreground">
         {editingId ? "Edit Event" : "Create Event"}
       </h3>
@@ -211,8 +206,7 @@ const ExhibitorEvents = () => {
 
       <div className={`${field} flex items-center gap-3`}>
         <span className="shrink-0 text-sm text-muted">Images</span>
-        <input type="file" accept="image/*" multiple onChange={(e) => setImages(Array.from(e.target.files || []))} disabled={uploadingImages}
-          className="min-w-0 flex-1 text-sm text-foreground"/>
+        <input type="file" accept="image/*" multiple onChange={(e) => setImages(Array.from(e.target.files || []))} disabled={uploadingImages} className="min-w-0 flex-1 text-sm text-foreground"/>
       </div>
 
       {images.length > 0 && (
@@ -224,9 +218,7 @@ const ExhibitorEvents = () => {
           {existingImages.map((url) => (
             <div key={url} className="relative">
               <img src={img(url)} alt="" className="h-14 w-14 rounded-lg border border-border object-cover"/>
-              <button type="button" onClick={() => setExistingImages((prev) => prev.filter((item) => item !== url))}
-                className="absolute -right-1 -top-1 rounded-full bg-red-500 px-1 text-[10px] text-white"
-                aria-label="Remove existing image">
+              <button type="button" onClick={() => setExistingImages((prev) => prev.filter((item) => item !== url))} className="absolute -right-1 -top-1 rounded-full bg-red-500 px-1 text-[10px] text-white" aria-label="Remove existing image">
                 x
               </button>
             </div>
@@ -235,13 +227,11 @@ const ExhibitorEvents = () => {
       )}
 
       <div className="flex gap-2">
-        <button type="button" onClick={handleSubmit} disabled={uploadingImages}
-          className="flex-1 rounded-lg bg-gold py-2 text-sm font-medium text-background disabled:opacity-50">
+        <button type="button" onClick={handleSubmit} disabled={uploadingImages} className="flex-1 rounded-lg bg-gold py-2 text-sm font-medium text-background disabled:opacity-50">
           {uploadingImages ? "Please wait..." : editingId ? "Save Changes" : "Submit Event"}
         </button>
 
-        <button type="button" onClick={resetForm} disabled={uploadingImages}
-          className="rounded-lg border border-border px-4 py-2 text-sm text-muted">
+        <button type="button" onClick={resetForm} disabled={uploadingImages} className="rounded-lg border border-border px-4 py-2 text-sm text-muted">
           Cancel
         </button>
       </div>

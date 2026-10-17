@@ -2,9 +2,9 @@ import weddingEventImage from '../../assets/event-gallery/wedding-1.jpg'
 import corporateEventImage from '../../assets/event-gallery/corporate-1.jpg'
 import birthdayEventImage from '../../assets/event-gallery/birthday-1.jpg'
 
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { Target, Eye, CalendarCheck, Users, Diamond, Headset, ChevronDown  } from 'lucide-react'
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Target, Eye, CalendarCheck, Users, Diamond, Headset, ChevronDown } from 'lucide-react';
 
 export default function AboutPlatform() {
   const settings = useSelector((state) => state.websiteSettings.settings)
@@ -59,7 +59,7 @@ export default function AboutPlatform() {
         <div className={`grid items-center gap-12 ${aboutImage ? 'lg:grid-cols-2' : ''}`}>
 
           {aboutImage && (
-            <div className="group h-72 overflow-hidden rounded-[2rem] bg-[#f8f5ef] shadow-lg sm:h-96">
+            <div className="group h-72 overflow-hidden rounded-4xl bg-[#f8f5ef] shadow-lg sm:h-96">
               <img
                 src={aboutImage}
                 alt={websiteName ? `${websiteName} event management platform` : ''}
@@ -232,10 +232,7 @@ export default function AboutPlatform() {
             { name: 'ELITE EVENTS', subtitle: 'Event Production' },
             { name: 'PRO CONNECT', subtitle: 'Business Network' },
           ].map((partner) => (
-            <div
-              key={partner.name}
-              className="flex min-h-32 flex-col items-center justify-center rounded-2xl border border-[#f0eae1] bg-white p-5 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
-            >
+            <div key={partner.name} className="flex min-h-32 flex-col items-center justify-center rounded-2xl border border-[#f0eae1] bg-white p-5 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md">
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-[#c49424]/40 bg-[#fdf8ed] font-serif text-lg font-bold text-[#c49424]">
                 {partner.name.charAt(0)}
               </div>
@@ -295,17 +292,9 @@ export default function AboutPlatform() {
                 'Colorful celebrations filled with thoughtful details, joyful moments and memorable experiences.',
             },
           ].map((event) => (
-            <article
-              key={event.title}
-              className="group overflow-hidden rounded-3xl border border-[#f0eae1] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-            >
+            <article key={event.title} className="group overflow-hidden rounded-3xl border border-[#f0eae1] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
               <div className="overflow-hidden">
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  loading="lazy"
-                  className="h-64 w-full object-cover transition duration-700 group-hover:scale-105"
-                />
+                <img src={event.image} alt={event.title} loading="lazy" className="h-64 w-full object-cover transition duration-700 group-hover:scale-105" />
               </div>
 
               <div className="p-7">
@@ -325,7 +314,7 @@ export default function AboutPlatform() {
           ))}
         </div>
 
-        <div className="mt-10 rounded-[2rem] bg-[#2f2a24] px-7 py-10 text-center sm:px-12 sm:py-14">
+        <div className="mt-10 rounded-4xl bg-[#2f2a24] px-7 py-10 text-center sm:px-12 sm:py-14">
           <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#e2bd69]">
             Your Next Event Starts Here
           </p>
@@ -339,10 +328,7 @@ export default function AboutPlatform() {
             unforgettable event.
           </p>
 
-          <a
-            href="/book-now"
-            className="mt-7 inline-flex rounded-full bg-[#c49424] px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-          >
+          <a href="/book-now" className="mt-7 inline-flex rounded-full bg-[#c49424] px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
             Plan Your Event
           </a>
         </div>
@@ -365,10 +351,7 @@ export default function AboutPlatform() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
           {teamMembers.map((member, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-3xl p-8 text-center shadow-sm border border-[#f0eae1] hover:shadow-md transition duration-300 flex flex-col items-center"
-            >
+            <div key={index} className="bg-white rounded-3xl p-8 text-center shadow-sm border border-[#f0eae1] hover:shadow-md transition duration-300 flex flex-col items-center">
 
               <div className="w-36 h-36 rounded-full border-2 border-[#c49424] flex items-center justify-center mb-6 overflow-hidden bg-[#fdf8ed]">
                 <Users className="w-16 h-16 text-[#c49424]" />
@@ -436,13 +419,8 @@ export default function AboutPlatform() {
                   'Visit our Contact page to send us your questions or request assistance with your event.',
               },
             ].map((faq, index) => (
-              <div
-                key={index}
-                className="overflow-hidden rounded-xl border border-[#e4dccd] bg-white"
-              >
-                <button
-                  type="button"
-                  onClick={() =>
+              <div key={index} className="overflow-hidden rounded-xl border border-[#e4dccd] bg-white">
+                <button type="button" onClick={() =>
                     setOpenFaq(openFaq === index ? null : index)
                   }
                   className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left transition hover:bg-[#fffdf9]"
@@ -475,7 +453,7 @@ export default function AboutPlatform() {
       <section className="bg-white px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 text-center lg:grid-cols-4">
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               140+
             </p>
             <p className="mt-2 text-sm text-[#5d574f]">
@@ -484,7 +462,7 @@ export default function AboutPlatform() {
           </div>
 
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               3,000+
             </p>
             <p className="mt-2 text-sm text-[#5d574f]">
@@ -493,7 +471,7 @@ export default function AboutPlatform() {
           </div>
 
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               80K+
             </p>
             <p className="mt-2 text-sm text-[#5d574f]">
@@ -502,7 +480,7 @@ export default function AboutPlatform() {
           </div>
 
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               99%
             </p>
             <p className="mt-2 text-sm text-[#5d574f]">

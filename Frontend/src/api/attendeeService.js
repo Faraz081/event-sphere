@@ -5,12 +5,10 @@ export const fetchAttendees = async (params = {}) => {
   return response.data;
 };
 
-
 export const fetchAttendeeStats = async () => {
   const response = await api.get("/api/attendees/stats");
   return response.data;
 };
-
 
 export const fetchAttendeeById = async (id) => {
   const response = await api.get(`/api/attendees/${id}`);
@@ -22,12 +20,10 @@ export const createAttendee = async (attendeeData) => {
   return response.data;
 };
 
-
 export const updateAttendee = async (id, attendeeData) => {
   const response = await api.put(`/api/attendees/${id}`, attendeeData);
   return response.data;
 };
-
 
 export const deleteAttendee = async (id) => {
   const response = await api.delete(`/api/attendees/${id}`);

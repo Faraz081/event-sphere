@@ -17,9 +17,7 @@ const AuthLayout = ({ title, subtitle, children }) => {
         <div className="absolute inset-0 bg-linear-to-t from-[#211a12]/90 via-[#211a12]/35 to-[#211a12]/10" />
         <div className="relative flex min-h-screen flex-col justify-between p-12 xl:p-16">
           <Link to="/home" className="inline-flex w-fit items-center gap-3 text-white">
-            {logo ? (
-              <img src={logo} alt="" className="max-h-10 max-w-40 object-contain" />
-            ) : (
+            {logo ? ( <img src={logo} alt="" className="max-h-10 max-w-40 object-contain" />) : (
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/15 text-[#f2c14e] backdrop-blur">
                 <Sparkles size={20} />
               </span>
@@ -55,12 +53,9 @@ const AuthLayout = ({ title, subtitle, children }) => {
       <main className="flex min-h-screen flex-col bg-background px-5 py-6 sm:px-10 lg:px-12 xl:px-20">
         <div className="flex items-center justify-between lg:justify-end">
           <Link to="/home" className="inline-flex items-center gap-2 font-display text-xl font-semibold text-foreground lg:hidden">
-            {logo ? (
-              <img src={logo} alt="" className="max-h-8 max-w-32 object-contain" />
-            ) : (
+            {logo ? (<img src={logo} alt="" className="max-h-8 max-w-32 object-contain" />) : (
               <Sparkles size={19} className="text-gold" />
-            )}
-            {websiteName}
+            )} {websiteName}
           </Link>
           <Link to="/home" className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted transition hover:bg-white hover:text-foreground">
             <ArrowLeft size={16} />
@@ -70,11 +65,8 @@ const AuthLayout = ({ title, subtitle, children }) => {
 
         <div className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center py-10">
           <div className="mb-8">
-            {websiteName && (
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-gold">
-                Welcome to {websiteName}
-              </p>
-            )}
+            {websiteName && ( <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-gold">
+                Welcome to {websiteName} </p> )}
             <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               {title}
             </h1>
@@ -85,9 +77,7 @@ const AuthLayout = ({ title, subtitle, children }) => {
             {children}
           </section>
 
-          <p className="mt-6 text-center text-xs text-muted">
-            Thoughtfully planned. Beautifully experienced.
-          </p>
+          <p className="mt-6 text-center text-xs text-muted"> Thoughtfully planned. Beautifully experienced. </p>
         </div>
       </main>
     </div>

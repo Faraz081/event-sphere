@@ -1,20 +1,11 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { toast } from 'sonner'
-import {
-  MessageSquareText,
-  UserRound,
-  Mail,
-  Star,
-  Send,
-  Lightbulb,
-  TriangleAlert,
-  CheckCircle2,
-} from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { MessageSquareText, UserRound, Mail, Star, Send, Lightbulb, TriangleAlert, CheckCircle2 } from 'lucide-react';
 
-import { submitFeedback } from '@/api/feedbackService'
-import { fetchPublicExpos } from '@/api/publicService'
+import { submitFeedback } from '@/api/feedbackService';
+import { fetchPublicExpos } from '@/api/publicService';
 
 const TYPES = [
   { value: 'suggestion', label: 'Suggestion', icon: Lightbulb },
@@ -106,7 +97,7 @@ const Feedback = () => {
       
       <section className="mx-auto mt-12 max-w-3xl">
 
-        <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-6 shadow-xl sm:p-10">
+        <div className="rounded-4xl border border-[#eadfc9] bg-white p-6 shadow-xl sm:p-10">
 
           {!user && (
             <div className="py-6 text-center">
@@ -137,11 +128,7 @@ const Feedback = () => {
                 Your feedback has been sent to our team.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="rounded-full bg-[#c49424] px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-                >
+                <button type="button" onClick={handleReset} className="rounded-full bg-[#c49424] px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
                   Send Another
                 </button>
                 <Link to="/" className="rounded-full border border-[#c49424] px-7 py-3 text-sm font-semibold text-[#8d681b] transition hover:bg-[#fffdf9]">
@@ -206,11 +193,7 @@ const Feedback = () => {
                 <label className="mb-2 block text-sm font-semibold text-[#4d473f]">
                   Select an Expo <span className="font-normal text-[#8a8379]">(optional)</span>
                 </label>
-                <select
-                  value={expo}
-                  onChange={(e) => setExpo(e.target.value)}
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                >
+                <select value={expo} onChange={(e) => setExpo(e.target.value)} className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20">
                   <option value="">Platform feedback / no specific expo</option>
                   {expos.map((item) => <option key={item._id} value={item._id}>{item.title}</option>)}
                 </select>
@@ -221,14 +204,7 @@ const Feedback = () => {
                   Subject <span className="font-normal text-[#8a8379]">(optional)</span>
                 </label>
 
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  maxLength={120}
-                  placeholder={type === 'issue' ? 'e.g. Booth page is not loading' : 'e.g. Add a map of the venue'}
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                />
+                <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} maxLength={120} placeholder={type === 'issue' ? 'e.g. Booth page is not loading' : 'e.g. Add a map of the venue'} className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20" />
               </div>
 
               <div>
@@ -267,24 +243,11 @@ const Feedback = () => {
                   Your Message
                 </label>
 
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows="6"
-                  minLength={10}
-                  maxLength={2000}
-                  placeholder={type === 'issue' ? 'What went wrong? What were you trying to do?' : 'Tell us your idea or experience...'}
-                  required
-                  className="w-full resize-none rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                />
+                <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows="6" minLength={10} maxLength={2000} placeholder={type === 'issue' ? 'What went wrong? What were you trying to do?' : 'Tell us your idea or experience...'} required className="w-full resize-none rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20" />
                 <p className="mt-1 text-right text-xs text-[#8a8379]">{message.length}/2000</p>
               </div>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:opacity-60"
-              >
+              <button type="submit" disabled={submitting} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:opacity-60">
                 {submitting ? 'Sending...' : 'Submit Feedback'}
                 <Send className="h-4 w-4" />
               </button>

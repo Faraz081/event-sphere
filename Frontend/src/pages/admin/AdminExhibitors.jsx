@@ -1,33 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import { fetchApplications, approveApplication, rejectApplication } from "@/api/exhibitorService";
 import { fetchExpoTickets, cancelExpoTicket } from "@/api/adminTicketService";
 import { API_BASE_URL } from "@/api/api";
 import { toast } from "sonner";
-import {
-  Search,
-  CheckCircle,
-  XCircle,
-  RotateCcw,
-  AlertCircle,
-  Building2,
-  Mail,
-  Phone,
-  Eye,
-  FileText,
-  Ticket,
-  Ban,
-} from "lucide-react";
+import { Search, CheckCircle, XCircle, RotateCcw, AlertCircle, Building2, Mail, Phone, Eye, FileText, Ticket, Ban } from "lucide-react";
 
 const FILE_BASE = API_BASE_URL;
 
@@ -190,11 +169,7 @@ const AdminExhibitors = () => {
             </p>
           </div>
 
-          <button
-            onClick={loadApplications}
-            disabled={loading}
-            className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors self-start"
-          >
+          <button onClick={loadApplications} disabled={loading} className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors self-start">
             <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
             Refresh
           </button>
@@ -203,20 +178,10 @@ const AdminExhibitors = () => {
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-            <input
-              type="text"
-              placeholder="Search by company, email, products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-            />
+            <input type="text" placeholder="Search by company, email, products..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-          >
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>
@@ -278,10 +243,7 @@ const AdminExhibitors = () => {
 
         <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
           <span className="text-xs text-muted">Applied {formatDate(a.createdAt)}</span>
-          <button
-            onClick={() => openReview(a)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors"
-          >
+          <button onClick={() => openReview(a)} className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors">
             <Eye size={14} />
             Review
           </button>
@@ -307,7 +269,7 @@ const AdminExhibitors = () => {
           <tbody>
            {loading ? (
   <tr>
-    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="block! md:table-cell! px-6 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
         <p className="text-sm">Loading applications...</p>
@@ -316,7 +278,7 @@ const AdminExhibitors = () => {
   </tr>
 ) : applications.length === 0 ? (
   <tr>
-    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="block! md:table-cell! px-6 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <Building2 className="opacity-40" size={32} />
         <p className="text-sm">No applications found for this filter.</p>
@@ -337,13 +299,11 @@ const AdminExhibitors = () => {
 
                   <td data-label="Contact" className="px-6 py-4 text-muted text-sm">
                     <div className="flex items-center gap-1.5">
-                      <Mail size={14} /> {a.email || a.userId?.email}
-                    </div>
+                      <Mail size={14} /> {a.email || a.userId?.email} </div>
 
                     {(a.phone || a.userId?.phone) && (
                       <div className="flex items-center gap-1.5 mt-1">
-                        <Phone size={14} /> {a.phone || a.userId?.phone}
-                      </div>
+                        <Phone size={14} /> {a.phone || a.userId?.phone} </div>
                     )}
                   </td>
 
@@ -363,10 +323,7 @@ const AdminExhibitors = () => {
 
                   <td data-label="Actions" className="px-6 py-4">
                     <div className="flex items-center justify-end">
-                      <button
-                        onClick={() => openReview(a)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
-                      >
+                      <button onClick={() => openReview(a)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors">
                         <Eye size={14} />
                         Review
                       </button>
@@ -394,49 +351,37 @@ const AdminExhibitors = () => {
             {selected && (
               <div className="max-h-[55vh] space-y-3 overflow-y-auto bg-[#f8f5ef] px-6 py-5 text-sm text-[#5d574f]">
                 {selected.logo && (
-                  <img
-                    src={`${FILE_BASE}${selected.logo}`}
-                    alt="logo"
-                    className="mb-3 h-16 w-16 rounded-lg border border-[#eadfc9] bg-[#fffdf9] object-cover"
-                  />
-                )}
+                  <img src={`${FILE_BASE}${selected.logo}`} alt="logo" className="mb-3 h-16 w-16 rounded-lg border border-[#eadfc9] bg-[#fffdf9] object-cover"/>)}
 
                 <p>
-                  <b className="text-[#2f2a24]">Exhibitor:</b> {selected.userId?.name}
-                </p>
+                  <b className="text-[#2f2a24]">Exhibitor:</b> {selected.userId?.name} </p>
 
                 <p>
-                  <b className="text-[#2f2a24]">Products/Services:</b> {selected.productsServices}
-                </p>
+                  <b className="text-[#2f2a24]">Products/Services:</b> {selected.productsServices} </p>
 
                 {selected.description && (
                   <p>
-                    <b className="text-[#2f2a24]">Description:</b> {selected.description}
-                  </p>
+                    <b className="text-[#2f2a24]">Description:</b> {selected.description} </p>
                 )}
 
                 {selected.email && (
                   <p>
-                    <b className="text-[#2f2a24]">Email:</b> {selected.email}
-                  </p>
+                    <b className="text-[#2f2a24]">Email:</b> {selected.email} </p>
                 )}
 
                 {selected.phone && (
                   <p>
-                    <b className="text-[#2f2a24]">Phone:</b> {selected.phone}
-                  </p>
+                    <b className="text-[#2f2a24]">Phone:</b> {selected.phone} </p>
                 )}
 
                 {selected.address && (
                   <p>
-                    <b className="text-[#2f2a24]">Address:</b> {selected.address}
-                  </p>
+                    <b className="text-[#2f2a24]">Address:</b> {selected.address} </p>
                 )}
 
                 {selected.adminNote && (
                   <p>
-                    <b className="text-[#2f2a24]">Previous note:</b> {selected.adminNote}
-                  </p>
+                    <b className="text-[#2f2a24]">Previous note:</b> {selected.adminNote} </p>
                 )}
 
                 <div>
@@ -477,10 +422,7 @@ const AdminExhibitors = () => {
                   ) : (
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {relatedTickets.map((t) => (
-                        <div
-                          key={t._id}
-                          className="flex items-center justify-between gap-3 rounded-lg border border-[#eadfc9] bg-[#fffdf9] px-3 py-2 text-sm"
-                        >
+                        <div key={t._id} className="flex items-center justify-between gap-3 rounded-lg border border-[#eadfc9] bg-[#fffdf9] px-3 py-2 text-sm">
                           <div className="min-w-0">
                             <div className="font-medium text-[#2f2a24] truncate">
                               {t.user?.name || "—"} · {t.user?.email || ""}
@@ -491,12 +433,7 @@ const AdminExhibitors = () => {
                           </div>
 
                           {["pending", "confirmed"].includes(t.bookingStatus) && (
-                            <button
-                              type="button"
-                              onClick={() => handleCancelTicket(t._id)}
-                              disabled={cancellingId === t._id}
-                              className="shrink-0 inline-flex items-center gap-1 rounded-md bg-red-500/15 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-500/25 disabled:opacity-50"
-                            >
+                            <button type="button" onClick={() => handleCancelTicket(t._id)} disabled={cancellingId === t._id} className="shrink-0 inline-flex items-center gap-1 rounded-md bg-red-500/15 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-500/25 disabled:opacity-50">
                               <Ban size={12} />
                               {cancellingId === t._id ? "..." : "Cancel"}
                             </button>
@@ -511,13 +448,7 @@ const AdminExhibitors = () => {
 
             {rejecting && (
               <div className="bg-[#f8f5ef] px-6 pb-5">
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Reason for rejection (exhibitor will see this)"
-                  rows={3}
-                  className="w-full rounded-xl border border-[#eadfc9] bg-[#fffdf9] p-3 text-sm text-[#2f2a24] placeholder:text-[#5d574f] focus:outline-none focus:ring-2 focus:ring-[#c49424]/40"
-                />
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Reason for rejection (exhibitor will see this)" rows={3} className="w-full rounded-xl border border-[#eadfc9] bg-[#fffdf9] p-3 text-sm text-[#2f2a24] placeholder:text-[#5d574f] focus:outline-none focus:ring-2 focus:ring-[#c49424]/40" />
               </div>
             )}
 
@@ -529,20 +460,13 @@ const AdminExhibitors = () => {
               {!rejecting ? (
                 <>
                   {selected?.status !== "rejected" && (
-                    <button
-                      onClick={() => setRejecting(true)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-500/25"
-                    >
+                    <button onClick={() => setRejecting(true)} className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-500/25">
                       <XCircle size={14} /> Reject
                     </button>
                   )}
 
                   {selected?.status !== "approved" && (
-                    <button
-                      onClick={handleApprove}
-                      disabled={actionLoading}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#c49424] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
-                    >
+                    <button onClick={handleApprove} disabled={actionLoading} className="inline-flex items-center gap-1.5 rounded-lg bg-[#c49424] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60">
                       <CheckCircle size={14} />
                       {actionLoading ? "Processing..." : "Approve"}
                     </button>
@@ -550,18 +474,11 @@ const AdminExhibitors = () => {
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={() => setRejecting(false)}
-                    className="rounded-lg border border-[#eadfc9] bg-transparent px-4 py-2 text-sm text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]"
-                  >
+                  <button onClick={() => setRejecting(false)} className="rounded-lg border border-[#eadfc9] bg-transparent px-4 py-2 text-sm text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]">
                     Back
                   </button>
 
-                  <button
-                    onClick={handleReject}
-                    disabled={actionLoading}
-                    className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
-                  >
+                  <button onClick={handleReject} disabled={actionLoading} className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60">
                     {actionLoading ? "Processing..." : "Confirm reject"}
                   </button>
                 </>

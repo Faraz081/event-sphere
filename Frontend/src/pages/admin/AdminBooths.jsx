@@ -1,40 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import {
-  fetchBooths,
-  createBooth,
-  updateBooth,
-  deleteBooth,
-  fetchExposForSelect,
-} from "@/api/boothService";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { fetchBooths, createBooth, updateBooth, deleteBooth, fetchExposForSelect } from "@/api/boothService";
 import { fetchApplications } from "@/api/exhibitorService";
 import { toast } from "sonner";
-import {
-  Plus,
-  Search,
-  Edit2,
-  Trash2,
-  X,
-  RotateCcw,
-  AlertCircle,
-  Building2,
-  UserPlus,
-  UserMinus,
-  LayoutGrid,
-  List,
-  CheckCircle,
-} from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, RotateCcw, AlertCircle, Building2, UserPlus, UserMinus, LayoutGrid, List, CheckCircle } from "lucide-react";
 
 const statusStyles = {
   available: "bg-gold/20 text-gold border border-gold/40",
@@ -69,7 +40,7 @@ const AdminBooths = () => {
   const [expoFilter, setExpoFilter] = useState("");
   const [expoCapacity, setExpoCapacity] = useState(null);
   const boothRequestId = useRef(0);
-  const [viewMode, setViewMode] = useState("table"); 
+  const [viewMode, setViewMode] = useState("table");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
@@ -225,7 +196,7 @@ const AdminBooths = () => {
     }
   };
 
-    const openAssignModal = async (booth) => {
+  const openAssignModal = async (booth) => {
     setAssignBooth(booth);
     setSelectedExhibitor("");
     setApprovedExhibitors([]);
@@ -234,7 +205,6 @@ const AdminBooths = () => {
       setApprovedExhibitors(data.applications ?? []);
     } catch (err) {
       console.log(err);
-      
       toast.error("Failed to load approved exhibitors");
     }
   };
@@ -275,7 +245,7 @@ const AdminBooths = () => {
     }
   };
 
-    const handleApproveRequest = async (booth) => {
+  const handleApproveRequest = async (booth) => {
     try {
       await updateBooth(booth._id, { status: "reserved" });
       toast.success(`Booth "${booth.boothNumber}" approved`);
@@ -288,8 +258,6 @@ const AdminBooths = () => {
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-8">
-     
-
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-2">
@@ -301,44 +269,22 @@ const AdminBooths = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-         
-
             <div className="inline-flex rounded-xl border border-border bg-surface p-1">
-              <button
-                onClick={() => setViewMode("table")}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                  viewMode === "table"
-                    ? "bg-gold text-background font-medium"
-                    : "text-muted hover:text-foreground"
-                }`}
-              >
+              <button onClick={() => setViewMode("table")} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                viewMode === "table" ? "bg-gold text-background font-medium" : "text-muted hover:text-foreground"}`}>
                 <List size={16} /> Table
               </button>
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-gold text-background font-medium"
-                    : "text-muted hover:text-foreground"
-                }`}
-              >
+              <button onClick={() => setViewMode("grid")} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                viewMode === "grid" ? "bg-gold text-background font-medium" : "text-muted hover:text-foreground"}`}>
                 <LayoutGrid size={16} /> Floor
               </button>
             </div>
 
-            <button
-              onClick={loadBooths}
-              disabled={loading}
-              className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors"
-            >
+            <button onClick={loadBooths} disabled={loading} className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors">
               <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
               Refresh
             </button>
-            <button
-              onClick={openCreateModal}
-              disabled={!expoFilter || expoCapacity?.remainingSlots === 0}
-              className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity"
-            >
+            <button onClick={openCreateModal} disabled={!expoFilter || expoCapacity?.remainingSlots === 0} className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity">
               <Plus size={18} />
               {expoFilter && expoCapacity?.remainingSlots === 0 ? "Booth Full" : "Add Booth"}
             </button>
@@ -355,31 +301,17 @@ const AdminBooths = () => {
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-            <input
-              type="text"
-              placeholder="Search booth number, size, location..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-            />
+            <input type="text" placeholder="Search booth number, size, location..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-          >
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
             <option value="all">All Status</option>
             <option value="available">Available</option>
             <option value="reserved">Reserved</option>
             <option value="occupied">Occupied</option>
           </select>
 
-          <select
-            value={expoFilter}
-            onChange={handleExpoFilterChange}
-            className="bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 min-w-[180px]"
-          >
+          <select value={expoFilter} onChange={handleExpoFilterChange} className="bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 min-w-45">
             <option value="">Select Expo</option>
             {expos.map((expo) => (
               <option key={expo._id} value={expo._id}>
@@ -426,26 +358,26 @@ const AdminBooths = () => {
             </thead>
             <tbody>
               {loading ? (
-  <tr>
-    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
-      <div className="flex w-full flex-col items-center justify-center gap-2">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
-        <p className="text-sm">Loading booths...</p>
-      </div>
-    </td>
-  </tr>
-) : booths.length === 0 ? (
-  <tr>
-    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
-      <div className="flex w-full flex-col items-center justify-center gap-2">
-        <Building2 className="opacity-40" size={32} />
-        <p className="text-sm">
-          {expoFilter ? "No booths found. Create your first booth." : "Select an expo to view its booths"}
-        </p>
-      </div>
-    </td>
-  </tr>
-) : (
+                <tr>
+                  <td colSpan={7} className="block! md:table-cell! px-6 py-12 text-center text-muted">
+                    <div className="flex w-full flex-col items-center justify-center gap-2">
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+                      <p className="text-sm">Loading booths...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : booths.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="block! md:table-cell! px-6 py-12 text-center text-muted">
+                    <div className="flex w-full flex-col items-center justify-center gap-2">
+                      <Building2 className="opacity-40" size={32} />
+                      <p className="text-sm">
+                        {expoFilter ? "No booths found. Create your first booth." : "Select an expo to view its booths"}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
                 booths.map((booth) => (
                   <tr key={booth._id} className="border-b border-border last:border-0 hover:bg-surface/50">
                     <td data-label="Booth #" className="px-6 py-4 text-foreground font-mono font-medium">
@@ -464,54 +396,31 @@ const AdminBooths = () => {
                       {booth.exhibitor?.name || booth.exhibitor?.companyName || "—"}
                     </td>
                     <td data-label="Status" className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
-                          statusStyles[booth.status] || statusStyles.available
-                        }`}
-                      >
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                        statusStyles[booth.status] || statusStyles.available}`}>
                         {booth.status}
                       </span>
                     </td>
                     <td data-label="Actions" className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1">
-                          {booth.status === "pending" && (
-                          <button
-                            onClick={() => handleApproveRequest(booth)}
-                            className="p-2 rounded-lg text-muted hover:text-emerald-300 hover:bg-emerald/10 transition-colors"
-                            title="Approve Request"
-                          >
+                        {booth.status === "pending" && (
+                          <button onClick={() => handleApproveRequest(booth)} className="p-2 rounded-lg text-muted hover:text-emerald-300 hover:bg-emerald/10 transition-colors" title="Approve Request">
                             <CheckCircle size={16} />
                           </button>
                         )}
                         {booth.status === "available" ? (
-                          <button
-                            onClick={() => openAssignModal(booth)}
-                            className="p-2 rounded-lg text-muted hover:text-emerald-300 hover:bg-emerald/10 transition-colors"
-                            title="Assign Exhibitor"
-                          >
+                          <button onClick={() => openAssignModal(booth)} className="p-2 rounded-lg text-muted hover:text-emerald-300 hover:bg-emerald/10 transition-colors" title="Assign Exhibitor">
                             <UserPlus size={16} />
                           </button>
                         ) : (
-                          <button
-                            onClick={() => handleUnassign(booth)}
-                            className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors"
-                            title="Unassign Exhibitor"
-                          >
+                          <button onClick={() => handleUnassign(booth)} className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors" title="Unassign Exhibitor">
                             <UserMinus size={16} />
                           </button>
                         )}
-                        <button
-                          onClick={() => openEditModal(booth)}
-                          className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors"
-                          title="Edit"
-                        >
+                        <button onClick={() => openEditModal(booth)} className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors" title="Edit">
                           <Edit2 size={16} />
                         </button>
-                        <button
-                          onClick={() => setBoothToDelete(booth)}
-                          className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                          title="Delete"
-                        >
+                        <button onClick={() => setBoothToDelete(booth)} className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors" title="Delete">
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -535,12 +444,7 @@ const AdminBooths = () => {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                 {booths.map((booth) => (
-                  <div
-                    key={booth._id}
-                    className={`relative rounded-xl border-2 p-3 min-h-[120px] flex flex-col transition-colors ${
-                      statusCardStyles[booth.status] || statusCardStyles.available
-                    }`}
-                  >
+                  <div key={booth._id} className={`relative rounded-xl border-2 p-3 min-h-30 flex flex-col transition-colors ${ statusCardStyles[booth.status] || statusCardStyles.available}`}>
                     <div className="font-mono font-bold text-foreground text-lg">
                       {booth.boothNumber}
                     </div>
@@ -559,24 +463,15 @@ const AdminBooths = () => {
 
                     <div className="flex gap-1 mt-2">
                       {booth.status === "available" ? (
-                        <button
-                          onClick={() => openAssignModal(booth)}
-                          className="flex-1 text-xs py-1 rounded-lg bg-emerald/20 text-emerald-300 hover:bg-emerald/30"
-                        >
+                        <button onClick={() => openAssignModal(booth)} className="flex-1 text-xs py-1 rounded-lg bg-emerald/20 text-emerald-300 hover:bg-emerald/30">
                           Assign
                         </button>
                       ) : (
-                        <button
-                          onClick={() => handleUnassign(booth)}
-                          className="flex-1 text-xs py-1 rounded-lg bg-gold/20 text-gold hover:bg-gold/30"
-                        >
+                        <button onClick={() => handleUnassign(booth)} className="flex-1 text-xs py-1 rounded-lg bg-gold/20 text-gold hover:bg-gold/30">
                           Unassign
                         </button>
                       )}
-                      <button
-                        onClick={() => openEditModal(booth)}
-                        className="px-2 text-xs py-1 rounded-lg bg-surface border border-border text-muted hover:text-foreground"
-                      >
+                      <button onClick={() => openEditModal(booth)} className="px-2 text-xs py-1 rounded-lg bg-surface border border-border text-muted hover:text-foreground">
                         Edit
                       </button>
                     </div>
@@ -602,13 +497,7 @@ const AdminBooths = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Expo *</label>
-                  <select
-                    name="expo"
-                    value={formData.expo}
-                    onChange={handleInputChange}
-                    disabled={!editingId}
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-                  >
+                  <select name="expo" value={formData.expo} onChange={handleInputChange} disabled={!editingId} className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
                     <option value="">Select Expo</option>
                     {expos.map((expo) => (
                       <option key={expo._id} value={expo._id}>
@@ -620,47 +509,23 @@ const AdminBooths = () => {
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Booth Number *</label>
-                  <input
-                    name="boothNumber"
-                    value={formData.boothNumber}
-                    onChange={handleInputChange}
-                    placeholder="e.g. A-12"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-                  />
+                  <input name="boothNumber" value={formData.boothNumber} onChange={handleInputChange} placeholder="e.g. A-12" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-muted mb-1.5">Size</label>
-                    <input
-                      name="size"
-                      value={formData.size}
-                      onChange={handleInputChange}
-                      placeholder="e.g. 10x10"
-                      className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-                    />
+                    <input name="size" value={formData.size} onChange={handleInputChange} placeholder="e.g. 10x10" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
                   </div>
                   <div>
                     <label className="block text-sm text-muted mb-1.5">Price</label>
-                    <input
-                      name="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      placeholder="0"
-                      className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-                    />
+                    <input name="price" type="number" value={formData.price} onChange={handleInputChange} placeholder="0" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Status</label>
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-                  >
+                  <select name="status" value={formData.status} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
                     <option value="available">Available</option>
                     <option value="reserved">Reserved</option>
                     <option value="occupied">Occupied</option>
@@ -669,28 +534,15 @@ const AdminBooths = () => {
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Location / Hall</label>
-                  <input
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Hall A, Near Entrance"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-                  />
+                  <input name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g. Hall A, Near Entrance" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={closeModal}
-                  className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors"
-                >
+                <button onClick={closeModal} className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors">
                   Cancel
                 </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
+                <button onClick={handleSave} disabled={saving} className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50">
                   {saving ? "Saving..." : editingId ? "Update Booth" : "Create Booth"}
                 </button>
               </div>
@@ -718,11 +570,7 @@ const AdminBooths = () => {
                 <label className="block text-sm text-muted mb-1.5">
                   Select Approved Exhibitor *
                 </label>
-                <select
-                  value={selectedExhibitor}
-                  onChange={(e) => setSelectedExhibitor(e.target.value)}
-                  className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40"
-                >
+                <select value={selectedExhibitor} onChange={(e) => setSelectedExhibitor(e.target.value)} className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40">
                   <option value="">Choose exhibitor...</option>
                   {approvedExhibitors.length === 0 ? (
                     <option disabled>No approved exhibitors for this expo</option>
@@ -737,17 +585,10 @@ const AdminBooths = () => {
               </div>
 
               <div className="flex justify-end gap-3">
-                <button
-                  onClick={closeAssignModal}
-                  className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors"
-                >
+                <button onClick={closeAssignModal} className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors">
                   Cancel
                 </button>
-                <button
-                  onClick={handleAssign}
-                  disabled={assigning || !selectedExhibitor}
-                  className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
+                <button onClick={handleAssign} disabled={assigning || !selectedExhibitor} className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50">
                   {assigning ? "Assigning..." : "Assign Booth"}
                 </button>
               </div>
@@ -756,10 +597,7 @@ const AdminBooths = () => {
         )}
 
        
-        <AlertDialog
-          open={!!boothToDelete}
-          onOpenChange={(open) => !open && setBoothToDelete(null)}
-        >
+        <AlertDialog open={!!boothToDelete} onOpenChange={(open) => !open && setBoothToDelete(null)} >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this booth?</AlertDialogTitle>
@@ -772,10 +610,7 @@ const AdminBooths = () => {
               <AlertDialogCancel className="bg-transparent border border-border text-muted hover:text-foreground">
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="bg-gold text-background hover:opacity-90"
-              >
+              <AlertDialogAction onClick={handleDelete} className="bg-gold text-background hover:opacity-90">
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>

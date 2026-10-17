@@ -1,29 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  AlertCircle,
-  Eye,
-  Inbox,
-  Mail,
-  Phone,
-  RotateCcw,
-  Search,
-  X,
-} from "lucide-react";
+import { AlertCircle, Eye, Inbox, Mail, Phone, RotateCcw, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { fetchContactMessages } from "@/api/contactService";
 import DashboardLayout from "@/layouts/DashboardLayout";
 
 const formatDate = (value) => {
   const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? "—"
-    : date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 };
 
 const formatShortDate = (value) => {
   const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? "—"
+  return Number.isNaN(date.getTime()) ? "—"
     : date.toLocaleDateString(undefined, { dateStyle: "medium" });
 };
 
@@ -37,39 +25,21 @@ const ContactMessageDialog = ({ message, onClose }) => {
   }, [onClose]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="contact-message-title"
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl sm:p-7"
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section role="dialog" aria-modal="true" aria-labelledby="contact-message-title" className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl sm:p-7">
         <div className="flex items-start justify-between gap-4 border-b border-border pb-5">
           <div className="min-w-0">
             <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gold">
               Contact message
             </p>
-            <h2
-              id="contact-message-title"
-              className="break-words text-xl font-semibold text-foreground"
-            >
+            <h2 id="contact-message-title" className="break-words text-xl font-semibold text-foreground">
               {message.subject || "No subject"}
             </h2>
             <p className="mt-2 text-sm text-muted">
               Submitted {formatDate(message.createdAt)}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close message details"
-            className="shrink-0 rounded-lg p-2 text-muted transition hover:bg-background hover:text-foreground"
-          >
+          <button type="button" onClick={onClose} aria-label="Close message details" className="shrink-0 rounded-lg p-2 text-muted transition hover:bg-background hover:text-foreground">
             <X size={18} />
           </button>
         </div>
@@ -162,12 +132,7 @@ const AdminContactMessages = () => {
               Review and respond to messages submitted through Contact Us.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={loadMessages}
-            disabled={loading}
-            className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground disabled:opacity-50"
-          >
+          <button type="button" onClick={loadMessages} disabled={loading} className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground disabled:opacity-50">
             <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
             Refresh
           </button>
@@ -183,25 +148,10 @@ const AdminContactMessages = () => {
         <section className="mb-5 rounded-xl border border-border bg-surface p-4 md:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-xl">
-              <Search
-                size={18}
-                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
-              />
-              <input
-                type="search"
-                aria-label="Search contact messages"
-                placeholder="Search by name, email, phone, or subject..."
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-10 text-sm text-foreground placeholder:text-muted focus:border-gold focus:outline-none"
-              />
+              <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+              <input type="search" aria-label="Search contact messages" placeholder="Search by name, email, phone, or subject..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-10 text-sm text-foreground placeholder:text-muted focus:border-gold focus:outline-none" />
               {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm("")}
-                  aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted transition hover:text-foreground"
-                >
+                <button type="button" onClick={() => setSearchTerm("")} aria-label="Clear search" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted transition hover:text-foreground">
                   <X size={16} />
                 </button>
               )}
@@ -241,11 +191,7 @@ const AdminContactMessages = () => {
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface py-12 text-center">
             <AlertCircle className="text-muted/60" size={32} />
             <p className="font-medium text-foreground">Messages could not be loaded</p>
-            <button
-              type="button"
-              onClick={loadMessages}
-              className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:border-gold hover:text-gold"
-            >
+            <button type="button" onClick={loadMessages} className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:border-gold hover:text-gold">
               Try again
             </button>
           </div>
@@ -253,20 +199,13 @@ const AdminContactMessages = () => {
           <>
             <div className="space-y-3 xl:hidden">
               {filteredMessages.map((message) => (
-                <article
-                  key={message._id}
-                  className="rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-gold/40 sm:p-5"
-                >
+                <article key={message._id} className="rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-gold/40 sm:p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h2 className="break-words font-semibold text-foreground">{message.name}</h2>
                       <p className="mt-1 break-all text-sm text-muted">{message.email}</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedMessage(message)}
-                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:border-gold hover:text-gold"
-                    >
+                    <button type="button" onClick={() => setSelectedMessage(message)} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:border-gold hover:text-gold">
                       <Eye size={15} />
                       View
                     </button>
@@ -311,11 +250,7 @@ const AdminContactMessages = () => {
                   <tr>
                     {["Name", "Email", "Phone", "Subject", "Message", "Date", "Actions"].map(
                       (label) => (
-                        <th
-                          key={label}
-                          scope="col"
-                          className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-muted xl:px-4"
-                        >
+                        <th key={label} scope="col" className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-muted xl:px-4">
                           {label}
                         </th>
                       ),
@@ -324,10 +259,7 @@ const AdminContactMessages = () => {
                 </thead>
                 <tbody>
                   {filteredMessages.map((message) => (
-                    <tr
-                      key={message._id}
-                      className="border-b border-border last:border-0 transition-colors hover:bg-background/50"
-                    >
+                    <tr key={message._id} className="border-b border-border last:border-0 transition-colors hover:bg-background/50">
                       <td className="break-words px-3 py-4 text-sm font-medium text-foreground xl:px-4">
                         {message.name}
                       </td>
@@ -349,11 +281,7 @@ const AdminContactMessages = () => {
                         </time>
                       </td>
                       <td className="px-3 py-4 xl:px-4">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedMessage(message)}
-                          className="inline-flex items-center gap-1 rounded-lg border border-border px-2 py-2 text-sm font-medium text-foreground transition hover:border-gold hover:text-gold xl:gap-2 xl:px-3"
-                        >
+                        <button type="button" onClick={() => setSelectedMessage(message)} className="inline-flex items-center gap-1 rounded-lg border border-border px-2 py-2 text-sm font-medium text-foreground transition hover:border-gold hover:text-gold xl:gap-2 xl:px-3">
                           <Eye size={15} />
                           View
                         </button>
@@ -367,10 +295,7 @@ const AdminContactMessages = () => {
         )}
       </div>
       {selectedMessage && (
-        <ContactMessageDialog
-          message={selectedMessage}
-          onClose={() => setSelectedMessage(null)}
-        />
+        <ContactMessageDialog message={selectedMessage} onClose={() => setSelectedMessage(null)} />
       )}
     </DashboardLayout>
   );

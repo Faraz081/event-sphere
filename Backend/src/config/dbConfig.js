@@ -1,19 +1,20 @@
 import mongoose from "mongoose";
 
-let connectionPromise = null;
+let cachedConnection = null;
 
-const database = () => {
-  if (!connectionPromise) {
-    connectionPromise = mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 8000,
-    }).then(() => {
-      console.log("Database connected");
-    }).catch((err) => {
-      connectionPromise = null;
-      throw err;
-    });
+const connectDB = () => {
+  if (cachedConnection) {
+    return cachedConnection;
   }
-  return connectionPromise;
+
+  cachedConnection = mongoose.connect(process.env.MONGODB_URI, {serverSelectionTimeoutMS: 8000}).then(() => {
+      console.log("Database connected");
+    }) .catch((error) => {
+      cachedConnection = null;
+      throw error;
+    });
+
+  return cachedConnection;
 };
 
-export default database;
+export default connectDB;

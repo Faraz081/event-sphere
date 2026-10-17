@@ -1,24 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import {
-  ArrowUpRight,
-  ArrowRight,
-  ArrowLeft,
-  ChevronDown,
-  CalendarDays,
-  Clock3,
-  MapPin,
-  Sparkles,
-} from 'lucide-react'
-
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { ArrowUpRight, ArrowRight, ArrowLeft, ChevronDown, CalendarDays, Clock3, MapPin, Sparkles } from 'lucide-react';
 import gallery1 from '../../assets/gallery-1.jpg'
 import gallery2 from '../../assets/gallery-2.jpg'
 import gallery3 from '../../assets/gallery-3.jpg'
 import api, { API_BASE_URL } from '../../api/api'
-import { fetchPublicExpos } from '@/api/publicService'
+import { fetchPublicExpos } from '@/api/publicService';
 import BookmarkButton from '@/components/shared/BookmarkButton'
-import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks';
 
 const getImage = (banner) => {
   if (!banner) return gallery1
@@ -126,11 +116,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
         
         {mainBannerImage && (
-          <img
-            src={mainBannerImage}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <img src={mainBannerImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
         )}
 
         
@@ -163,18 +149,12 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               <div className="mt-8 flex flex-wrap gap-4">
 
-                <Link
-                  to="/ongoing-events"
-                  className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-                >
+                <Link to="/ongoing-events" className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
                   Explore Events
                 </Link>
 
                 {mainBannerButtonText && (
-                  <Link
-                    to="/book-now"
-                    className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-                  >
+                  <Link to="/book-now" className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
                     {mainBannerButtonText}
                   </Link>
                 )}
@@ -188,12 +168,8 @@ const [eventsLoading, setEventsLoading] = useState(true)
               <div className="relative flex justify-center lg:justify-end">
                 <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-[#c49424]/25 blur-2xl" />
 
-                <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] border border-white/60 shadow-2xl">
-                  <img
-                    src={mainBannerImage}
-                    alt="Elegant event venue"
-                    className="h-full w-full object-cover"
-                  />
+                <div className="relative aspect-4/5 w-full max-w-md overflow-hidden rounded-4xl border border-white/60 shadow-2xl">
+                  <img src={mainBannerImage} alt="Elegant event venue" className="h-full w-full object-cover" />
                 </div>
               </div>
             )}
@@ -204,10 +180,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
       </section>
 
-      <section
-        id="about"
-        className="scroll-mt-24 bg-[#f8f5ef] px-6 py-24 lg:px-10"
-      >
+      <section id="about" className="scroll-mt-24 bg-[#f8f5ef] px-6 py-24 lg:px-10">
 
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
 
@@ -232,10 +205,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
               </p>
             )}
 
-            <Link
-              to="/about-platform"
-              className="mt-7 inline-block rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-            >
+            <Link to="/about-platform" className="mt-7 inline-block rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
               Explore Platform
             </Link>
 
@@ -244,7 +214,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           <div className="space-y-5">
             {aboutSectionImage && (
-              <div className="relative h-64 overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-lg sm:h-80">
+              <div className="relative h-64 overflow-hidden rounded-4xl border border-white/60 bg-white shadow-lg sm:h-80">
                 <img
                   src={aboutSectionImage}
                   alt={websiteName ? `${websiteName} event management` : ""}
@@ -253,7 +223,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4 rounded-[2rem] bg-white p-5 shadow-lg sm:gap-5 sm:p-8">
+            <div className="grid grid-cols-2 gap-4 rounded-4xl bg-white p-5 shadow-lg sm:gap-5 sm:p-8">
               {[
                 ["01", "Easy Management"],
                 ["02", "Smart Scheduling"],
@@ -300,16 +270,9 @@ const [eventsLoading, setEventsLoading] = useState(true)
                 const time = formatTime(expo.date)
 
                 return (
-                  <div
-                    key={expo._id}
-                    className="group overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-                  >
+                  <div key={expo._id} className="group overflow-hidden rounded-4xl border border-[#eadfc9] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div className="relative h-56 overflow-hidden">
-                      <img
-                        src={getImage(expo.banner)}
-                        alt={expo.title}
-                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                      />
+                      <img src={getImage(expo.banner)} alt={expo.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-black/20" />
                       <BookmarkButton expo={expo} className="absolute left-5 top-5" />
                       <span
@@ -432,16 +395,9 @@ const [eventsLoading, setEventsLoading] = useState(true)
     ) : (
       <div className="grid gap-7 md:grid-cols-3">
         {events.slice(0, 3).map((ev) => (
-          <div
-            key={ev._id}
-            className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
-          >
+          <div key={ev._id} className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
             <div className="relative overflow-hidden">
-              <img
-                src={getImage(ev.images?.[0])}
-                alt={ev.title ?? ev.name}
-                className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
-              />
+              <img src={getImage(ev.images?.[0])} alt={ev.title ?? ev.name} className="h-64 w-full object-cover transition duration-500 group-hover:scale-105" />
               <BookmarkButton event={ev} className="absolute right-4 top-4" />
             </div>
 
@@ -488,10 +444,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
     )}
 
     <div className="mt-10 text-center">
-      <Link
-        to="/ongoing-events"
-        className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-      >
+      <Link to="/ongoing-events" className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
         View All Events
       </Link>
     </div>
@@ -500,10 +453,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 </section>
 
       
-      <section
-        id="gallery"
-        className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10"
-      >
+      <section id="gallery" className="scroll-mt-24 bg-[#fffdf9] px-6 py-24 lg:px-10">
 
         <div className="mx-auto max-w-7xl">
 
@@ -525,39 +475,24 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
             
             <div className="group overflow-hidden rounded-3xl md:col-span-2 md:row-span-2">
-              <img
-                src={gallery1}
-                alt="Event gallery"
-                className="h-full min-h-[200px] w-full object-cover object-center transition duration-500 group-hover:scale-105"
-              />
+              <img src={gallery1} alt="Event gallery" className="h-full min-h-50 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
             </div>
 
             
             <div className="group overflow-hidden rounded-3xl md:col-span-2">
-              <img
-                src={gallery2}
-                alt="Event gallery"
-                className="h-[400px] w-full object-cover object-center transition duration-500 group-hover:scale-105"
-              />
+              <img src={gallery2} alt="Event gallery" className="h-100 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
             </div>
 
             
             <div className="group overflow-hidden rounded-3xl md:col-span-2">
-              <img
-                src={gallery3}
-                alt="Event gallery"
-                className="h-[400px] w-full object-cover object-center transition duration-500 group-hover:scale-105"
-              />
+              <img src={gallery3} alt="Event gallery" className="h-100 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
             </div>
 
           </div>
 
           
           <div className="mt-10 text-center">
-            <Link
-              to="/event-gallery"
-              className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-            >
+            <Link to="/event-gallery" className="rounded-full bg-[#c49424] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
               Explore More
             </Link>
           </div>
@@ -638,20 +573,10 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           <div className="relative mt-10">
 
-            <div
-              id="reviews-container"
-              className="flex gap-6 overflow-x-auto scroll-smooth pb-4"
-              style={{
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-              }}
-            >
+            <div id="reviews-container" className="flex gap-6 overflow-x-auto scroll-smooth pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', }}>
 
               
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -689,10 +614,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -730,10 +652,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -771,10 +690,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -812,10 +728,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -853,10 +766,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -894,10 +804,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -935,10 +842,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
               </div>
 
-              <div
-                data-review-card
-                className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]"
-              >
+              <div data-review-card className="min-w-[85%] rounded-3xl border border-[#eadfc9] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:min-w-[48%] lg:min-w-[32%]">
 
                 <div className="flex items-center gap-4">
 
@@ -978,68 +882,37 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                const container = document.getElementById('reviews-container')
-
-                if (container) {
-                  const card = container.querySelector('[data-review-card]')
-
-                  if (card) {
-                    const cardWidth = card.offsetWidth + 24
-
-                    if (container.scrollLeft <= 10) {
-                      container.scrollTo({
-                        left: container.scrollWidth,
-                        behavior: 'smooth',
-                      })
-                    } else {
-                      container.scrollBy({
-                        left: -cardWidth,
-                        behavior: 'smooth',
-                      })
-                    }
+            <button type="button" onClick={() => {
+              const container = document.getElementById('reviews-container');
+              if (container) {
+                const card = container.querySelector('[data-review-card]');
+                if (card) {
+                  const cardWidth = card.offsetWidth + 24;
+                  if (container.scrollLeft <= 10) {
+                    container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+                  } else {
+                    container.scrollBy({ left: -cardWidth, behavior: 'smooth' });
                   }
                 }
-              }}
-              className="absolute -left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#eadfc9] bg-white text-[#c49424] shadow-lg transition duration-300 hover:bg-[#c49424] hover:text-white"
-              aria-label="Previous review"
-            >
+              }
+            }} className="absolute -left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#eadfc9] bg-white text-[#c49424] shadow-lg transition duration-300 hover:bg-[#c49424] hover:text-white" aria-label="Previous review">
               <ArrowLeft className="h-5 w-5" />
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                const container = document.getElementById('reviews-container')
-
-                if (container) {
-                  const card = container.querySelector('[data-review-card]')
-
-                  if (card) {
-                    const cardWidth = card.offsetWidth + 24
-
-                    if (
-                      container.scrollLeft + container.clientWidth >=
-                      container.scrollWidth - 10
-                    ) {
-                      container.scrollTo({
-                        left: 0,
-                        behavior: 'smooth',
-                      })
-                    } else {
-                      container.scrollBy({
-                        left: cardWidth,
-                        behavior: 'smooth',
-                      })
-                    }
+            <button type="button" onClick={() => {
+              const container = document.getElementById('reviews-container');
+              if (container) {
+                const card = container.querySelector('[data-review-card]');
+                if (card) {
+                  const cardWidth = card.offsetWidth + 24;
+                  if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                  } else {
+                    container.scrollBy({ left: cardWidth, behavior: 'smooth' });
                   }
                 }
-              }}
-              className="absolute -right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#eadfc9] bg-white text-[#c49424] shadow-lg transition duration-300 hover:bg-[#c49424] hover:text-white"
-              aria-label="Next review"
-            >
+              }
+            }} className="absolute -right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#eadfc9] bg-white text-[#c49424] shadow-lg transition duration-300 hover:bg-[#c49424] hover:text-white" aria-label="Next review">
               <ArrowRight className="h-5 w-5" />
             </button>
 
@@ -1047,10 +920,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           <div className="mt-12 text-center">
 
-            <Link
-              to="/contact"
-              className="inline-block rounded-full bg-[#c49424] px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg"
-            >
+            <Link to="/contact" className="inline-block rounded-full bg-[#c49424] px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg">
               Contact Us
             </Link>
 
@@ -1081,14 +951,9 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
             {faqs.map((faq, index) => (
 
-              <div
-                key={index}
-                className="overflow-hidden rounded-xl border border-[#e4dccd] bg-white"
-              >
+              <div key={index} className="overflow-hidden rounded-xl border border-[#e4dccd] bg-white">
 
-                <button
-                  type="button"
-                  onClick={() =>
+                <button type="button" onClick={() =>
                     setOpenFaq(openFaq === index ? null : index)
                   }
                   className="flex w-full items-center justify-between px-6 py-4 text-left transition hover:bg-[#fffdf9]"
@@ -1135,7 +1000,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
 
           
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               140+
             </p>
 
@@ -1145,7 +1010,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
           </div>
 
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               3,000+
             </p>
 
@@ -1155,7 +1020,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
           </div>
 
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               80K+
             </p>
 
@@ -1165,7 +1030,7 @@ const [eventsLoading, setEventsLoading] = useState(true)
           </div>
 
           <div>
-            <p className="font-serif text-4xl font-bold text-[#a8790d] sm:text-5xl">
+            <p className="font-serif text-4xl font-bold text-gold-100 sm:text-5xl">
               99%
             </p>
 

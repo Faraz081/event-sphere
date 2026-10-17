@@ -12,9 +12,7 @@ import { fetchContacts, fetchUnreadCounts } from "@/store/slices/messageSlice";
 
 const POLL_MS = 30000;
 const groupOf = (status) =>
-  status === "confirmed" || status === "approved"
-    ? "approved" : status === "cancelled" || status === "rejected"
-    ? "rejected" : "pending";
+  status === "confirmed" || status === "approved" ? "approved" : status === "cancelled" || status === "rejected" ? "rejected" : "pending";
 
 const tooltipStyle = {
   background: "var(--color-surface)",
@@ -91,16 +89,7 @@ const ExhibitorPortal = () => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3);
 
-    return {
-      products,
-      upcomingBookings,
-      stallCapacity,
-      eventsApproved,
-      counts,
-      statusData,
-      perEventData: Object.values(perEvent),
-      pendingRequests,
-    };
+    return { products, upcomingBookings, stallCapacity, eventsApproved, counts, statusData, perEventData: Object.values(perEvent), pendingRequests,};
   }, [myBooths, events, requests]);
 
   const stats = [

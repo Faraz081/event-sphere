@@ -1,15 +1,5 @@
 import express from "express";
-import {
-  getPublicExpos,
-  getPublicExpo,
-  getPublicExhibitors,
-  getPublicBooths,
-  getPublicEvents,
-  getPublicExhibitorProfile,
-  getPublicExhibitorList,
-  getPublicEventStalls,
-  publicCheckIn,
-} from "../controllers/publicController.js";
+import {getPublicExpos, getPublicExpo, getPublicExhibitors, getPublicBooths, getPublicEvents, getPublicExhibitorProfile, getPublicExhibitorList, getPublicEventStalls, publicCheckIn} from "../controllers/publicController.js";
 
 const publicRoute = express.Router();
 

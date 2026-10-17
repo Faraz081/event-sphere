@@ -1,21 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import {
-  Building2,
-  CalendarDays,
-  Mail,
-  Phone,
-  UserRound,
-  Ticket,
-  MapPin,
-  Store,
-  Users,
-  CheckCircle2,
-  Clock3,
-  XCircle,
-  ShieldCheck,
-} from "lucide-react";
+import { Building2, CalendarDays, Mail, Phone, UserRound, Ticket, MapPin, Store, Users, CheckCircle2, Clock3, XCircle, ShieldCheck } from "lucide-react";
 import { fetchMyRegistrations } from "@/api/attendeePortalService";
 import EntryPass from "@/components/shared/EntryPass";
 import SavedEvents from "@/components/shared/SavedEvents";
@@ -170,10 +156,7 @@ useEffect(() => {
               const location = b.event?.location ?? b.expo?.location;
 
               return (
-                <div
-                  key={b._id}
-                  className="relative flex flex-col overflow-hidden rounded-2xl border border-[#eadfc9] bg-[#fffdf9] shadow-sm transition-all duration-200 hover:shadow-md md:flex-row"
-                >
+                <div key={b._id} className="relative flex flex-col overflow-hidden rounded-2xl border border-[#eadfc9] bg-[#fffdf9] shadow-sm transition-all duration-200 hover:shadow-md md:flex-row">
                   <div className="flex-1 p-5 sm:p-6">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#f0e8d8] pb-3">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-gold-100">
@@ -187,11 +170,7 @@ useEffect(() => {
 
                     <div className="mt-3">
                       {b.customEventImage && (
-                        <img
-                          src={b.customEventImage}
-                          alt={title}
-                          className="mb-3 h-32 w-full rounded-xl object-cover sm:max-w-xs"
-                        />
+                        <img src={b.customEventImage} alt={title} className="mb-3 h-32 w-full rounded-xl object-cover sm:max-w-xs" />
                       )}
                       <h3 className="font-serif text-xl font-bold text-[#2f2a24]">
                         {title}

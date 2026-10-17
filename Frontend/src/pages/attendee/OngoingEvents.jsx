@@ -1,17 +1,12 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { toast } from 'sonner'
-import {
-  Radio,
-  Search,
-  X,
-  ArrowUpRight,
-} from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Radio, Search, X, ArrowUpRight } from 'lucide-react';
 
 import api from '@/api/api'
 import BookmarkButton from '@/components/shared/BookmarkButton'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
-import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks';
 
 const OngoingEvents = () => {
   const [events, setEvents] = useState([])
@@ -89,34 +84,15 @@ const OngoingEvents = () => {
           </div>
         </div>
 
-        <form
-          className="mb-8 flex w-full max-w-xl items-center gap-3 rounded-full border border-[#eadfc9] bg-white p-2 shadow-sm"
-          onSubmit={(e) => e.preventDefault()}
-          role="search"
-        >
+        <form className="mb-8 flex w-full max-w-xl items-center gap-3 rounded-full border border-[#eadfc9] bg-white p-2 shadow-sm" onSubmit={(e) => e.preventDefault()} role="search">
           <Search className="ml-3 h-5 w-5 shrink-0 text-[#c49424]" aria-hidden="true" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by title or exhibitor"
-            aria-label="Search events"
-            className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]"
-          />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by title or exhibitor" aria-label="Search events" className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#2f2a24] outline-none placeholder:text-[#8a8379]" />
           {search && (
-            <button
-              type="button"
-              onClick={() => setSearch('')}
-              aria-label="Clear search"
-              className="rounded-full p-2 text-[#8a8379] transition hover:bg-[#fff4d9] hover:text-[#9a721c]"
-            >
+            <button type="button" onClick={() => setSearch('')} aria-label="Clear search" className="rounded-full p-2 text-[#8a8379] transition hover:bg-[#fff4d9] hover:text-[#9a721c]">
               <X className="h-4 w-4" />
             </button>
           )}
-          <button
-            type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-          >
+          <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a97d18]">
             <Search className="h-4 w-4" aria-hidden="true" />
             Search
           </button>
@@ -136,16 +112,9 @@ const OngoingEvents = () => {
         {!loading && filteredEvents.length > 0 && (
           <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((ev) => (
-              <div
-                key={ev._id}
-                className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
-              >
+              <div key={ev._id} className="group overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
                 <div className="relative overflow-hidden">
-                  <img
-                    src={ev.images?.[0] || fallbackImage}
-                    alt={ev.title ?? ev.name}
-                    className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
-                  />
+                  <img src={ev.images?.[0] || fallbackImage} alt={ev.title ?? ev.name} className="h-64 w-full object-cover transition duration-500 group-hover:scale-105" />
                   <BookmarkButton event={ev} className="absolute right-4 top-4" />
                 </div>
 
@@ -190,7 +159,7 @@ const OngoingEvents = () => {
       </section>
 
       <section className="mx-auto mt-16 max-w-5xl">
-        <div className="rounded-[2rem] bg-[#f8f5ef] px-7 py-12 text-center sm:px-12">
+        <div className="rounded-4xl bg-[#f8f5ef] px-7 py-12 text-center sm:px-12">
           <h2 className="font-serif text-3xl font-bold text-[#2f2a24]">
             Don't Miss Your Next Event
           </h2>

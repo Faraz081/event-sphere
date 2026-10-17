@@ -1,36 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import {
-  fetchSchedules,
-  createSchedule,
-  updateSchedule,
-  deleteSchedule,
-} from "@/api/scheduleService";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { fetchSchedules, createSchedule, updateSchedule, deleteSchedule } from "@/api/scheduleService";
 import { fetchExpos } from "@/api/expoService";
 import { toast } from "sonner";
-import {
-  Plus,
-  Search,
-  Edit2,
-  Trash2,
-  X,
-  RotateCcw,
-  AlertCircle,
-  Clock,
-  MapPin,
-  User,
-} from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, RotateCcw, AlertCircle, Clock, MapPin, User } from "lucide-react";
 
 const toDatetimeLocal = (isoString) => {
   if (!isoString) return "";
@@ -334,18 +309,11 @@ const AdminSchedule = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={loadSchedules}
-              disabled={loading}
-              className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors"
-            >
+            <button onClick={loadSchedules} disabled={loading} className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors">
               <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
               Refresh
             </button>
-            <button
-              onClick={openCreateModal}
-              className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity"
-            >
+            <button onClick={openCreateModal} className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity">
               <Plus size={18} />
               Add Session
             </button>
@@ -357,23 +325,13 @@ const AdminSchedule = () => {
           
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-            <input
-              type="text"
-              placeholder="Search sessions, speakers, topics..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-            />
+            <input type="text" placeholder="Search sessions, speakers, topics..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
           </div>
 
           
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted hidden sm:inline">Expo:</span>
-            <select
-              value={selectedExpoFilter}
-              onChange={(e) => setSelectedExpoFilter(e.target.value)}
-              className="bg-background border border-border rounded-xl px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 max-w-xs"
-            >
+            <select value={selectedExpoFilter} onChange={(e) => setSelectedExpoFilter(e.target.value)} className="bg-background border border-border rounded-xl px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 max-w-xs">
               <option value="all">All Expos</option>
               {expos.map((expo) => (
                 <option key={expo._id} value={expo._id}>
@@ -391,10 +349,7 @@ const AdminSchedule = () => {
               <AlertCircle size={18} />
               <span>{error}</span>
             </div>
-            <button
-              onClick={loadSchedules}
-              className="text-xs bg-red-500/20 hover:bg-red-500/30 px-3 py-1 rounded-lg text-red-200 transition-colors"
-            >
+            <button onClick={loadSchedules} className="text-xs bg-red-500/20 hover:bg-red-500/30 px-3 py-1 rounded-lg text-red-200 transition-colors">
               Retry
             </button>
           </div>
@@ -416,20 +371,11 @@ const AdminSchedule = () => {
           : "No schedule sessions have been created yet. Add your first session."}
       </p>
       {search || selectedExpoFilter !== "all" ? (
-        <button
-          onClick={() => {
-            setSearch("");
-            setSelectedExpoFilter("all");
-          }}
-          className="text-sm text-gold hover:underline"
-        >
+        <button onClick={() => { setSearch(""); setSelectedExpoFilter("all"); }} className="text-sm text-gold hover:underline">
           Reset filters
         </button>
       ) : (
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-background"
-        >
+        <button onClick={openCreateModal} className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-background">
           <Plus size={16} />
           Add First Session
         </button>
@@ -464,20 +410,10 @@ const AdminSchedule = () => {
         </div>
 
         <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
-          <button
-            type="button"
-            onClick={() => openEditModal(session)}
-            title="Edit Session"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold"
-          >
+          <button type="button" onClick={() => openEditModal(session)} title="Edit Session" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold">
             <Edit2 size={15} />
           </button>
-          <button
-            type="button"
-            onClick={() => setSessionToDelete(session)}
-            title="Delete Session"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400"
-          >
+          <button type="button" onClick={() => setSessionToDelete(session)} title="Delete Session" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400">
             <Trash2 size={15} />
           </button>
         </div>
@@ -485,9 +421,7 @@ const AdminSchedule = () => {
     ))
   )}
 </div>
-
-        
-        <div className="hidden md:block">
+  <div className="hidden md:block">
         <ResponsiveTable>
           <thead className="border-b border-border">
             <tr>
@@ -521,20 +455,11 @@ const AdminSchedule = () => {
                         : "No schedule sessions have been created yet. Add your first session."}
                     </p>
                     {search || selectedExpoFilter !== "all" ? (
-                      <button
-                        onClick={() => {
-                          setSearch("");
-                          setSelectedExpoFilter("all");
-                        }}
-                        className="mt-2 text-sm text-gold hover:underline"
-                      >
+                      <button onClick={() => { setSearch(""); setSelectedExpoFilter("all"); }} className="mt-2 text-sm text-gold hover:underline">
                         Reset filters
                       </button>
                     ) : (
-                      <button
-                        onClick={openCreateModal}
-                        className="mt-2 inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity"
-                      >
+                      <button onClick={openCreateModal} className="mt-2 inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity">
                         <Plus size={16} />
                         Add First Session
                       </button>
@@ -544,10 +469,7 @@ const AdminSchedule = () => {
               </tr>
             ) : (
               schedules.map((session) => (
-                <tr
-                  key={session._id}
-                  className="border-b border-border last:border-0 hover:bg-surface/50 transition-colors"
-                >
+                <tr key={session._id} className="border-b border-border last:border-0 hover:bg-surface/50 transition-colors">
                   <td data-label="Session" className="px-6 py-4">
                     <div className="text-foreground font-medium">{session.title}</div>
                     {session.topic && (
@@ -592,18 +514,10 @@ const AdminSchedule = () => {
 
                   <td data-label="Actions" className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openEditModal(session)}
-                        className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors"
-                        title="Edit Session"
-                      >
+                      <button onClick={() => openEditModal(session)} className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors" title="Edit Session">
                         <Edit2 size={16} />
                       </button>
-                      <button
-                        onClick={() => setSessionToDelete(session)}
-                        className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                        title="Delete Session"
-                      >
+                      <button onClick={() => setSessionToDelete(session)} className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors" title="Delete Session">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -623,10 +537,7 @@ const AdminSchedule = () => {
                 <h2 className="text-xl font-semibold text-foreground">
                   {editingId ? "Edit Session" : "Add New Session"}
                 </h2>
-                <button
-                  onClick={closeModal}
-                  className="text-muted hover:text-foreground transition-colors"
-                >
+                <button onClick={closeModal} className="text-muted hover:text-foreground transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -635,13 +546,7 @@ const AdminSchedule = () => {
                 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Expo *</label>
-                  <select
-                    name="expo"
-                    value={formData.expo}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  >
+                  <select name="expo" value={formData.expo} onChange={handleInputChange} required className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm">
                     <option value="" disabled>
                       Select an Expo
                     </option>
@@ -656,96 +561,45 @@ const AdminSchedule = () => {
                 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Session Title *</label>
-                  <input
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Opening Keynote: AI in Global Trade"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="title" value={formData.title} onChange={handleInputChange} placeholder="e.g. Opening Keynote: AI in Global Trade" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
 
                 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Speaker</label>
-                  <input
-                    name="speaker"
-                    value={formData.speaker}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Dr. Ayesha Raza"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="speaker" value={formData.speaker} onChange={handleInputChange} placeholder="e.g. Dr. Ayesha Raza" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
 
                 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Topic</label>
-                  <input
-                    name="topic"
-                    value={formData.topic}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Future of Generative Agents & Automation"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="topic" value={formData.topic} onChange={handleInputChange} placeholder="e.g. Future of Generative Agents & Automation" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
 
                 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Location / Room</label>
-                  <input
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Main Hall A, Stage 2"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g. Main Hall A, Stage 2" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
 
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-muted mb-1.5">Start Time *</label>
-                    <input
-                      name="startTime"
-                      type="datetime-local"
-                      min={toDatetimeLocal(minimumStart)}
-                      max={expoEnd ? toDatetimeLocal(expoEnd) : undefined}
-                      value={formData.startTime}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                    />
+                    <input name="startTime" type="datetime-local" min={toDatetimeLocal(minimumStart)} max={expoEnd ? toDatetimeLocal(expoEnd) : undefined} value={formData.startTime} onChange={handleInputChange} required className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm text-muted mb-1.5">End Time *</label>
-                    <input
-                      name="endTime"
-                      type="datetime-local"
-                      min={formData.startTime || (expoStart ? toDatetimeLocal(minimumStart) : undefined)}
-                      max={maximumEnd ? toDatetimeLocal(maximumEnd) : undefined}
-                      value={formData.endTime}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                    />
+                    <input name="endTime" type="datetime-local" min={formData.startTime || (expoStart ? toDatetimeLocal(minimumStart) : undefined)} max={maximumEnd ? toDatetimeLocal(maximumEnd) : undefined} value={formData.endTime} onChange={handleInputChange} required className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors text-sm font-medium"
-                >
+                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors text-sm font-medium">
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
-                >
+                <button type="button" onClick={handleSave} disabled={saving} className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-sm">
                   {saving ? "Saving..." : editingId ? "Update Session" : "Add Session"}
                 </button>
               </div>
@@ -754,10 +608,7 @@ const AdminSchedule = () => {
         )}
 
         
-        <AlertDialog
-          open={!!sessionToDelete}
-          onOpenChange={(open) => !open && setSessionToDelete(null)}
-        >
+        <AlertDialog open={!!sessionToDelete} onOpenChange={(open) => !open && setSessionToDelete(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this session?</AlertDialogTitle>
@@ -767,17 +618,10 @@ const AdminSchedule = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel
-                disabled={deleting}
-                className="bg-transparent border border-border text-muted hover:text-foreground"
-              >
+              <AlertDialogCancel disabled={deleting} className="bg-transparent border border-border text-muted hover:text-foreground">
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction
-                disabled={deleting}
-                onClick={handleDelete}
-                className="bg-red-500 text-white hover:bg-red-600"
-              >
+              <AlertDialogAction disabled={deleting} onClick={handleDelete} className="bg-red-500 text-white hover:bg-red-600">
                 {deleting ? "Deleting..." : "Delete Session"}
               </AlertDialogAction>
             </AlertDialogFooter>

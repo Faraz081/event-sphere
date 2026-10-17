@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { toast } from 'sonner'
-import {
-  Ticket, UserRound, Mail, Phone, CalendarDays, MapPin, CheckCircle2, Send, Plus, Trash2,
-} from 'lucide-react'
-import { fetchPublicExpos } from '@/api/publicService'
-import { bookExpoTicket } from '@/api/attendeePortalService'
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { Ticket, UserRound, Mail, Phone, CalendarDays, MapPin, CheckCircle2, Send, Plus, Trash2 } from 'lucide-react';
+import { fetchPublicExpos } from '@/api/publicService';
+import { bookExpoTicket } from '@/api/attendeePortalService';
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -126,7 +124,7 @@ const BookTicket = () => {
       </section>
 
       <section className="mx-auto mt-14 max-w-4xl">
-        <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-7 shadow-xl sm:p-10">
+        <div className="rounded-4xl border border-[#eadfc9] bg-white p-7 shadow-xl sm:p-10">
           {!user && (
             <div className="py-6 text-center">
               <h2 className="font-serif text-2xl font-bold text-[#2f2a24]">Please login to book a ticket</h2>
@@ -206,12 +204,7 @@ const BookTicket = () => {
 
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-[#4d473f]">Select Expo</label>
-                  <select
-                    value={expoId}
-                    onChange={(e) => setExpoId(e.target.value)}
-                    disabled={loading}
-                    className={selectClass}
-                  >
+                  <select value={expoId} onChange={(e) => setExpoId(e.target.value)} disabled={loading} className={selectClass}>
                     <option value="">{loading ? 'Loading expos...' : 'Select an expo'}</option>
                     {expos.map((expo) => (
                       <option key={expo._id} value={expo._id}>
@@ -252,17 +245,7 @@ const BookTicket = () => {
 
                 <div className="rounded-xl border border-[#eadfc9] bg-[#fffdf9] p-4">
                   <label className="flex cursor-pointer items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={bookForFriends}
-                      onChange={(e) => {
-                        setBookForFriends(e.target.checked)
-                        if (!e.target.checked) {
-                          setFriendRows([{ name: '', phone: '' }])
-                        }
-                      }}
-                      className="h-4 w-4 rounded border-[#e4d9c4] text-[#c49424] focus:ring-[#c49424]"
-                    />
+                    <input type="checkbox" checked={bookForFriends} onChange={(e) => { setBookForFriends(e.target.checked); if (!e.target.checked) { setFriendRows([{ name: '', phone: '' }]); } }} className="h-4 w-4 rounded border-[#e4d9c4] text-[#c49424] focus:ring-[#c49424]" />
                     <span className="text-sm font-medium text-[#2f2a24]">
                       Also book tickets for friends
                     </span>
@@ -272,47 +255,16 @@ const BookTicket = () => {
                     <div className="mt-4 space-y-3">
                       {friendRows.map((row, index) => (
                         <div key={index} className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                          <input
-                            type="text"
-                            placeholder="Friend name *"
-                            value={row.name}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/[^A-Za-z\s]/g, '')
-                              const next = [...friendRows]
-                              next[index] = { ...next[index], name: val }
-                              setFriendRows(next)
-                            }}
-                            className="w-full rounded-xl border border-[#e4d9c4] bg-[#f8f5ef] px-4 py-3 text-black outline-none focus:border-[#c49424]"
-                          />
-                          <input
-                            type="tel"
-                            placeholder="Phone (11 digits)"
-                            value={row.phone}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/\D/g, '').slice(0, 11)
-                              const next = [...friendRows]
-                              next[index] = { ...next[index], phone: val }
-                              setFriendRows(next)
-                            }}
-                            maxLength={11}
-                            className="w-full rounded-xl border border-[#e4d9c4] bg-[#f8f5ef] px-4 py-3 text-black outline-none focus:border-[#c49424]"
-                          />
+                          <input type="text" placeholder="Friend name *" value={row.name} onChange={(e) => { const val = e.target.value.replace(/[^A-Za-z\s]/g, ''); const next = [...friendRows]; next[index] = { ...next[index], name: val }; setFriendRows(next); }} className="w-full rounded-xl border border-[#e4d9c4] bg-[#f8f5ef] px-4 py-3 text-black outline-none focus:border-[#c49424]" />
+                          <input type="tel" placeholder="Phone (11 digits)" value={row.phone} onChange={(e) => { const val = e.target.value.replace(/\D/g, '').slice(0, 11); const next = [...friendRows]; next[index] = { ...next[index], phone: val }; setFriendRows(next); }} maxLength={11} className="w-full rounded-xl border border-[#e4d9c4] bg-[#f8f5ef] px-4 py-3 text-black outline-none focus:border-[#c49424]" />
                           {friendRows.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => setFriendRows(friendRows.filter((_, i) => i !== index))}
-                              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#eadfc9] text-[#8d681b] hover:bg-[#fff4d9]"
-                            >
+                            <button type="button" onClick={() => setFriendRows(friendRows.filter((_, i) => i !== index))} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#eadfc9] text-[#8d681b] hover:bg-[#fff4d9]">
                               <Trash2 className="h-4 w-4" />
                             </button>
                           )}
                         </div>
                       ))}
-                      <button
-                        type="button"
-                        onClick={() => setFriendRows([...friendRows, { name: '', phone: '' }])}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-[#c49424] hover:underline"
-                      >
+                      <button type="button" onClick={() => setFriendRows([...friendRows, { name: '', phone: '' }])} className="inline-flex items-center gap-2 text-sm font-medium text-[#c49424] hover:underline">
                         <Plus className="h-4 w-4" />
                         Add another friend
                       </button>
@@ -321,11 +273,7 @@ const BookTicket = () => {
                 </div>
 
                 <div className="border-t border-[#eee5d5] pt-7">
-                  <button
-                    type="submit"
-                    disabled={submitting || !expoId}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-4 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:opacity-60"
-                  >
+                  <button type="submit" disabled={submitting || !expoId} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-4 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:opacity-60">
                     {submitting ? 'Sending request...' : 'Request Ticket'}
                     <Send className="h-4 w-4" />
                   </button>

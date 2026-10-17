@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { toast } from 'sonner'
-import { ArrowLeft, ArrowUpRight, MessageSquare } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { ArrowLeft, ArrowUpRight, MessageSquare } from 'lucide-react';
 import gallery1 from '../../assets/gallery-1.jpg'
-import { fetchPublicExhibitorProfile } from '../../api/publicService'
+import { fetchPublicExhibitorProfile } from '../../api/publicService';
 import BookmarkButton from '@/components/shared/BookmarkButton'
-import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks';
 
 const ExhibitorPublicProfile = () => {
   const { id } = useParams()
@@ -70,15 +70,10 @@ const ExhibitorPublicProfile = () => {
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
 
-        <section className="relative mt-6 rounded-[2rem] border border-[#eadfca] bg-white p-8 shadow-sm sm:p-10">
+        <section className="relative mt-6 rounded-4xl border border-[#eadfca] bg-white p-8 shadow-sm sm:p-10">
 
           {showMessageButton && (
-            <button
-              onClick={handleMessage}
-              title="Message this exhibitor"
-              aria-label="Message this exhibitor"
-              className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#c49424] text-white shadow-md transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-            >
+            <button onClick={handleMessage} title="Message this exhibitor" aria-label="Message this exhibitor" className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#c49424] text-white shadow-md transition duration-300 hover:bg-[#b48620] hover:shadow-lg">
               <MessageSquare className="h-5 w-5" />
             </button>
           )}
@@ -95,7 +90,8 @@ const ExhibitorPublicProfile = () => {
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">Exhibitor</p>
               <h1 className="mt-2 font-serif text-3xl font-bold text-neutral-900 sm:text-4xl">{exhibitor.companyName}</h1>
-              {exhibitor.description && <p className="mt-3 max-w-2xl leading-7 text-[#5d574f]">{exhibitor.description}</p>}
+               {exhibitor.name && <p className="mt-1 text-sm text-[#8a8379]">{exhibitor.name}</p>}
+               {exhibitor.description && <p className="mt-3 max-w-2xl leading-7 text-[#5d574f]">{exhibitor.description}</p>}
             </div>
           </div>
 

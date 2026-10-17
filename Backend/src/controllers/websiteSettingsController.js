@@ -27,12 +27,7 @@ const updateWebsiteSettings = async (req, res) => {
       });
     }
 
-    const scalarFields = [
-      "websiteName",
-      "logo",
-      "favicon",
-      "tagline",
-    ];
+    const scalarFields = [ "websiteName", "logo", "favicon", "tagline"];
     const settingsToUpdate = Object.fromEntries(
       scalarFields
         .filter((field) => Object.prototype.hasOwnProperty.call(req.body, field))
@@ -84,7 +79,4 @@ const updateWebsiteSettings = async (req, res) => {
   }
 };
 
-export {
-  getWebsiteSettings,
-  updateWebsiteSettings,
-};
+export { getWebsiteSettings, updateWebsiteSettings,};

@@ -11,12 +11,9 @@ const EntryPass = ({ booking, user }) => {
   const websiteName = websiteSettings?.websiteName?.trim() || "";
   const logo = websiteSettings?.logo?.trim();
   const passCode = booking.passCode || booking.entryPassId;
- const SITE_URL = "https://event-sphere-z3ci-gold.vercel.app";
-const checkInUrl = passCode
-  ? `${SITE_URL}/check-in/${encodeURIComponent(passCode)}`
-  : "";
-  const isCheckedIn =
-    booking.passStatus === "scanned" || booking.registrationStatus === "attended";
+  const SITE_URL = "https://event-sphere-z3ci-gold.vercel.app";
+  const checkInUrl = passCode ? `${SITE_URL}/check-in/${encodeURIComponent(passCode)}` : "";
+  const isCheckedIn = booking.passStatus === "scanned" || booking.registrationStatus === "attended";
   const isRevoked = booking.passStatus === "revoked" || booking.bookingStatus === "cancelled";
 
   const handleDownloadPass = async () => {
@@ -35,14 +32,12 @@ const checkInUrl = passCode
       const attendeeName = user?.name || "Valued Guest";
       const expoName = booking.event?.title || booking.expo?.title || booking.eventName || "Event";
       const eventDate = booking.eventDate || booking.expo?.date || booking.event?.date;
-      const date = eventDate
-        ? new Date(eventDate).toLocaleDateString("en-US", {
+      const date = eventDate ? new Date(eventDate).toLocaleDateString("en-US", {
             weekday: "short",
             month: "short",
             day: "numeric",
             year: "numeric",
-          })
-        : "N/A";
+          }) : "N/A";
       const location = booking.event?.location || booking.expo?.location || "Main Arena";
 
       pdf.setFillColor(248, 245, 239); 
@@ -184,7 +179,7 @@ const checkInUrl = passCode
           {!isCheckedIn && !isRevoked && passCode && (
             <button
               onClick={handleDownloadPass}
-              className="mt-3 flex items-center gap-2 rounded-xl bg-[#2f2a24] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a8790d]"
+              className="mt-3 flex items-center gap-2 rounded-xl bg-[#2f2a24] px-5 py-3 text-sm font-semibold text-white transition hover:bg-gold"
             >
               <Download size={17} />
               Download Entry Pass

@@ -4,12 +4,7 @@ import { toast } from "sonner";
 import { Search, RotateCcw, AlertCircle, Inbox, CalendarDays, Building2, Store, Check, X, Trash2 } from "lucide-react";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
-import {
-  fetchAdminEvents,
-  deleteAdminEvent,
-  approveEvent,
-  rejectEvent,
-} from "@/store/slices/eventSlice";
+import { fetchAdminEvents, deleteAdminEvent, approveEvent, rejectEvent } from "@/store/slices/eventSlice";
 
 const statusStyles = {
   pending: "bg-gold/20 text-gold border border-gold/40",
@@ -115,12 +110,7 @@ const EventCard = ({ event, onRefresh }) => {
         {event.images?.length > 0 && (
           <div className="flex gap-2">
             {event.images.slice(0, 3).map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={event.title}
-                className="h-16 w-16 rounded-lg border border-border object-cover"
-              />
+              <img key={index} src={image} alt={event.title} className="h-16 w-16 rounded-lg border border-border object-cover" />
             ))}
           </div>
         )}
@@ -165,51 +155,26 @@ const EventCard = ({ event, onRefresh }) => {
         <div className="mt-5 border-t border-border pt-4">
           {!rejecting ? (
             <div className="flex flex-wrap gap-3">
-              <button
-                onClick={handleApprove}
-                disabled={busy}
-                className="inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-40"
-              >
+              <button onClick={handleApprove} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-40">
                 <Check size={16} />
                 {busy ? "Please wait..." : "Approve Event"}
               </button>
 
-              <button
-                onClick={() => setRejecting(true)}
-                disabled={busy}
-                className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-40"
-              >
+              <button onClick={() => setRejecting(true)} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-40">
                 <X size={16} />
                 Reject
               </button>
             </div>
           ) : (
             <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-start">
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                rows={2}
-                placeholder="Reason for rejection"
-                className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-              />
+              <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} placeholder="Reason for rejection" className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
 
               <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setRejecting(false);
-                    setReason("");
-                  }}
-                  disabled={busy}
-                  className="rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-medium text-muted transition-colors hover:text-foreground"
-                >
+                <button onClick={() => { setRejecting(false); setReason(""); }} disabled={busy} className="rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-medium text-muted transition-colors hover:text-foreground">
                   Cancel
                 </button>
 
-                <button
-                  onClick={handleReject}
-                  disabled={busy}
-                  className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
-                >
+                <button onClick={handleReject} disabled={busy} className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40">
                   {busy ? "Saving..." : "Confirm Reject"}
                 </button>
               </div>
@@ -225,11 +190,7 @@ const EventCard = ({ event, onRefresh }) => {
       )}
 
       <div className="mt-5 border-t border-border pt-4">
-        <button
-          onClick={handleDelete}
-          disabled={busy}
-          className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-40"
-        >
+        <button onClick={handleDelete} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-40">
           <Trash2 size={16} />
           Delete Event
         </button>
@@ -289,11 +250,7 @@ const AdminEvents = () => {
             </p>
           </div>
 
-          <button
-            onClick={load}
-            disabled={loading}
-            className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
-          >
+          <button onClick={load} disabled={loading} className="inline-flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground">
             <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
             Refresh
           </button>
@@ -303,13 +260,7 @@ const AdminEvents = () => {
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
 
-            <input
-              type="text"
-              placeholder="Search event, exhibitor or company..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40"
-            />
+            <input type="text" placeholder="Search event, exhibitor or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40" />
           </div>
         </div>
 

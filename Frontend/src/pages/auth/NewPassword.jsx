@@ -71,7 +71,7 @@ const NewPassword = () => {
       className="relative flex min-h-screen items-center justify-center bg-cover bg-center bg-no-repeat px-6 py-24"
       style={{ backgroundImage: `url(${loginSignupBg})` }}
     >
-      <div className="w-full max-w-md rounded-[2rem] border border-[#eadfca] bg-white p-8 shadow-xl sm:p-10">
+      <div className="w-full max-w-md rounded-4xl border border-[#eadfca] bg-white p-8 shadow-xl sm:p-10">
 
         <div className="mb-8 flex items-center justify-center font-serif text-2xl font-semibold text-[#2f2a24]">
           {logo ? (

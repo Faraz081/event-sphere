@@ -66,12 +66,8 @@ const NotificationBell = () => {
       return;
     }
 
-    items
-      .filter((n) => !n.isRead && !seenRef.current.has(keyOf(n)))
-      .forEach((n) => {
-        toast(n.title, {
-          description: n.message,
-          action: { label: "View", onClick: () => { dispatch(markNotificationRead(n._id));
+    items .filter((n) => !n.isRead && !seenRef.current.has(keyOf(n))) .forEach((n) => {
+        toast(n.title, {description: n.message, action: { label: "View", onClick: () => { dispatch(markNotificationRead(n._id));
               if (n.link) navigate(n.link);
             },
           },

@@ -52,25 +52,13 @@ const DashboardLayout = ({ role, children }) => {
   return (
     <div className="dashboard-theme min-h-screen w-full max-w-[100vw] overflow-x-clip bg-background text-foreground">
       <div className="flex min-h-screen">
-        <aside
-          className={[
-            "fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-border bg-surface/95 backdrop-blur md:sticky md:top-0 md:bottom-auto md:z-auto md:h-screen md:flex",
+        <aside className={[ "fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-border bg-surface/95 backdrop-blur md:sticky md:top-0 md:bottom-auto md:z-auto md:h-screen md:flex",
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
             "transform transition-transform duration-300 ease-out"].join(" ")}>
           <div className="border-b border-border px-6 py-5">
             <div className="flex min-w-0 flex-col items-start gap-2">
-              {logo && (
-                <button
-                  type="button"
-                  onClick={handleHomeClick}
-                  className="max-w-full"
-                  aria-label="Go to dashboard home"
-                >
-                  <img
-                    src={logo}
-                    alt=""
-                    className="max-h-10 max-w-56 object-contain object-left"
-                  />
+              {logo && ( <button type="button" onClick={handleHomeClick} className="max-w-full" aria-label="Go to dashboard home">
+                  <img src={logo} alt="" className="max-h-10 max-w-56 object-contain object-left"/>
                 </button>
               )}
               {role !== "admin" && (

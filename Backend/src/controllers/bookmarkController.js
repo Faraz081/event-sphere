@@ -11,22 +11,17 @@ const makeToggle = (BookmarkModel, TargetModel, field, targetFilter, label) => a
     const userId = getMyId(req);
     const { id } = req.params;
 
-    if (!mongoose.isValidObjectId(userId)) {
+    if (!mongoose.isValidObjectId(userId)) 
       return res.status(401).json({ error: "Please login again" });
-    }
-
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(400).json({ error: `Invalid ${label}` });
-    }
+    if (!mongoose.isValidObjectId(id))
+       return res.status(400).json({ error: `Invalid ${label}` });
 
     const user = await User.findById(userId).select("role status");
-
     if (!user || user.role !== "attendee") {
       return res.status(403).json({ error: `Only attendee accounts can bookmark ${label}s` });
     }
 
     const removed = await BookmarkModel.findOneAndDelete({ user: userId, [field]: id });
-
     if (removed) return res.status(200).json({ bookmarked: false });
 
     if (!(await TargetModel.exists({ _id: id, ...targetFilter }))) {
@@ -34,11 +29,22 @@ const makeToggle = (BookmarkModel, TargetModel, field, targetFilter, label) => a
     }
 
     await BookmarkModel.create({ user: userId, [field]: id });
-
     return res.status(201).json({ bookmarked: true });
   } catch (error) {
     if (error.code === 11000) return res.status(200).json({ bookmarked: true });
+    res.status(500).json({ error: error.message });
+  }
+};
 
+const makeList = (BookmarkModel, field, populateOptions) => async (req, res) => {
+  try {
+    const userId = getMyId(req);
+    if (!mongoose.isValidObjectId(userId)) 
+      return res.status(401).json({ error: "Please login again" });
+
+    const rows = await BookmarkModel.find({ user: userId }).populate(populateOptions).sort({ createdAt: -1 });
+    return res.status(200).json({ bookmarks: rows.map((row) => row[field]).filter(Boolean) });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
@@ -46,51 +52,15 @@ const makeToggle = (BookmarkModel, TargetModel, field, targetFilter, label) => a
 export const toggleBookmark = makeToggle(Bookmark, Event, "event", { status: "approved" }, "event");
 export const toggleExpoBookmark = makeToggle(ExpoBookmark, Expo, "expo", { status: "published" }, "expo");
 
-export const getMyBookmarks = async (req, res) => {
-  try {
-    const userId = getMyId(req);
+export const getMyBookmarks = makeList(Bookmark, "event", {
+  path: "event",
+  match: { status: "approved" },
+  select: "title description location eventType images exhibitor",
+  populate: { path: "exhibitor", select: "name" },
+});
 
-    if (!mongoose.isValidObjectId(userId)) {
-      return res.status(401).json({ error: "Please login again" });
-    }
-
-    const rows = await Bookmark.find({ user: userId })
-      .populate({
-        path: "event",
-        match: { status: "approved" },
-        select: "title description location eventType images exhibitor",
-        populate: { path: "exhibitor", select: "name" },
-      })
-      .sort({ createdAt: -1 });
-
-    const bookmarks = rows.map((row) => row.event).filter(Boolean);
-
-    return res.status(200).json({ bookmarks });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const getMyExpoBookmarks = async (req, res) => {
-  try {
-    const userId = getMyId(req);
-
-    if (!mongoose.isValidObjectId(userId)) {
-      return res.status(401).json({ error: "Please login again" });
-    }
-
-    const rows = await ExpoBookmark.find({ user: userId })
-      .populate({
-        path: "expo",
-        match: { status: "published" },
-        select: "title description theme date location banner",
-      })
-      .sort({ createdAt: -1 });
-
-    const bookmarks = rows.map((row) => row.expo).filter(Boolean);
-
-    return res.status(200).json({ bookmarks });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+export const getMyExpoBookmarks = makeList(ExpoBookmark, "expo", {
+  path: "expo",
+  match: { status: "published" },
+  select: "title description theme date location banner",
+});

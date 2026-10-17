@@ -333,13 +333,7 @@ const AdminWebsiteSettings = () => {
           {label}
         </label>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(event) => handleImageUpload(event, fieldType)}
-          disabled={uploading === fieldType}
-          className="block w-full rounded-xl border border-border bg-background px-3 py-3 text-sm text-muted file:mr-4 file:rounded-lg file:border-0 file:bg-gold file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground file:hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-50"
-        />
+        <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, fieldType)} disabled={uploading === fieldType} className="block w-full rounded-xl border border-border bg-background px-3 py-3 text-sm text-muted file:mr-4 file:rounded-lg file:border-0 file:bg-gold file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground file:hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-50" />
 
         {uploading === fieldType && (
           <p className="text-sm text-gold">
@@ -353,21 +347,9 @@ const AdminWebsiteSettings = () => {
               Current Image
             </p>
 
-            <img
-              src={currentValue}
-              alt={label}
-              className={
-                fieldType === "logo"
-                  ? "mr-2 h-8 max-h-9 w-auto max-w-30 shrink-0 rounded-md object-contain shadow-[0_1px_3px_rgba(0,0,0,0.3)] md:h-9 md:max-w-40"
-                  : fieldType === "favicon"
-                    ? "h-8 w-8 object-contain"
-                  : "max-h-48 w-auto max-w-full rounded-lg object-contain"
-              }
-            />
+            <img src={currentValue} alt={label} className={ fieldType === "logo" ? "mr-2 h-8 max-h-9 w-auto max-w-30 shrink-0 rounded-md object-contain shadow-[0_1px_3px_rgba(0,0,0,0.3)] md:h-9 md:max-w-40" : fieldType === "favicon" ? "h-8 w-8 object-contain" : "max-h-48 w-auto max-w-full rounded-lg object-contain" } />
 
-            <button
-              type="button"
-              onClick={() =>
+            <button type="button" onClick={() =>
                 handleImageDelete(fieldType, currentValue)
               }
               disabled={uploading === fieldType}
@@ -430,10 +412,7 @@ const AdminWebsiteSettings = () => {
                   Website Name
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.websiteName}
-                  onChange={(event) =>
+                <input type="text" value={settings.websiteName} onChange={(event) =>
                     updateRootField(
                       "websiteName",
                       event.target.value
@@ -448,10 +427,7 @@ const AdminWebsiteSettings = () => {
                   Tagline
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.tagline}
-                  onChange={(event) =>
+                <input type="text" value={settings.tagline} onChange={(event) =>
                     updateRootField(
                       "tagline",
                       event.target.value
@@ -496,10 +472,7 @@ const AdminWebsiteSettings = () => {
                   Main Banner Title
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.hero.title}
-                  onChange={(event) =>
+                <input type="text" value={settings.hero.title} onChange={(event) =>
                     updateNestedField(
                       "hero",
                       "title",
@@ -515,10 +488,7 @@ const AdminWebsiteSettings = () => {
                   Main Banner Description
                 </label>
 
-                <textarea
-                  rows={4}
-                  value={settings.hero.description}
-                  onChange={(event) =>
+                <textarea rows={4} value={settings.hero.description} onChange={(event) =>
                     updateNestedField(
                       "hero",
                       "description",
@@ -534,10 +504,7 @@ const AdminWebsiteSettings = () => {
                   Button Text
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.hero.buttonText}
-                  onChange={(event) =>
+                <input type="text" value={settings.hero.buttonText} onChange={(event) =>
                     updateNestedField(
                       "hero",
                       "buttonText",
@@ -575,10 +542,7 @@ const AdminWebsiteSettings = () => {
                   About Title
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.about.title}
-                  onChange={(event) =>
+                <input type="text" value={settings.about.title} onChange={(event) =>
                     updateNestedField(
                       "about",
                       "title",
@@ -594,10 +558,7 @@ const AdminWebsiteSettings = () => {
                   About Description
                 </label>
 
-                <textarea
-                  rows={5}
-                  value={settings.about.description}
-                  onChange={(event) =>
+                <textarea rows={5} value={settings.about.description} onChange={(event) =>
                     updateNestedField(
                       "about",
                       "description",
@@ -635,10 +596,7 @@ const AdminWebsiteSettings = () => {
                   Email
                 </label>
 
-                <input
-                  type="email"
-                  value={settings.contact.email}
-                  onChange={(event) =>
+                <input type="email" value={settings.contact.email} onChange={(event) =>
                     updateNestedField(
                       "contact",
                       "email",
@@ -654,10 +612,7 @@ const AdminWebsiteSettings = () => {
                   Phone
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.contact.phone}
-                  onChange={(event) =>
+                <input type="text" value={settings.contact.phone} onChange={(event) =>
                     updateNestedField(
                       "contact",
                       "phone",
@@ -673,10 +628,7 @@ const AdminWebsiteSettings = () => {
                   Address
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.contact.address}
-                  onChange={(event) =>
+                <input type="text" value={settings.contact.address} onChange={(event) =>
                     updateNestedField(
                       "contact",
                       "address",
@@ -692,10 +644,7 @@ const AdminWebsiteSettings = () => {
                   Office Hours
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.contact.officeHours}
-                  onChange={(event) =>
+                <input type="text" value={settings.contact.officeHours} onChange={(event) =>
                     updateNestedField(
                       "contact",
                       "officeHours",
@@ -725,10 +674,7 @@ const AdminWebsiteSettings = () => {
                   Facebook
                 </label>
 
-                <input
-                  type="url"
-                  value={settings.socialLinks.facebook}
-                  onChange={(event) =>
+                <input type="url" value={settings.socialLinks.facebook} onChange={(event) =>
                     updateNestedField(
                       "socialLinks",
                       "facebook",
@@ -744,10 +690,7 @@ const AdminWebsiteSettings = () => {
                   Instagram
                 </label>
 
-                <input
-                  type="url"
-                  value={settings.socialLinks.instagram}
-                  onChange={(event) =>
+                <input type="url" value={settings.socialLinks.instagram} onChange={(event) =>
                     updateNestedField(
                       "socialLinks",
                       "instagram",
@@ -763,10 +706,7 @@ const AdminWebsiteSettings = () => {
                   LinkedIn
                 </label>
 
-                <input
-                  type="url"
-                  value={settings.socialLinks.linkedin}
-                  onChange={(event) =>
+                <input type="url" value={settings.socialLinks.linkedin} onChange={(event) =>
                     updateNestedField(
                       "socialLinks",
                       "linkedin",
@@ -782,10 +722,7 @@ const AdminWebsiteSettings = () => {
                   YouTube
                 </label>
 
-                <input
-                  type="url"
-                  value={settings.socialLinks.youtube}
-                  onChange={(event) =>
+                <input type="url" value={settings.socialLinks.youtube} onChange={(event) =>
                     updateNestedField(
                       "socialLinks",
                       "youtube",
@@ -801,10 +738,7 @@ const AdminWebsiteSettings = () => {
                   Twitter / X
                 </label>
 
-                <input
-                  type="url"
-                  value={settings.socialLinks.twitter}
-                  onChange={(event) =>
+                <input type="url" value={settings.socialLinks.twitter} onChange={(event) =>
                     updateNestedField(
                       "socialLinks",
                       "twitter",
@@ -834,10 +768,7 @@ const AdminWebsiteSettings = () => {
                   Footer Description
                 </label>
 
-                <textarea
-                  rows={4}
-                  value={settings.footer.description}
-                  onChange={(event) =>
+                <textarea rows={4} value={settings.footer.description} onChange={(event) =>
                     updateNestedField(
                       "footer",
                       "description",
@@ -853,10 +784,7 @@ const AdminWebsiteSettings = () => {
                   Copyright Text
                 </label>
 
-                <input
-                  type="text"
-                  value={settings.footer.copyright}
-                  onChange={(event) =>
+                <input type="text" value={settings.footer.copyright} onChange={(event) =>
                     updateNestedField(
                       "footer",
                       "copyright",
@@ -870,11 +798,7 @@ const AdminWebsiteSettings = () => {
           </section>
 
           <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-xl bg-gold px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            <button type="submit" disabled={saving} className="rounded-xl bg-gold px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-50">
               {saving ? "Saving..." : "Save Website Settings"}
             </button>
           </div>

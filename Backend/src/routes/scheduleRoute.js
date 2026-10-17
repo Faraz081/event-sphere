@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  createSchedule,
-  getAllSchedules,
-  getScheduleById,
-  updateSchedule,
-  deleteSchedule,
-} from "../controllers/scheduleController.js";
+import {createSchedule, getAllSchedules, getScheduleById, updateSchedule, deleteSchedule} from "../controllers/scheduleController.js";
 import { adminAuth } from "../middleware/authMiddleware.js";
 
 const scheduleRoute = express.Router();

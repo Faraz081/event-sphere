@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { CalendarDays, UserRound, Phone, Mail, MapPin, Users, Sparkles, ClipboardList } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { CalendarDays, UserRound, Phone, Mail, MapPin, Users, Sparkles, ClipboardList } from 'lucide-react';
 import api from '../../api/api'
 
 const fieldCls = 'text-[#2f2a24] placeholder:text-[#a39b8d] [color-scheme:light] border border-[#e4d9c4] bg-[#fffdf9] outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20'
@@ -252,7 +252,7 @@ export default function BookNow() {
       </section>
 
       <section className="mx-auto mt-14 max-w-5xl">
-        <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-6 shadow-xl sm:p-10">
+        <div className="rounded-4xl border border-[#eadfc9] bg-white p-6 shadow-xl sm:p-10">
           <div className="mb-10 flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff6df]">
               <ClipboardList className="h-7 w-7 text-[#b48620]" />
@@ -266,10 +266,7 @@ export default function BookNow() {
           {!user && (
             <div className="mb-8 flex flex-col gap-3 rounded-2xl border border-[#eadfc9] bg-[#fff6df] p-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-[#5d574f]">Please login with your attendee account to book an event.</p>
-              <Link
-                to="/login"
-                className="rounded-full bg-[#c49424] px-6 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#a97d18]"
-              >
+              <Link to="/login" className="rounded-full bg-[#c49424] px-6 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#a97d18]">
                 Login
               </Link>
             </div>
@@ -312,15 +309,7 @@ export default function BookNow() {
                   <label className="mb-2 block text-sm font-medium text-[#4d473f]">Event Date</label>
                   <div className="relative">
                     <CalendarDays className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                    <input
-                      type="date"
-                      name="eventDate"
-                      value={formData.eventDate}
-                      onChange={handleChange}
-                      min={todayStr()}
-                      required
-                      className={inputCls}
-                    />
+                    <input type="date" name="eventDate" value={formData.eventDate} onChange={handleChange} min={todayStr()} required className={inputCls} />
                   </div>
                 </div>
               </div>
@@ -334,11 +323,7 @@ export default function BookNow() {
               {selectedEvent && (
                 <div className="mt-5 flex flex-col gap-5 rounded-2xl border border-[#eadfc9] bg-[#fffdf9] p-4 sm:flex-row">
                   {selectedEvent.images?.[0] && (
-                    <img
-                      src={selectedEvent.images[0]}
-                      alt=""
-                      className="h-32 w-full rounded-xl object-cover sm:w-48"
-                    />
+                    <img src={selectedEvent.images[0]} alt="" className="h-32 w-full rounded-xl object-cover sm:w-48" />
                   )}
                   <div className="space-y-2 text-sm text-[#5d574f]">
                     <p className="font-serif text-xl font-bold text-[#c49424]">
@@ -448,13 +433,7 @@ export default function BookNow() {
                                   : 'cursor-pointer border-[#e4d9c4] bg-[#fffdf9] text-[#2f2a24] hover:border-[#c49424]'
                             }`}
                           >
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              disabled={s.booked}
-                              onChange={() => toggleStall(s._id)}
-                              className="mt-1 accent-[#c49424]"
-                            />
+                            <input type="checkbox" checked={checked} disabled={s.booked} onChange={() => toggleStall(s._id)} className="mt-1 accent-[#c49424]" />
                             <span>
                               <span className="block font-semibold">
                                 {s.name || `Stall ${s.stallNumber}`}
@@ -508,15 +487,7 @@ export default function BookNow() {
                   <label className="mb-2 block text-sm font-medium text-[#4d473f]">Phone Number</label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="Enter your phone number"
-                      required
-                      className={inputCls}
-                    />
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" required className={inputCls} />
                   </div>
                 </div>
 
@@ -524,16 +495,7 @@ export default function BookNow() {
                   <label className="mb-2 block text-sm font-medium text-[#4d473f]">Number of Guests</label>
                   <div className="relative">
                     <Users className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                    <input
-                      type="number"
-                      name="guests"
-                      value={formData.guests}
-                      onChange={handleChange}
-                      placeholder="e.g. 100"
-                      min="1"
-                      required
-                      className={inputCls}
-                    />
+                    <input type="number" name="guests" value={formData.guests} onChange={handleChange} placeholder="e.g. 100" min="1" required className={inputCls} />
                   </div>
                 </div>
               </div>
@@ -568,11 +530,7 @@ export default function BookNow() {
     </p>
   )}
               <p className="text-sm text-[#777067]">The exhibitor will review your request and confirm it.</p>
-              <button
-                type="submit"
-                disabled={submitting || uploadingImage || !user || !isAttendee || (!isCustomEvent && dateBooked)}
-                className="rounded-xl bg-[#b48620] px-8 py-3.5 font-semibold text-white shadow-md transition hover:bg-[#967019] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
-              >
+              <button type="submit" disabled={submitting || uploadingImage || !user || !isAttendee || (!isCustomEvent && dateBooked)} className="rounded-xl bg-[#b48620] px-8 py-3.5 font-semibold text-white shadow-md transition hover:bg-[#967019] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">
                 {uploadingImage ? 'Uploading image...' : submitting ? 'Sending...' : 'Submit Booking'}
               </button>
             </div>

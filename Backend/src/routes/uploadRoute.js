@@ -20,18 +20,7 @@ const upload = multer({
   },
 });
 
-uploadRoute.post(
-  "/image",
-  authMiddleware,
-  upload.single("image"),
-  uploadImage
-);
-
-uploadRoute.delete(
-  "/image",
-  authMiddleware,
-  adminMiddleware,
-  deleteImage
-);
+uploadRoute.post( "/image", authMiddleware, upload.single("image"), uploadImage);
+uploadRoute.delete( "/image", authMiddleware, adminMiddleware, deleteImage);
 
 export default uploadRoute;

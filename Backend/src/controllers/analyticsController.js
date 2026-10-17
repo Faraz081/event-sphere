@@ -7,21 +7,7 @@ import Schedule from "../models/Schedule.js";
 
 export const getDashboardAnalytics = async (req, res) => {
   try {
-    const [
-      totalExpos,
-      publishedExpos,
-      totalBooths,
-      availableBooths,
-      reservedBooths,
-      occupiedBooths,
-      totalExhibitors,
-      pendingExhibitors,
-      approvedExhibitors,
-      rejectedExhibitors,
-      totalAttendees,
-      totalUsers,
-      totalSessions,
-    ] = await Promise.all([
+    const [totalExpos, publishedExpos, totalBooths, availableBooths, reservedBooths, occupiedBooths, totalExhibitors, pendingExhibitors, approvedExhibitors, rejectedExhibitors, totalAttendees, totalUsers, totalSessions] = await Promise.all([
       Expo.countDocuments(),
       Expo.countDocuments({ status: "published" }),
       Booth.countDocuments(),
@@ -61,29 +47,9 @@ export const getDashboardAnalytics = async (req, res) => {
     res.status(200).json({
       success: true,
       analytics: {
-        overview: {
-          totalExpos,
-          publishedExpos,
-          totalBooths,
-          totalExhibitors,
-          totalAttendees,
-          totalUsers,
-          totalSessions,
-          occupancyRate,
-        },
-        booths: {
-          available: availableBooths,
-          reserved: reservedBooths,
-          occupied: occupiedBooths,
-          assigned: assignedBooths,
-          occupancyRate,
-        },
-        exhibitors: {
-          total: totalExhibitors,
-          pending: pendingExhibitors,
-          approved: approvedExhibitors,
-          rejected: rejectedExhibitors,
-        },
+        overview: {totalExpos, publishedExpos, totalBooths, totalExhibitors, totalAttendees, totalUsers, totalSessions, occupancyRate},
+        booths: { available: availableBooths, reserved: reservedBooths,occupied: occupiedBooths, assigned: assignedBooths, occupancyRate},
+        exhibitors: {total: totalExhibitors, pending: pendingExhibitors, approved: approvedExhibitors, rejected: rejectedExhibitors},
         boothStatusBreakdown,
         exhibitorStatusBreakdown,
         recentExpos,
@@ -113,21 +79,7 @@ export const getExpoReport = async (req, res) => {
 
     const attendeeScope = { expo: expoId };
 
-    const [
-      attendeeTotal,
-      regRegistered,
-      regConfirmed,
-      regAttended,
-      regCancelled,
-      bookConfirmed,
-      bookPending,
-      bookCancelled,
-      boothTotal,
-      boothAvailable,
-      boothReserved,
-      boothOccupied,
-      sessions,
-    ] = await Promise.all([
+    const [ attendeeTotal, regRegistered, regConfirmed, regAttended, regCancelled, bookConfirmed, bookPending, bookCancelled, boothTotal, boothAvailable, boothReserved, boothOccupied, sessions] = await Promise.all([
       Attendee.countDocuments(attendeeScope),
       Attendee.countDocuments({ ...attendeeScope, registrationStatus: "registered" }),
       Attendee.countDocuments({ ...attendeeScope, registrationStatus: "confirmed" }),

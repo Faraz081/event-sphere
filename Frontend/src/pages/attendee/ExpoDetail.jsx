@@ -1,29 +1,13 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'sonner'
-import {
-  CalendarDays,
-  MapPin,
-  Sparkles,
-  Search,
-  Store,
-  Clock3,
-  User,
-  Mic2,
-  ArrowLeft,
-  ArrowUpRight,
-  Building2,
-} from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import { CalendarDays, MapPin, Sparkles, Search, Store, Clock3, User, Mic2, ArrowLeft, ArrowUpRight, Building2 } from 'lucide-react';
 
-import {
-  fetchPublicExpo,
-  fetchPublicExhibitors,
-  fetchPublicBooths,
-} from '@/api/publicService'
-import { API_BASE_URL } from '@/api/api'
+import { fetchPublicExpo, fetchPublicExhibitors, fetchPublicBooths } from '@/api/publicService';
+import { API_BASE_URL } from '@/api/api';
 import BookmarkButton from '@/components/shared/BookmarkButton'
 import fallbackImage from '../../assets/event-gallery/corporate-1.jpg'
-import { useLoadBookmarks } from '@/hooks/useLoadBookmarks'
+import { useLoadBookmarks } from '@/hooks/useLoadBookmarks';
 
 const BASE = API_BASE_URL
 
@@ -134,13 +118,9 @@ const ExpoDetail = () => {
           All Expos
         </Link>
 
-        <section className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-sm">
+        <section className="overflow-hidden rounded-4xl border border-[#eadfc9] bg-white shadow-sm">
           <div className="relative h-60 sm:h-72">
-            <img
-              src={fileUrl(expo.banner) || fallbackImage}
-              alt={expo.title}
-              className="h-full w-full object-cover"
-            />
+            <img src={fileUrl(expo.banner) || fallbackImage} alt={expo.title} className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-black/30" />
             {expo.theme && (
               <span className="absolute left-6 top-6 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-[#9a721c] shadow-md">
@@ -222,13 +202,7 @@ const ExpoDetail = () => {
             <div>
               <div className="relative mb-6 max-w-md">
                 <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search by company, product or keyword"
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20"
-                />
+                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by company, product or keyword" className="w-full rounded-xl border border-[#e4d9c4] bg-white py-3.5 pl-12 pr-4 text-black outline-none transition focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20" />
               </div>
 
               {exhibitors.length === 0 && (

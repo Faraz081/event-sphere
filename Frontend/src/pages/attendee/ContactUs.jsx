@@ -1,15 +1,8 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { toast } from 'sonner'
-import { submitContactMessage } from '@/api/contactService'
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock3,
-  Send,
-  MessageCircle,
-} from 'lucide-react'
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { submitContactMessage } from '@/api/contactService';
+import { Mail, Phone, MapPin, Clock3, Send, MessageCircle } from 'lucide-react';
 
 const ContactUs = () => {
   const settings = useSelector((state) => state.websiteSettings.settings)
@@ -160,7 +153,7 @@ const ContactUs = () => {
         <div className="grid gap-10 lg:grid-cols-2">
 
      
-          <div className="rounded-[2rem] border border-[#eadfc9] bg-white p-7 shadow-xl sm:p-10">
+          <div className="rounded-4xl border border-[#eadfc9] bg-white p-7 shadow-xl sm:p-10">
 
             <div className="mb-8">
 
@@ -178,10 +171,7 @@ const ContactUs = () => {
 
             </div>
 
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-5"
-            >
+            <form onSubmit={handleSubmit} className="space-y-5">
 
               
               <div>
@@ -189,15 +179,7 @@ const ContactUs = () => {
                   Full Name
                 </label>
 
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your name"
-                  required
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
-                />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your name" required className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]" />
               </div>
 
           
@@ -208,15 +190,7 @@ const ContactUs = () => {
                     Email
                   </label>
 
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Your email"
-                    required
-                    className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
-                  />
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Your email" required className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]" />
                 </div>
 
                 <div>
@@ -224,14 +198,7 @@ const ContactUs = () => {
                     Phone
                   </label>
 
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="Your phone"
-                    className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
-                  />
+                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Your phone" className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]" />
                 </div>
 
               </div>
@@ -242,14 +209,7 @@ const ContactUs = () => {
                   Subject
                 </label>
 
-                <input
-                  type="text"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  placeholder="What is this about?"
-                  className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
-                />
+                <input type="text" name="subject" value={formData.subject} onChange={handleChange} placeholder="What is this about?" className="w-full rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]" />
               </div>
 
              
@@ -258,23 +218,11 @@ const ContactUs = () => {
                   Message
                 </label>
 
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows="6"
-                  placeholder="Write your message..."
-                  required
-                  className="w-full resize-none rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]"
-                />
+                <textarea name="message" value={formData.message} onChange={handleChange} rows="6" placeholder="Write your message..." required className="w-full resize-none rounded-xl border border-[#e4d9c4] bg-[#fffdf9] px-4 py-3.5 outline-none transition focus:border-[#c49424] text-[#2f2a24]" />
               </div>
 
               
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
-              >
+              <button type="submit" disabled={submitting} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49424] px-6 py-3.5 font-semibold text-white transition hover:bg-[#a97d18] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60">
                 {submitting ? 'Sending...' : 'Send Message'}
                 <Send className="h-4 w-4" />
               </button>
@@ -284,7 +232,7 @@ const ContactUs = () => {
           </div>
 
       
-          {contactAddress && <div className="overflow-hidden rounded-[2rem] border border-[#eadfc9] bg-white shadow-xl">
+          {contactAddress && <div className="overflow-hidden rounded-4xl border border-[#eadfc9] bg-white shadow-xl">
 
             <div className="p-7 sm:p-10">
 
@@ -302,15 +250,10 @@ const ContactUs = () => {
 
             </div>
 
-            <div className="h-[450px] w-full">
+            <div className="h-112.5 w-full">
 
-              <iframe
-                title="Location"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(contactAddress)}&output=embed`}
-                className="h-full w-full border-0"
-                loading="lazy"
-                allowFullScreen
-              />
+              <iframe title="Location" src={`https://www.google.com/maps?q=${encodeURIComponent(contactAddress)}&output=embed`} className="h-full w-full border-0"
+                loading="lazy" allowFullScreen/>
 
             </div>
           </div>}
@@ -322,7 +265,7 @@ const ContactUs = () => {
      
       <section className="mx-auto mt-16 max-w-7xl">
 
-        <div className="rounded-[2rem] bg-[#c49424] px-7 py-14 text-center text-white shadow-xl sm:px-12">
+        <div className="rounded-4xl bg-[#c49424] px-7 py-14 text-center text-white shadow-xl sm:px-12">
 
           <h2 className="font-serif text-3xl font-bold sm:text-4xl">
             Ready To Plan Your Event?
@@ -332,10 +275,7 @@ const ContactUs = () => {
             Tell us about your event and turn your idea into a successful experience.
           </p>
 
-          <a
-            href="/book-now"
-            className="mt-7 inline-block rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-[#9a721c] transition hover:bg-[#f8f5ef]"
-          >
+          <a href="/book-now" className="mt-7 inline-block rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-[#9a721c] transition hover:bg-[#f8f5ef]">
             Book Your Event
           </a>
 

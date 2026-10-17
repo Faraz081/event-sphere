@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {toast} from "sonner";
-import {Check, X} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import { Check, X } from "lucide-react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardSectionPage from "@/components/shared/DashboardSectionPage";
-import {fetchBookingRequests, approveBooking, rejectBooking} from "@/store/slices/eventSlice";
+import { fetchBookingRequests, approveBooking, rejectBooking } from "@/store/slices/eventSlice";
 
 const badge = {
   pending: "bg-gold/20 text-gold border border-gold/40",
@@ -121,11 +121,7 @@ const ExhibitorBookings = () => {
                     <span className="text-foreground">{r.customEventName || r.event?.title || r.eventName || "Event"}</span>
                   </p>
                   {r.customEventImage && (
-                    <img
-                      src={r.customEventImage}
-                      alt={r.customEventName || "Custom event"}
-                      className="mt-2 h-24 w-full max-w-xs rounded-lg object-cover"
-                    />
+                    <img src={r.customEventImage} alt={r.customEventName || "Custom event"} className="mt-2 h-24 w-full max-w-xs rounded-lg object-cover" />
                   )}
                   <p className="text-xs text-muted">Requested {new Date(r.createdAt).toLocaleDateString()}</p>
 
@@ -154,9 +150,9 @@ const ExhibitorBookings = () => {
               {r.bookingStatus === "pending" && rejectingId !== r._id && (
                 <div className="mt-4 flex gap-2">
                   <button type="button" onClick={() => handleApprove(r._id)} className="flex items-center gap-1.5 rounded-lg bg-gold px-4 py-2 text-sm font-medium text-background">
-                    <Check size={14} /> Approve </button>
-                  <button type="button" onClick={() => { setRejectingId(r._id); setRejectNote("");}}
-                    className="flex items-center gap-1.5 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-300">
+                    <Check size={14} /> Approve
+                  </button>
+                  <button type="button" onClick={() => { setRejectingId(r._id); setRejectNote("");}} className="flex items-center gap-1.5 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-300">
                     <X size={14} /> Reject
                   </button>
                 </div>

@@ -17,7 +17,6 @@ const SavedEvents = () => {
 
   const handleRemove = async (thunk, item) => {
     const result = await dispatch(thunk(item));
-
     if (result.type.endsWith("/fulfilled")) toast.success("Bookmark removed");
     else toast.error(result.payload?.error || "Could not remove bookmark");
   };

@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  createBooth,
-  getAllBooths,
-  getBoothById,
-  updateBooth,
-  deleteBooth,
-} from "../controllers/boothController.js";
+import {createBooth, getAllBooths, getBoothById, updateBooth, deleteBooth} from "../controllers/boothController.js";
 import { adminAuth } from "../middleware/authMiddleware.js";
 
 const boothRoute = express.Router();

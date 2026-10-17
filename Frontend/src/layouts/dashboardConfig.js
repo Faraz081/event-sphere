@@ -40,20 +40,4 @@ export const dashboardNavigation = {
   ],
 };
 
-
-export const dashboardSummaries = {
-  admin: [
-    { label: "Active Expos", value: 12 },
-    { label: "Total Exhibitors", value: 348 },
-    { label: "Registered Attendees", value: "4,215" },
-    { label: "Booths Reserved", value: "89%" },
-  ],
-  exhibitor: [
-    { label: "My Booth", value: "B-12" },
-    { label: "Products", value: "18" },
-    { label: "Meetings", value: "9" },
-    { label: "Messages", value: "5" },
-  ],
-};
-
 export const getRoleHomePath = (role) => roleHomePaths[role] ?? "/login";

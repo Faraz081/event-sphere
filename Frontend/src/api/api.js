@@ -21,9 +21,7 @@ api.interceptors.request.use(
       const isPublicAuthRequest = /^\/api\/(login|register)(\/|$)/.test(
         config.url || ""
       );
-      const token = isPublicAuthRequest
-        ? null
-        : localStorage.getItem("eventsphere_auth_token");
+      const token = isPublicAuthRequest ? null : localStorage.getItem("eventsphere_auth_token");
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;

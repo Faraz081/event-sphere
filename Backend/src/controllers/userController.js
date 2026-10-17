@@ -10,7 +10,6 @@ const VALID_STATUSES = ["active", "inactive", "suspended"];
 export const getAllUsers = async (req, res) => {
   try {
     const { search, role, status, sortBy = "createdAt", sortOrder = "desc" } = req.query;
-
     const filter = { role: { $ne: "admin" } };
 
     if (role && role !== "all" && role !== "admin") {
@@ -69,14 +68,7 @@ export const getUserStats = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      stats: {
-        total,
-        attendees,
-        exhibitors,
-        active,
-        inactive,
-        suspended,
-      },
+      stats: {total, attendees, exhibitors, active, inactive, suspended},
     });
   } catch (error) {
     console.error("Error fetching user statistics:", error);

@@ -1,40 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import {
-  fetchAttendees,
-  createAttendee,
-  updateAttendee,
-  deleteAttendee,
-} from "@/api/attendeeService";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { fetchAttendees, createAttendee, updateAttendee, deleteAttendee } from "@/api/attendeeService";
 import { fetchUsers } from "@/api/userService";
 import { fetchExposForSelect } from "@/api/boothService";
 import { mockExpos } from "@/data/mockData";
 import { toast } from "sonner";
-import {
-  Search,
-  UserPlus,
-  Eye,
-  Edit2,
-  Trash2,
-  X,
-  Ticket,
-  Calendar,
-  Mail,
-  Phone,
-  AlertCircle,
-  RotateCcw,
-} from "lucide-react";
+import { Search, UserPlus, Eye, Edit2, Trash2, X, Ticket, Calendar, Mail, Phone, AlertCircle, RotateCcw } from "lucide-react";
 
 const registrationStatusStyles = {
   registered: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
@@ -88,7 +61,6 @@ const AdminAttendees = () => {
   const [selectedRegStatus, setSelectedRegStatus] = useState("all");
   const [selectedBookingStatus, setSelectedBookingStatus] = useState("all");
   const [selectedPassStatus, setSelectedPassStatus] = useState("all");
-
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
@@ -275,12 +247,8 @@ const AdminAttendees = () => {
               Manage event attendees, registration workflows, booking statuses, and entry passes.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-1.5 bg-gold text-background text-sm font-semibold px-3 py-2 rounded-xl hover:opacity-90 transition-opacity self-start sm:self-auto sm:gap-2 sm:px-4 sm:py-2.5 shadow-md shadow-gold/10 whitespace-nowrap"
-          >
-            <UserPlus size={16} className="sm:h-[18px] sm:w-[18px]" />
+          <button type="button" onClick={handleOpenCreateModal} className="inline-flex items-center gap-1.5 bg-gold text-background text-sm font-semibold px-3 py-2 rounded-xl hover:opacity-90 transition-opacity self-start sm:self-auto sm:gap-2 sm:px-4 sm:py-2.5 shadow-md shadow-gold/10 whitespace-nowrap">
+            <UserPlus size={16} className="sm:h-4.5 sm:w-4.5" />
             <span>Register Attendee</span>
           </button>
         </div>
@@ -288,34 +256,17 @@ const AdminAttendees = () => {
         <div className="bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
             <div className="lg:col-span-3 relative">
-              <Search
-                size={18}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
-              />
-              <input
-                type="text"
-                placeholder="Search by name, email, phone, or pass code..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-              />
+              <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+              <input type="text" placeholder="Search by name, email, phone, or pass code..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
               {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
-                >
+                <button type="button" onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground">
                   <X size={16} />
                 </button>
               )}
             </div>
 
             <div className="lg:col-span-2">
-              <select
-                value={expoFilter}
-                onChange={(e) => setExpoFilter(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-              >
+              <select value={expoFilter} onChange={(e) => setExpoFilter(e.target.value)} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                 <option value="">Select Expo</option>
                 {expos.map((expo) => (
                   <option key={expo._id} value={expo._id}>
@@ -326,11 +277,7 @@ const AdminAttendees = () => {
             </div>
 
             <div className="lg:col-span-2">
-              <select
-                value={selectedRegStatus}
-                onChange={(e) => setSelectedRegStatus(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-              >
+              <select value={selectedRegStatus} onChange={(e) => setSelectedRegStatus(e.target.value)} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                 <option value="all">All Registration Statuses</option>
                 <option value="registered">Registered</option>
                 <option value="confirmed">Confirmed</option>
@@ -340,11 +287,7 @@ const AdminAttendees = () => {
             </div>
 
             <div className="lg:col-span-2">
-              <select
-                value={selectedBookingStatus}
-                onChange={(e) => setSelectedBookingStatus(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-              >
+              <select value={selectedBookingStatus} onChange={(e) => setSelectedBookingStatus(e.target.value)} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                 <option value="all">All Bookings</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="pending">Pending</option>
@@ -353,11 +296,7 @@ const AdminAttendees = () => {
             </div>
 
             <div className="lg:col-span-2">
-              <select
-                value={selectedPassStatus}
-                onChange={(e) => setSelectedPassStatus(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-              >
+              <select value={selectedPassStatus} onChange={(e) => setSelectedPassStatus(e.target.value)} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                 <option value="all">All Pass Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="issued">Issued</option>
@@ -368,73 +307,60 @@ const AdminAttendees = () => {
             </div>
 
             <div className="lg:col-span-1 flex justify-end">
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                title="Reset Filters"
-                className="inline-flex items-center justify-center h-10 w-10 rounded-xl border border-border bg-background text-muted hover:text-foreground hover:bg-surface transition-colors"
-              >
+              <button type="button" onClick={handleResetFilters} title="Reset Filters" className="inline-flex items-center justify-center h-10 w-10 rounded-xl border border-border bg-background text-muted hover:text-foreground hover:bg-surface transition-colors">
                 <RotateCcw size={16} />
               </button>
             </div>
           </div>
 
-          {(searchTerm ||
-            expoFilter ||
-            selectedRegStatus !== "all" ||
-            selectedBookingStatus !== "all" ||
-            selectedPassStatus !== "all") && (
-            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50 text-xs text-muted">
-              <span>Active Filters:</span>
-              {searchTerm && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground">
-                  Query: "{searchTerm}"
-                  <button type="button" onClick={() => setSearchTerm("")}>
-                    <X size={12} />
-                  </button>
-                </span>
-              )}
-              {expoFilter && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground">
-                  Expo: {expos.find((e) => e._id === expoFilter)?.title || "Selected"}
-                  <button type="button" onClick={() => setExpoFilter("")}>
-                    <X size={12} />
-                  </button>
-                </span>
-              )}
-              {selectedRegStatus !== "all" && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground capitalize">
-                  Registration: {selectedRegStatus}
-                  <button type="button" onClick={() => setSelectedRegStatus("all")}>
-                    <X size={12} />
-                  </button>
-                </span>
-              )}
-              {selectedBookingStatus !== "all" && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground capitalize">
-                  Booking: {selectedBookingStatus}
-                  <button type="button" onClick={() => setSelectedBookingStatus("all")}>
-                    <X size={12} />
-                  </button>
-                </span>
-              )}
-              {selectedPassStatus !== "all" && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground capitalize">
-                  Pass: {selectedPassStatus}
-                  <button type="button" onClick={() => setSelectedPassStatus("all")}>
-                    <X size={12} />
-                  </button>
-                </span>
-              )}
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="text-gold hover:underline ml-1"
-              >
-                Clear all
-              </button>
-            </div>
-          )}
+          {(searchTerm || expoFilter || selectedRegStatus !== "all" || selectedBookingStatus !== "all" || selectedPassStatus !== "all") && (
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50 text-xs text-muted">
+                <span>Active Filters:</span>
+                {searchTerm && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground">
+                    Query: "{searchTerm}"
+                    <button type="button" onClick={() => setSearchTerm("")}>
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {expoFilter && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground">
+                    Expo: {expos.find((e) => e._id === expoFilter)?.title || "Selected"}
+                    <button type="button" onClick={() => setExpoFilter("")}>
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {selectedRegStatus !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground capitalize">
+                    Registration: {selectedRegStatus}
+                    <button type="button" onClick={() => setSelectedRegStatus("all")}>
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {selectedBookingStatus !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground capitalize">
+                    Booking: {selectedBookingStatus}
+                    <button type="button" onClick={() => setSelectedBookingStatus("all")}>
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {selectedPassStatus !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-background border border-border px-2.5 py-0.5 text-foreground capitalize">
+                    Pass: {selectedPassStatus}
+                    <button type="button" onClick={() => setSelectedPassStatus("all")}>
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                <button type="button" onClick={handleResetFilters} className="text-gold hover:underline ml-1">
+                  Clear all
+                </button>
+              </div>
+            )}
         </div>
 
         <ResponsiveTable>
@@ -474,41 +400,32 @@ const AdminAttendees = () => {
           </thead>
           <tbody>
             {loading ? (
-  <tr>
-    <td colSpan={7} className="!block md:!table-cell px-3 py-12 text-center text-muted">
-      <div className="flex w-full flex-col items-center justify-center gap-2">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
-        <p className="text-sm">Loading attendees directory...</p>
-      </div>
-    </td>
-  </tr>
-) : attendees.length === 0 ? (
-  <tr>
-    <td colSpan={7} className="!block md:!table-cell px-3 py-12 text-center text-muted">
-      <div className="flex w-full flex-col items-center justify-center gap-2">
-        <AlertCircle size={32} className="text-muted/60" />
-        <p className="font-medium text-foreground">
-          {expoFilter ? "No attendees found" : "Select an expo"}
-        </p>
-        <p className="text-xs text-muted">
-          {expoFilter
-            ? searchTerm ||
-              selectedRegStatus !== "all" ||
-              selectedBookingStatus !== "all" ||
-              selectedPassStatus !== "all"
-              ? "Try adjusting your search criteria or clearing filters."
-              : "No attendee registrations for this expo yet."
-            : "Select an expo to view its attendees"}
-        </p>
-      </div>
-    </td>
-  </tr>
-) : (
+              <tr>
+                <td colSpan={7} className="block! md:table-cell! px-3 py-12 text-center text-muted">
+                  <div className="flex w-full flex-col items-center justify-center gap-2">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+                    <p className="text-sm">Loading attendees directory...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : attendees.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="block! md:table-cell! px-3 py-12 text-center text-muted">
+                  <div className="flex w-full flex-col items-center justify-center gap-2">
+                    <AlertCircle size={32} className="text-muted/60" />
+                    <p className="font-medium text-foreground">
+                      {expoFilter ? "No attendees found" : "Select an expo"}
+                    </p>
+                    <p className="text-xs text-muted">
+                      {expoFilter ? searchTerm || selectedRegStatus !== "all" || selectedBookingStatus !== "all" || selectedPassStatus !== "all"
+                          ? "Try adjusting your search criteria or clearing filters." : "No attendee registrations for this expo yet." : "Select an expo to view its attendees"}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
               attendees.map((item) => (
-                <tr
-                  key={item._id}
-                  className="border-b border-border hover:bg-surface/60 transition-colors last:border-0"
-                >
+                <tr key={item._id} className="border-b border-border hover:bg-surface/60 transition-colors last:border-0">
                   <td data-label="Attendee" className="px-2 py-4 xl:px-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-gold font-semibold text-sm">
@@ -545,32 +462,20 @@ const AdminAttendees = () => {
                   </td>
 
                   <td data-label="Registration" className="px-2 py-4 xl:px-3">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                        registrationStatusStyles[item.registrationStatus] || "bg-muted/20 text-muted"
-                      }`}
-                    >
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${registrationStatusStyles[item.registrationStatus] || "bg-muted/20 text-muted" }`}>
                       {item.registrationStatus}
                     </span>
                   </td>
 
                   <td data-label="Booking" className="px-2 py-4 xl:px-3">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                        bookingStatusStyles[item.bookingStatus] || "bg-muted/20 text-muted"
-                      }`}
-                    >
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${bookingStatusStyles[item.bookingStatus] || "bg-muted/20 text-muted" }`}>
                       {item.bookingStatus}
                     </span>
                   </td>
 
                   <td data-label="Pass" className="px-2 py-4 xl:px-3">
                     <div className="flex flex-col gap-1 items-start">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                          passStatusStyles[item.passStatus] || "bg-muted/20 text-muted"
-                        }`}
-                      >
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${passStatusStyles[item.passStatus] || "bg-muted/20 text-muted"}`}>
                         {item.passStatus}
                       </span>
                       {(item.passCode || item.entryPassId) && (
@@ -580,10 +485,10 @@ const AdminAttendees = () => {
                         </span>
                       )}
                       {item.checkedInAt && (
-  <span className="text-xs text-muted">
-    Checked in: {new Date(item.checkedInAt).toLocaleString()}
-  </span>
-)}
+                        <span className="text-xs text-muted">
+                          Checked in: {new Date(item.checkedInAt).toLocaleString()}
+                        </span>
+                      )}
                     </div>
                   </td>
 
@@ -593,28 +498,13 @@ const AdminAttendees = () => {
 
                   <td data-label="Actions" className="px-2 py-4 xl:px-3">
                     <div className="flex items-center justify-end gap-0">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenViewModal(item)}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-foreground"
-                        title="View Attendee"
-                      >
+                      <button type="button" onClick={() => handleOpenViewModal(item)} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-foreground" title="View Attendee">
                         <Eye size={14} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEditModal(item)}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-gold"
-                        title="Edit Attendee"
-                      >
+                      <button type="button" onClick={() => handleOpenEditModal(item)} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-gold" title="Edit Attendee">
                         <Edit2 size={14} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setAttendeeToDelete(item)}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-red-400"
-                        title="Delete Attendee"
-                      >
+                      <button type="button" onClick={() => setAttendeeToDelete(item)} className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-red-400" title="Delete Attendee">
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -640,11 +530,7 @@ const AdminAttendees = () => {
                     <p className="text-xs text-muted font-mono">{attendeeToView._id}</p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsViewModalOpen(false)}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors"
-                >
+                <button type="button" onClick={() => setIsViewModalOpen(false)} className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors">
                   <X size={16} />
                 </button>
               </div>
@@ -672,34 +558,21 @@ const AdminAttendees = () => {
 
                 <div className="bg-background border border-border rounded-xl p-3">
                   <p className="text-xs text-muted mb-1">Registration Status</p>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize mt-0.5 ${
-                      registrationStatusStyles[attendeeToView.registrationStatus] ||
-                      "bg-muted/20 text-muted"
-                    }`}
-                  >
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize mt-0.5 ${registrationStatusStyles[attendeeToView.registrationStatus] || "bg-muted/20 text-muted" }`}>
                     {attendeeToView.registrationStatus}
                   </span>
                 </div>
 
                 <div className="bg-background border border-border rounded-xl p-3">
                   <p className="text-xs text-muted mb-1">Booking Status</p>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize mt-0.5 ${
-                      bookingStatusStyles[attendeeToView.bookingStatus] || "bg-muted/20 text-muted"
-                    }`}
-                  >
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize mt-0.5 ${bookingStatusStyles[attendeeToView.bookingStatus] || "bg-muted/20 text-muted" }`}>
                     {attendeeToView.bookingStatus}
                   </span>
                 </div>
 
                 <div className="bg-background border border-border rounded-xl p-3">
                   <p className="text-xs text-muted mb-1">Pass Status</p>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize mt-0.5 ${
-                      passStatusStyles[attendeeToView.passStatus] || "bg-muted/20 text-muted"
-                    }`}
-                  >
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize mt-0.5 ${passStatusStyles[attendeeToView.passStatus] || "bg-muted/20 text-muted"}`}>
                     {attendeeToView.passStatus}
                   </span>
                 </div>
@@ -715,13 +588,13 @@ const AdminAttendees = () => {
                 </div>
 
                 {attendeeToView.checkedInAt && (
-  <div className="bg-background border border-border rounded-xl p-3">
-    <p className="text-xs text-muted mb-1">Checked In At</p>
-    <p className="text-sm text-foreground">
-      {new Date(attendeeToView.checkedInAt).toLocaleString()}
-    </p>
-  </div>
-)}
+                  <div className="bg-background border border-border rounded-xl p-3">
+                    <p className="text-xs text-muted mb-1">Checked In At</p>
+                    <p className="text-sm text-foreground">
+                      {new Date(attendeeToView.checkedInAt).toLocaleString()}
+                    </p>
+                  </div>
+                )}
 
                 <div className="bg-background border border-border rounded-xl p-3 sm:col-span-2">
                   <p className="text-xs text-muted mb-1 flex items-center gap-1.5">
@@ -761,22 +634,11 @@ const AdminAttendees = () => {
               </div>
 
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsViewModalOpen(false);
-                    handleOpenEditModal(attendeeToView);
-                  }}
-                  className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface transition-colors"
-                >
+                <button type="button" onClick={() => { setIsViewModalOpen(false); handleOpenEditModal(attendeeToView); }} className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface transition-colors">
                   <Edit2 size={14} />
                   Edit Attendee
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setIsViewModalOpen(false)}
-                  className="bg-gold text-background px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity"
-                >
+                <button type="button" onClick={() => setIsViewModalOpen(false)} className="bg-gold text-background px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
                   Close
                 </button>
               </div>
@@ -791,11 +653,7 @@ const AdminAttendees = () => {
                 <h2 className="font-display text-xl font-bold text-foreground">
                   {editingAttendeeId ? "Edit Attendee Registration" : "Register New Attendee"}
                 </h2>
-                <button
-                  type="button"
-                  onClick={() => setIsFormModalOpen(false)}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors"
-                >
+                <button type="button" onClick={() => setIsFormModalOpen(false)} className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors">
                   <X size={16} />
                 </button>
               </div>
@@ -806,23 +664,9 @@ const AdminAttendees = () => {
                     User Account *
                   </label>
                   {editingAttendeeId ? (
-                    <input
-                      type="text"
-                      disabled
-                      value={
-                        usersList.find((u) => u._id === formData.userId)?.name ||
-                        "Selected User Account"
-                      }
-                      className="w-full bg-background/50 border border-border rounded-xl px-3.5 py-2.5 text-sm text-muted cursor-not-allowed"
-                    />
+                    <input type="text" disabled value={ usersList.find((u) => u._id === formData.userId)?.name || "Selected User Account" } className="w-full bg-background/50 border border-border rounded-xl px-3.5 py-2.5 text-sm text-muted cursor-not-allowed" />
                   ) : (
-                    <select
-                      name="userId"
-                      required
-                      value={formData.userId}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-                    >
+                    <select name="userId" required value={formData.userId} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                       <option value="">-- Select an Existing User Account --</option>
                       {usersList.map((u) => (
                         <option key={u._id} value={u._id}>
@@ -837,12 +681,7 @@ const AdminAttendees = () => {
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Associated Event / Expo
                   </label>
-                  <select
-                    name="eventName"
-                    value={formData.eventName}
-                    onChange={handleInputChange}
-                    className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-                  >
+                  <select name="eventName" value={formData.eventName} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                     <option value="General Platform Event">General Platform Event</option>
                     {mockExpos.map((expo) => (
                       <option key={expo.id} value={expo.title}>
@@ -857,12 +696,7 @@ const AdminAttendees = () => {
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Registration Status *
                     </label>
-                    <select
-                      name="registrationStatus"
-                      value={formData.registrationStatus}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-                    >
+                    <select name="registrationStatus" value={formData.registrationStatus} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                       <option value="registered">Registered</option>
                       <option value="confirmed">Confirmed</option>
                       {formData.registrationStatus === "attended" && <option value="attended" disabled>Attended (QR check-in)</option>}
@@ -873,12 +707,7 @@ const AdminAttendees = () => {
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Booking Status *
                     </label>
-                    <select
-                      name="bookingStatus"
-                      value={formData.bookingStatus}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-                    >
+                    <select name="bookingStatus" value={formData.bookingStatus} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                       <option value="confirmed">Confirmed</option>
                       <option value="pending">Pending</option>
                       <option value="cancelled">Cancelled</option>
@@ -891,12 +720,7 @@ const AdminAttendees = () => {
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Pass Status *
                     </label>
-                    <select
-                      name="passStatus"
-                      value={formData.passStatus}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-                    >
+                    <select name="passStatus" value={formData.passStatus} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                       <option value="pending" disabled={formData.passStatus === "scanned"}>Pending</option>
                       <option value="issued" disabled={formData.passStatus === "scanned"}>Issued</option>
                       <option value="claimed" disabled={formData.passStatus === "scanned"}>Claimed</option>
@@ -908,14 +732,7 @@ const AdminAttendees = () => {
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Pass Code (Optional)
                     </label>
-                    <input
-                      name="passCode"
-                      type="text"
-                      placeholder="Auto-generated if empty"
-                      value={formData.passCode}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground font-mono placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                    />
+                    <input name="passCode" type="text" placeholder="Auto-generated if empty" value={formData.passCode} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground font-mono placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                   </div>
                 </div>
 
@@ -924,48 +741,22 @@ const AdminAttendees = () => {
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Ticket Type
                     </label>
-                    <input
-                      name="ticketType"
-                      type="text"
-                      placeholder="e.g. Standard Pass, VIP"
-                      value={formData.ticketType}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                    />
+                    <input name="ticketType" type="text" placeholder="e.g. Standard Pass, VIP" value={formData.ticketType} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Notes
                     </label>
-                    <input
-                      name="notes"
-                      type="text"
-                      placeholder="Optional internal remarks"
-                      value={formData.notes}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                    />
+                    <input name="notes" type="text" placeholder="Optional internal remarks" value={formData.notes} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
-                  <button
-                    type="button"
-                    onClick={() => setIsFormModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-sm text-muted hover:text-foreground transition-colors"
-                  >
+                  <button type="button" onClick={() => setIsFormModalOpen(false)} className="px-4 py-2 rounded-xl text-sm text-muted hover:text-foreground transition-colors">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-gold text-background font-semibold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-                  >
-                    {isSubmitting
-                      ? "Saving..."
-                      : editingAttendeeId
-                      ? "Update Attendee"
-                      : "Register Attendee"}
+                  <button type="submit" disabled={isSubmitting} className="bg-gold text-background font-semibold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+                    {isSubmitting ? "Saving..." : editingAttendeeId ? "Update Attendee" : "Register Attendee"}
                   </button>
                 </div>
               </form>
@@ -973,10 +764,7 @@ const AdminAttendees = () => {
           </div>
         )}
 
-        <AlertDialog
-          open={!!attendeeToDelete}
-          onOpenChange={(open) => !open && setAttendeeToDelete(null)}
-        >
+        <AlertDialog open={!!attendeeToDelete} onOpenChange={(open) => !open && setAttendeeToDelete(null)}>
           <AlertDialogContent className="border border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24] ring-[#eadfc9]">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-[#2f2a24]">Remove Attendee Record?</AlertDialogTitle>
@@ -993,10 +781,7 @@ const AdminAttendees = () => {
               <AlertDialogCancel className="border-[#eadfc9] bg-transparent text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]">
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteConfirm}
-                className="bg-red-500/90 text-white hover:bg-red-600 transition-colors"
-              >
+              <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-500/90 text-white hover:bg-red-600 transition-colors">
                 Delete Attendee
               </AlertDialogAction>
             </AlertDialogFooter>

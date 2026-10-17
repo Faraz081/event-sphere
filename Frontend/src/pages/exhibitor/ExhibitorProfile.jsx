@@ -119,8 +119,7 @@ const ExhibitorProfile = () => {
           <div className="rounded-3xl border border-border bg-surface p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">Company profile</h2>
-              <button onClick={() => setEditing(true)}
-                className="rounded-xl bg-[#d4a62a] px-5 py-2 text-sm font-bold text-black">
+              <button onClick={() => setEditing(true)} className="rounded-xl bg-[#d4a62a] px-5 py-2 text-sm font-bold text-black">
                 Edit Profile
               </button>
             </div>

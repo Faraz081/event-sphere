@@ -1,21 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import {
-  Phone,
-  Mail,
-  MapPin,
-  Clock3,
-  ArrowRight,
-  Sparkles,
-} from 'lucide-react'
-import {
-  FaInstagram,
-  FaLinkedinIn,
-  FaFacebookF,
-  FaXTwitter,
-  FaYoutube,
-} from 'react-icons/fa6'
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Phone, Mail, MapPin, Clock3, ArrowRight, Sparkles } from 'lucide-react';
+import { FaInstagram, FaLinkedinIn, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6';
 
 const Footer = () => {
   const settings = useSelector((state) => state.websiteSettings.settings)
@@ -66,10 +53,7 @@ const Footer = () => {
 
           <div className="lg:col-span-4">
 
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 font-serif text-2xl font-medium tracking-wider text-white transition-opacity hover:opacity-80"
-            >
+            <Link to="/" className="inline-flex items-center gap-2 font-serif text-2xl font-medium tracking-wider text-white transition-opacity hover:opacity-80">
               {logo ? (
                 <img src={logo} alt="" className="max-h-8 max-w-32 object-contain" />
               ) : (
@@ -89,22 +73,10 @@ const Footer = () => {
                 Subscribe to Our Newsletter
               </p>
 
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="mt-2.5 flex items-center overflow-hidden rounded-full border border-white/15 bg-white/5 p-1.5 backdrop-blur-md transition-all focus-within:border-[#c49424]"
-              >
-                <input
-                  type="email"
-                  placeholder="Enter Your Email"
-                  className="w-full bg-transparent px-4 py-2 text-sm text-white outline-none placeholder:text-white/30"
-                  required
-                />
+              <form onSubmit={(e) => e.preventDefault()} className="mt-2.5 flex items-center overflow-hidden rounded-full border border-white/15 bg-white/5 p-1.5 backdrop-blur-md transition-all focus-within:border-[#c49424]">
+                <input type="email" placeholder="Enter Your Email" className="w-full bg-transparent px-4 py-2 text-sm text-white outline-none placeholder:text-white/30" required />
 
-                <button
-                  type="submit"
-                  aria-label="Subscribe"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#c49424] text-white shadow-md transition-all duration-300 hover:scale-105 hover:bg-[#a77d20]"
-                >
+                <button type="submit" aria-label="Subscribe" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#c49424] text-white shadow-md transition-all duration-300 hover:scale-105 hover:bg-[#a77d20]">
                   <ArrowRight className="h-5 w-5" />
                 </button>
               </form>
@@ -114,14 +86,7 @@ const Footer = () => {
             <div className="mt-6 flex gap-3">
 
               {socials.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  aria-label={social.label}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all duration-300 hover:-translate-y-1 hover:border-[#c49424] hover:bg-[#c49424]/10 hover:text-[#c49424]"
-                >
+                <a key={index} href={social.href} aria-label={social.label} target="_blank" rel="noopener noreferrer" className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all duration-300 hover:-translate-y-1 hover:border-[#c49424] hover:bg-[#c49424]/10 hover:text-[#c49424]">
                   {social.icon}
                 </a>
               ))}
@@ -139,46 +104,31 @@ const Footer = () => {
             <ul className="mt-5 flex flex-col gap-3 text-sm text-white/60">
 
               <li>
-                <Link
-                  to="/"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Home
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/about-platform"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/about-platform" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   About Us
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/service"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/service" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Our Expos
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/event-gallery"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/event-gallery" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Gallery
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/contact"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/contact" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Contact Us
                 </Link>
               </li>
@@ -196,46 +146,31 @@ const Footer = () => {
             <ul className="mt-5 flex flex-col gap-3 text-sm text-white/60">
 
               <li>
-                <Link
-                  to="/dashboard"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/dashboard" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Event Dashboard
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/dashboard"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/dashboard" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Event Management
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/dashboard"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/dashboard" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Exhibitor Hub
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/dashboard"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/dashboard" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Attendee Portal
                 </Link>
               </li>
 
               <li>
-                <Link
-                  to="/dashboard"
-                  className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]"
-                >
+                <Link to="/dashboard" className="transition-all duration-300 hover:pl-1 hover:text-[#c49424]">
                   Analytics & Reports
                 </Link>
               </li>
@@ -312,10 +247,7 @@ const Footer = () => {
             </div>
             )}
 
-            <Link
-              to="/book-now"
-              className="ml-2 mt-6 inline-flex items-center gap-2 rounded-full border border-[#c49424]/40 bg-[#c49424] px-8 py-2.5 text-xs font-semibold uppercase tracking-widest text-white shadow-md transition-all duration-300 hover:bg-[#a77d20]"
-            >
+            <Link to="/book-now" className="ml-2 mt-6 inline-flex items-center gap-2 rounded-full border border-[#c49424]/40 bg-[#c49424] px-8 py-2.5 text-xs font-semibold uppercase tracking-widest text-white shadow-md transition-all duration-300 hover:bg-[#a77d20]">
               Book Now
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -330,17 +262,11 @@ const Footer = () => {
 
           <div className="flex gap-6">
 
-            <Link
-              to="/"
-              className="transition hover:text-[#c49424]"
-            >
+            <Link to="/" className="transition hover:text-[#c49424]">
               Privacy Policy
             </Link>
 
-            <Link
-              to="/"
-              className="hover:text-[#c49424]"
-            >
+            <Link to="/" className="hover:text-[#c49424]">
               Terms & Conditions
             </Link>
 

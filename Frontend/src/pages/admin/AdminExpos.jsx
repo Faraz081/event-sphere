@@ -1,43 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useSelector } from "react-redux";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import {
-  fetchExpos,
-  createExpo,
-  updateExpo,
-  updateExpoStatus,
-  deleteExpo,
-  uploadExpoBanner,
-} from "@/api/expoService";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { fetchExpos, createExpo, updateExpo, updateExpoStatus, deleteExpo, uploadExpoBanner } from "@/api/expoService";
 import { fetchExpoReport } from "@/api/analyticsService";
 import { generateExpoReport } from "@/lib/generateExpoReport";
 import { toast } from "sonner";
-import {
-  Plus,
-  Search,
-  Edit2,
-  Trash2,
-  X,
-  RotateCcw,
-  AlertCircle,
-  Upload,
-  Image as ImageIcon,
-  ChevronLeft,
-  ChevronRight,
-  Calendar,
-  MapPin,
-  FileDown,
-} from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, RotateCcw, AlertCircle, Upload, Image as ImageIcon, ChevronLeft, ChevronRight, Calendar, MapPin, FileDown } from "lucide-react";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
 
 const statusStyles = {
@@ -359,18 +328,11 @@ const AdminExpos = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={loadExpos}
-              disabled={loading}
-              className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors"
-            >
+            <button onClick={loadExpos} disabled={loading} className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors">
               <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
               Refresh
             </button>
-            <button
-              onClick={openCreateModal}
-              className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity"
-            >
+            <button onClick={openCreateModal} className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity">
               <Plus size={18} />
               Create Expo
             </button>
@@ -380,22 +342,12 @@ const AdminExpos = () => {
         <div className="flex flex-col sm:flex-row gap-4 mb-6 items-stretch sm:items-center justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-            <input
-              type="text"
-              placeholder="Search expos by title..."
-              value={search}
-              onChange={handleSearchChange}
-              className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-            />
+            <input type="text" placeholder="Search expos by title..." value={search} onChange={handleSearchChange} className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted hidden sm:inline">Status:</span>
-            <select
-              value={statusFilter}
-              onChange={handleStatusFilterChange}
-              className="bg-background border border-border rounded-xl px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/40"
-            >
+            <select value={statusFilter} onChange={handleStatusFilterChange} className="bg-background border border-border rounded-xl px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/40">
               <option value="all">All Statuses</option>
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -404,14 +356,7 @@ const AdminExpos = () => {
               <option value="cancelled">Cancelled</option>
             </select>
             <label htmlFor="expo-date-filter" className="text-sm text-muted hidden sm:inline">Date:</label>
-            <input
-              id="expo-date-filter"
-              type="date"
-              value={dateFilter}
-              onChange={handleDateFilterChange}
-              aria-label="Filter expos by date"
-              className="bg-background border border-border rounded-xl px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/40"
-            />
+            <input id="expo-date-filter" type="date" value={dateFilter} onChange={handleDateFilterChange} aria-label="Filter expos by date" className="bg-background border border-border rounded-xl px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/40" />
           </div>
         </div>
 
@@ -421,10 +366,7 @@ const AdminExpos = () => {
               <AlertCircle size={18} />
               <span>{error}</span>
             </div>
-            <button
-              onClick={loadExpos}
-              className="text-xs bg-red-500/20 hover:bg-red-500/30 px-3 py-1 rounded-lg text-red-200 transition-colors"
-            >
+            <button onClick={loadExpos} className="text-xs bg-red-500/20 hover:bg-red-500/30 px-3 py-1 rounded-lg text-red-200 transition-colors">
               Retry
             </button>
           </div>
@@ -446,22 +388,11 @@ const AdminExpos = () => {
           : "No expos have been created yet. Create your first expo to get started."}
       </p>
       {search || statusFilter !== "all" || dateFilter ? (
-        <button
-          onClick={() => {
-            setSearch("");
-            setStatusFilter("all");
-            setDateFilter("");
-            setCurrentPage(1);
-          }}
-          className="text-sm text-gold hover:underline"
-        >
+        <button onClick={() => { setSearch(""); setStatusFilter("all"); setDateFilter(""); setCurrentPage(1); }} className="text-sm text-gold hover:underline">
           Reset filters
         </button>
       ) : (
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-background"
-        >
+        <button onClick={openCreateModal} className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-background">
           <Plus size={16} />
           Create First Expo
         </button>
@@ -472,11 +403,7 @@ const AdminExpos = () => {
       <div key={expo._id} className="rounded-xl border border-border bg-surface p-4">
         <div className="flex items-start gap-3">
           {expo.banner ? (
-            <img
-              src={expo.banner}
-              alt={expo.title}
-              className="h-12 w-12 shrink-0 rounded-lg border border-border object-cover"
-            />
+            <img src={expo.banner} alt={expo.title} className="h-12 w-12 shrink-0 rounded-lg border border-border object-cover" />
           ) : (
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-muted">
               <ImageIcon size={20} />
@@ -521,29 +448,13 @@ const AdminExpos = () => {
         </div>
 
         <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
-          <button
-            type="button"
-            onClick={() => handleGenerateReport(expo)}
-            disabled={reportLoadingId === expo._id}
-            title="Generate Report"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold disabled:opacity-50"
-          >
+          <button type="button" onClick={() => handleGenerateReport(expo)} disabled={reportLoadingId === expo._id} title="Generate Report" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold disabled:opacity-50">
             <FileDown size={15} className={reportLoadingId === expo._id ? "animate-pulse" : ""} />
           </button>
-          <button
-            type="button"
-            onClick={() => openEditModal(expo)}
-            title="Edit Expo"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold"
-          >
+          <button type="button" onClick={() => openEditModal(expo)} title="Edit Expo" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold">
             <Edit2 size={15} />
           </button>
-          <button
-            type="button"
-            onClick={() => setExpoToDelete(expo)}
-            title="Delete Expo"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400"
-          >
+          <button type="button" onClick={() => setExpoToDelete(expo)} title="Delete Expo" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400">
             <Trash2 size={15} />
           </button>
         </div>
@@ -585,22 +496,11 @@ const AdminExpos = () => {
                         : "No expos have been created yet. Create your first expo to get started."}
                     </p>
                     {search || statusFilter !== "all" || dateFilter ? (
-                      <button
-                        onClick={() => {
-                          setSearch("");
-                          setStatusFilter("all");
-                          setDateFilter("");
-                          setCurrentPage(1);
-                        }}
-                        className="mt-2 text-sm text-gold hover:underline"
-                      >
+                      <button onClick={() => { setSearch(""); setStatusFilter("all"); setDateFilter(""); setCurrentPage(1); }} className="mt-2 text-sm text-gold hover:underline">
                         Reset filters
                       </button>
                     ) : (
-                      <button
-                        onClick={openCreateModal}
-                        className="mt-2 inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity"
-                      >
+                      <button onClick={openCreateModal} className="mt-2 inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-opacity">
                         <Plus size={16} />
                         Create First Expo
                       </button>
@@ -610,18 +510,11 @@ const AdminExpos = () => {
               </tr>
             ) : (
               expos.map((expo) => (
-                <tr
-                  key={expo._id}
-                  className="border-b border-border last:border-0 hover:bg-surface/50 transition-colors"
-                >
+                <tr key={expo._id} className="border-b border-border last:border-0 hover:bg-surface/50 transition-colors">
                   <td data-label="Expo" className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       {expo.banner ? (
-                        <img
-                          src={expo.banner}
-                          alt={expo.title}
-                          className="w-12 h-12 rounded-lg object-cover border border-border flex-shrink-0"
-                        />
+                        <img src={expo.banner} alt={expo.title} className="w-12 h-12 rounded-lg object-cover border border-border flex-shrink-0" />
                       ) : (
                         <div className="w-12 h-12 rounded-lg bg-surface border border-border flex items-center justify-center text-muted flex-shrink-0">
                           <ImageIcon size={20} />
@@ -688,27 +581,13 @@ const AdminExpos = () => {
 
                   <td data-label="Actions" className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleGenerateReport(expo)}
-                        disabled={reportLoadingId === expo._id}
-                        className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors disabled:opacity-50"
-                        title="Generate Report"
-                      >
+                      <button type="button" onClick={() => handleGenerateReport(expo)} disabled={reportLoadingId === expo._id} className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors disabled:opacity-50" title="Generate Report">
                         <FileDown size={16} className={reportLoadingId === expo._id ? "animate-pulse" : ""} />
                       </button>
-                      <button
-                        onClick={() => openEditModal(expo)}
-                        className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors"
-                        title="Edit Expo"
-                      >
+                      <button onClick={() => openEditModal(expo)} className="p-2 rounded-lg text-muted hover:text-gold hover:bg-gold/10 transition-colors" title="Edit Expo">
                         <Edit2 size={16} />
                       </button>
-                      <button
-                        onClick={() => setExpoToDelete(expo)}
-                        className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                        title="Delete Expo"
-                      >
+                      <button onClick={() => setExpoToDelete(expo)} className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors" title="Delete Expo">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -727,11 +606,7 @@ const AdminExpos = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                disabled={currentPage <= 1 || loading}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border bg-surface text-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs font-medium"
-              >
+              <button onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))} disabled={currentPage <= 1 || loading} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border bg-surface text-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs font-medium">
                 <ChevronLeft size={16} />
                 Previous
               </button>
@@ -740,11 +615,7 @@ const AdminExpos = () => {
                 {currentPage} / {totalPages}
               </span>
 
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-                disabled={currentPage >= totalPages || loading}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border bg-surface text-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs font-medium"
-              >
+              <button onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))} disabled={currentPage>= totalPages || loading} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border bg-surface text-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs font-medium">
                 Next
                 <ChevronRight size={16} />
               </button>
@@ -759,10 +630,7 @@ const AdminExpos = () => {
                 <h2 className="text-xl font-semibold text-foreground">
                   {editingId ? "Edit Expo" : "Create New Expo"}
                 </h2>
-                <button
-                  onClick={closeModal}
-                  className="text-muted hover:text-foreground transition-colors"
-                >
+                <button onClick={closeModal} className="text-muted hover:text-foreground transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -772,33 +640,18 @@ const AdminExpos = () => {
                   <label className="block text-sm text-muted mb-1.5">Banner Image</label>
                   {formData.banner ? (
                     <div className="relative rounded-xl overflow-hidden border border-border bg-background">
-                      <img
-                        src={formData.banner}
-                        alt="Expo Banner"
-                        className="w-full h-40 object-cover"
-                      />
+                      <img src={formData.banner} alt="Expo Banner" className="w-full h-40 object-cover" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3 p-2">
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="bg-surface/90 text-foreground px-3 py-1.5 rounded-lg text-xs font-medium border border-border hover:bg-surface"
-                        >
+                        <button type="button" onClick={() => fileInputRef.current?.click()} className="bg-surface/90 text-foreground px-3 py-1.5 rounded-lg text-xs font-medium border border-border hover:bg-surface">
                           Change Image
                         </button>
-                        <button
-                          type="button"
-                          onClick={handleRemoveBanner}
-                          className="bg-red-500/80 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-500"
-                        >
+                        <button type="button" onClick={handleRemoveBanner} className="bg-red-500/80 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-500">
                           Remove
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div
-                      onClick={() => !uploadingBanner && fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-gold/50 bg-background/50 transition-colors"
-                    >
+                    <div onClick={() => !uploadingBanner && fileInputRef.current?.click()} className="border-2 border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-gold/50 bg-background/50 transition-colors">
                       <div className="flex flex-col items-center gap-2">
                         <Upload size={24} className="text-muted" />
                         <span className="text-sm font-medium text-foreground">
@@ -808,58 +661,27 @@ const AdminExpos = () => {
                       </div>
                     </div>
                   )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleBannerUpload}
-                    className="hidden"
-                  />
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleBannerUpload} className="hidden" />
                 </div>
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Title *</label>
-                  <input
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Future Tech Expo 2026"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="title" value={formData.title} onChange={handleInputChange} placeholder="e.g. Future Tech Expo 2026" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Description *</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Provide a detailed description of the expo event..."
-                    rows={3}
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 resize-none text-sm"
-                  />
+                  <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Provide a detailed description of the expo event..." rows={3} className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 resize-none text-sm" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-muted mb-1.5">Date & time *</label>
-                    <input
-                      name="date"
-                      type="datetime-local"
-                      min={today}
-                      value={formData.date}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                    />
+                    <input name="date" type="datetime-local" min={today} value={formData.date} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm text-muted mb-1.5">Status</label>
-                    <select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                    >
+                    <select name="status" value={formData.status} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm">
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
                       <option value="completed">Completed</option>
@@ -870,55 +692,25 @@ const AdminExpos = () => {
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Location *</label>
-                  <input
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Karachi Expo Centre, Hall 1"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g. Karachi Expo Centre, Hall 1" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Category / Theme</label>
-                  <input
-                    name="theme"
-                    value={formData.theme}
-                    onChange={handleInputChange}
-                    placeholder="e.g. AI, Robotics, Food & Beverage"
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="theme" value={formData.theme} onChange={handleInputChange} placeholder="e.g. AI, Robotics, Food & Beverage" className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
 
                 <div>
                   <label className="block text-sm text-muted mb-1.5">Max Booths *</label>
-                  <input
-                    name="maxBooths"
-                    type="number"
-                    min="1"
-                    step="1"
-                    required
-                    value={formData.maxBooths}
-                    onChange={handleInputChange}
-                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
-                  />
+                  <input name="maxBooths" type="number" min="1" step="1" required value={formData.maxBooths} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm" />
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors text-sm font-medium"
-                >
+                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-xl text-muted hover:text-foreground transition-colors text-sm font-medium">
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={saving || uploadingBanner}
-                  className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
-                >
+                <button type="button" onClick={handleSave} disabled={saving || uploadingBanner} className="bg-gold text-background font-semibold px-5 py-2 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-sm">
                   {saving ? "Saving..." : editingId ? "Update Expo" : "Create Expo"}
                 </button>
               </div>
@@ -926,10 +718,7 @@ const AdminExpos = () => {
           </div>
         )}
 
-        <AlertDialog
-          open={!!expoToDelete}
-          onOpenChange={(open) => !open && setExpoToDelete(null)}
-        >
+        <AlertDialog open={!!expoToDelete} onOpenChange={(open) => !open && setExpoToDelete(null)}>
           <AlertDialogContent className="border border-[#eadfc9] bg-[#f8f5ef] text-[#2f2a24]">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-[#2f2a24]">Delete this expo?</AlertDialogTitle>
@@ -939,17 +728,10 @@ const AdminExpos = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="border-t-[#eadfc9] bg-[#fffdf9]">
-              <AlertDialogCancel
-                disabled={deleting}
-                className="border border-[#d8c9a6] bg-transparent text-[#4b463e] hover:bg-[#f3eee4] hover:text-[#2f2a24]"
-              >
+              <AlertDialogCancel disabled={deleting} className="border border-[#d8c9a6] bg-transparent text-[#4b463e] hover:bg-[#f3eee4] hover:text-[#2f2a24]">
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction
-                disabled={deleting}
-                onClick={handleDelete}
-                className="bg-red-500 text-white hover:bg-red-600"
-              >
+              <AlertDialogAction disabled={deleting} onClick={handleDelete} className="bg-red-500 text-white hover:bg-red-600">
                 {deleting ? "Deleting..." : "Delete Expo"}
               </AlertDialogAction>
             </AlertDialogFooter>

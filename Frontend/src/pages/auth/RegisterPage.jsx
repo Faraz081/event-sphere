@@ -1,26 +1,11 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Sparkles,
-  UserRound,
-  Mail,
-  Lock,
-  UserPlus,
-  Building2,
-  Phone,
-} from "lucide-react";
+import {Sparkles,UserRound,Mail,Lock,UserPlus,Building2,Phone} from "lucide-react";
 import { toast } from "sonner";
-
 import loginSignupBg from "../../assets/login-signup-bg.jpg";
 import { registerUser } from "@/store/slices/authSlice";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 const initialFormData = {
   name: "",
@@ -157,7 +142,7 @@ const RegisterPage = () => {
       className="relative flex min-h-screen items-center justify-center bg-cover bg-center bg-no-repeat px-6 py-16 lg:px-10"
       style={{ backgroundImage: `url(${loginSignupBg})` }}
     >
-      <div className="grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#eadfca] bg-white shadow-xl lg:grid-cols-2">
+      <div className="grid w-full max-w-6xl overflow-hidden rounded-4xl border border-[#eadfca] bg-white shadow-xl lg:grid-cols-2">
 
         
         <div className="relative hidden overflow-hidden bg-[#f8f5ef] p-12 lg:flex lg:flex-col lg:justify-center">
@@ -247,17 +232,7 @@ const RegisterPage = () => {
 
                 <div className="relative">
                   <UserRound className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-
-                  <input
-                    id="fullName"
-                    name="name"
-                    type="text"
-                    maxLength={50}
-                    placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                  <input id="fullName" name="name" type="text" maxLength={50} placeholder="Enter your full name" value={formData.name} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
 
@@ -269,17 +244,7 @@ const RegisterPage = () => {
 
                 <div className="relative">
                   <Building2 className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
-
-                  <input
-                    id="company"
-                    name="companyName"
-                    type="text"
-                    maxLength={100}
-                    placeholder="ABC Technologies"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                  <input id="company" name="companyName" type="text" maxLength={100} placeholder="ABC Technologies" value={formData.companyName} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
 
@@ -291,28 +256,15 @@ const RegisterPage = () => {
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
 
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                  <input id="email" name="email" type="email" placeholder="Enter your email" value={formData.email} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
 
               <div>
                 <label className={labelClass}>Role</label>
 
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, role: value }))
-                  }
-                >
-                  <SelectTrigger className="h-[50px] data-[size=default]:h-[50px] w-full rounded-xl border-[#eadfca] bg-[#fffdf9] px-4 text-base text-black data-[placeholder]:text-gray-400 shadow-none focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20 focus-visible:border-[#c49424] focus-visible:ring-2 focus-visible:ring-[#c49424]/20">
+                <Select value={formData.role} onValueChange={(value) =>   setFormData((prev) => ({ ...prev, role: value }))}>
+                  <SelectTrigger className="h-12.5 data-[size=default]:h-12.5 w-full rounded-xl border-[#eadfca] bg-[#fffdf9] px-4 text-base text-black data-placeholder:text-gray-400 shadow-none focus:border-[#c49424] focus:ring-2 focus:ring-[#c49424]/20 focus-visible:border-[#c49424] focus-visible:ring-2 focus-visible:ring-[#c49424]/20">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
 
@@ -331,15 +283,7 @@ const RegisterPage = () => {
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
 
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="Create a password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                  <input id="password" name="password" type="password" placeholder="Create a password" value={formData.password} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
 
@@ -351,15 +295,7 @@ const RegisterPage = () => {
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
 
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                  <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm your password" value={formData.confirmPassword} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
 
@@ -371,17 +307,7 @@ const RegisterPage = () => {
                 <div className="relative">
                   <Phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b48620]" />
 
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    inputMode="tel"
-                    maxLength={13}
-                    placeholder="03001234567 or +923001234567"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                  <input id="phone" name="phone" type="tel" inputMode="tel" maxLength={13} placeholder="03001234567 or +923001234567" value={formData.phone} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
 

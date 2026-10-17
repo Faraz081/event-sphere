@@ -31,13 +31,7 @@ const createEvent = async (req, res) => {
       return res.status(400).json({ error: "Event price must be a valid non-negative amount" });
     }
 
-    if (
-      !title?.trim() ||
-      !description?.trim() ||
-      !eventType?.trim() ||
-      !boothCapacity ||
-      (!expo && !location?.trim()) ||
-      (expo && !date)
+    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !boothCapacity || (!expo && !location?.trim()) || (expo && !date)
     ) {
       return res.status(400).json({
         error: "Title, description, event type, booth capacity and either location or an expo with date are required",

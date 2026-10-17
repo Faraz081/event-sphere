@@ -132,7 +132,7 @@ const EventStalls = ({ event }) => {
       )}
 
       {formOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4" onClick={() => !busy && reset()}>
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/60 p-4" onClick={() => !busy && reset()}>
           <div role="dialog" aria-modal="true" aria-labelledby={`stall-form-title-${event._id}`} className="w-full max-w-lg space-y-4 rounded-2xl border border-border bg-surface p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 id={`stall-form-title-${event._id}`} className="font-semibold text-foreground">{editingId ? "Edit stall" : "Add stall"}</h3>

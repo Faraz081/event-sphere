@@ -29,9 +29,13 @@ const passwordResetSuccessEmail = () => `
 const verifyEmail = async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
-    if (!email) return res.status(400).json({ error: "Email is required" });
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
     const exist = await User.findOne({ email });
-    if (!exist) return res.status(404).json({ error: "Email not found" });
+    if (!exist){
+     return res.status(404).json({ error: "Email not found" });
+    }
     const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
     await Otp.findOneAndUpdate({ email }, { otp, createdAt: new Date() }, { upsert: true });
     await sendEmail(email, "EventSphere - Password Reset OTP", otpEmail(otp));
@@ -69,13 +73,21 @@ const resetPassword = async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
     const { otp, newPassword } = req.body;
-    if (!email || !otp || !newPassword) return res.status(400).json({ error: "Email, OTP and new password are required" });
-    if (newPassword.length < 6) return res.status(400).json({ error: "Password must be at least 6 characters" });
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ error: "Email, OTP and new password are required" });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters" });
+    }
     const match = await Otp.findOne({ email, otp });
-    if (!match) return res.status(401).json({ error: "OTP is incorrect or expired" });
+    if (!match){
+       return res.status(401).json({ error: "OTP is incorrect or expired" });
+    }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     const update = await User.findOneAndUpdate({ email }, { password: hashedPassword });
-    if (!update) return res.status(404).json({ error: "User not found" });
+    if (!update) {
+       return res.status(404).json({ error: "User not found" });
+    }
     await Otp.deleteOne({ _id: match._id });
     await sendEmail(email, "EventSphere - Password Changed Successfully", passwordResetSuccessEmail());
     return res.status(200).json({ msg: "Password updated successfully" });

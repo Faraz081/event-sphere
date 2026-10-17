@@ -3,39 +3,10 @@ import { useSelector } from "react-redux";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ResponsiveTable from "@/components/shared/ResponsiveTable";
 import StatCard from "@/components/shared/StatCard";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import {
-  fetchUsers,
-  fetchUserStats,
-  createUser,
-  updateUser,
-  deleteUser,
-} from "@/api/userService";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { fetchUsers, fetchUserStats, createUser, updateUser, deleteUser } from "@/api/userService";
 import { toast } from "sonner";
-import {
-  Search,
-  UserPlus,
-  Eye,
-  Edit2,
-  Trash2,
-  X,
-  Shield,
-  RotateCcw,
-  Building2,
-  Phone,
-  Mail,
-  Calendar,
-  AlertCircle,
-} from "lucide-react";
+import { Search, UserPlus, Eye, Edit2, Trash2, X, Shield, RotateCcw, Building2, Phone, Mail, Calendar, AlertCircle } from "lucide-react";
 
 const roleBadgeStyles = {
   admin: "bg-gold/20 text-gold border border-gold/40",
@@ -300,11 +271,7 @@ const AdminUsers = () => {
               Manage all platform users, roles, statuses, and account authorizations.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity self-start sm:self-auto shadow-md shadow-gold/10"
-          >
+          <button type="button" onClick={handleOpenCreateModal} className="inline-flex items-center gap-2 bg-gold text-background font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity self-start sm:self-auto shadow-md shadow-gold/10">
             <UserPlus size={18} />
             <span>Add User</span>
           </button>
@@ -319,44 +286,23 @@ const AdminUsers = () => {
         <div className="bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
             <div className="lg:col-span-6 relative">
-              <Search
-                size={18}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
-              />
-              <input
-                type="text"
-                placeholder="Search by name, email, phone, or company..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-              />
+              <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+              <input type="text" placeholder="Search by name, email, phone, or company..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
               {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
-                >
+                <button type="button" onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground">
                   <X size={16} />
                 </button>
               )}
             </div>
             <div className="lg:col-span-3">
-              <select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-              >
+              <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                 <option value="all">All Roles</option>
                 <option value="attendee">Attendee</option>
                 <option value="exhibitor">Exhibitor</option>
               </select>
             </div>
             <div className="lg:col-span-2">
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-              >
+              <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -364,12 +310,7 @@ const AdminUsers = () => {
               </select>
             </div>
             <div className="lg:col-span-1 flex justify-end">
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                title="Reset Filters"
-                className="inline-flex items-center justify-center h-10 w-10 rounded-xl border border-border bg-background text-muted hover:text-foreground hover:bg-surface transition-colors"
-              >
+              <button type="button" onClick={handleResetFilters} title="Reset Filters" className="inline-flex items-center justify-center h-10 w-10 rounded-xl border border-border bg-background text-muted hover:text-foreground hover:bg-surface transition-colors">
                 <RotateCcw size={16} />
               </button>
             </div>
@@ -402,11 +343,7 @@ const AdminUsers = () => {
                   </button>
                 </span>
               )}
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="text-gold hover:underline ml-1"
-              >
+              <button type="button" onClick={handleResetFilters} className="text-gold hover:underline ml-1">
                 Clear all
               </button>
             </div>
@@ -476,16 +413,13 @@ const AdminUsers = () => {
         </div>
 
         <div className="mt-3 flex justify-end gap-2 border-t border-border pt-3">
-          <button type="button" onClick={() => handleOpenViewModal(item)} title="View User Details"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-foreground">
+          <button type="button" onClick={() => handleOpenViewModal(item)} title="View User Details" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-foreground">
             <Eye size={15} />
           </button>
-          <button type="button" onClick={() => handleOpenEditModal(item)} title="Edit User"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold">
+          <button type="button" onClick={() => handleOpenEditModal(item)} title="Edit User" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-gold">
             <Edit2 size={15} />
           </button>
-          <button type="button" onClick={() => setUserToDelete(item)} title="Delete User"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400">
+          <button type="button" onClick={() => setUserToDelete(item)} title="Delete User" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted hover:text-red-400">
             <Trash2 size={15} />
           </button>
         </div>
@@ -547,10 +481,7 @@ const AdminUsers = () => {
               </tr>
             ) : (
               users.map((item) => (
-                <tr
-                  key={item._id}
-                  className="border-b border-border hover:bg-surface/60 transition-colors last:border-0"
-                >
+                <tr key={item._id} className="border-b border-border hover:bg-surface/60 transition-colors last:border-0">
                   <td data-label="User" className="px-2 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-gold font-semibold text-sm">
@@ -596,28 +527,13 @@ const AdminUsers = () => {
                   </td>
                   <td className="px-2 py-3">
                     <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenViewModal(item)}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-foreground hover:bg-surface transition-colors"
-                        title="View User Details"
-                      >
+                      <button type="button" onClick={() => handleOpenViewModal(item)} className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-foreground hover:bg-surface transition-colors" title="View User Details">
                         <Eye size={15} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEditModal(item)}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-gold hover:bg-surface transition-colors"
-                        title="Edit User"
-                      >
+                      <button type="button" onClick={() => handleOpenEditModal(item)} className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-gold hover:bg-surface transition-colors" title="Edit User">
                         <Edit2 size={15} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setUserToDelete(item)}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-red-400 hover:bg-surface transition-colors"
-                        title="Delete User"
-                      >
+                      <button type="button" onClick={() => setUserToDelete(item)} className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-red-400 hover:bg-surface transition-colors" title="Delete User">
                         <Trash2 size={15} />
                       </button>
                     </div>
@@ -644,11 +560,7 @@ const AdminUsers = () => {
                     <p className="text-xs text-muted font-mono">{userToView._id}</p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsViewModalOpen(false)}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors"
-                >
+                <button type="button" onClick={() => setIsViewModalOpen(false)} className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors">
                   <X size={16} />
                 </button>
               </div>
@@ -718,22 +630,11 @@ const AdminUsers = () => {
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsViewModalOpen(false);
-                    handleOpenEditModal(userToView);
-                  }}
-                  className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface transition-colors"
-                >
+                <button type="button" onClick={() => { setIsViewModalOpen(false); handleOpenEditModal(userToView); }} className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface transition-colors">
                   <Edit2 size={14} />
                   Edit User
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setIsViewModalOpen(false)}
-                  className="bg-gold text-background px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity"
-                >
+                <button type="button" onClick={() => setIsViewModalOpen(false)} className="bg-gold text-background px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
                   Close
                 </button>
               </div>
@@ -748,11 +649,7 @@ const AdminUsers = () => {
                 <h2 className="font-display text-xl font-bold text-foreground">
                   {editingUserId ? "Edit User Account" : "Create New User"}
                 </h2>
-                <button
-                  type="button"
-                  onClick={() => setIsFormModalOpen(false)}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors"
-                >
+                <button type="button" onClick={() => setIsFormModalOpen(false)} className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-border text-muted hover:text-foreground hover:bg-background transition-colors">
                   <X size={16} />
                 </button>
               </div>
@@ -761,57 +658,26 @@ const AdminUsers = () => {
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Full Name *
                   </label>
-                  <input
-                    name="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Letters and spaces only"
-                    className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                  />
+                  <input name="name" type="text" required value={formData.name} onChange={handleInputChange} placeholder="Letters and spaces only" className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Email Address *
                   </label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="jane@example.com"
-                    className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                  />
+                  <input name="email" type="email" required value={formData.email} onChange={handleInputChange} placeholder="jane@example.com" className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Phone Number
                     </label>
-                    <input
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="11 digits e.g. 03001234567"
-                      maxLength={11}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                    />
+                    <input name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="11 digits e.g. 03001234567" maxLength={11} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Company / Org
                     </label>
-                    <input
-                      name="companyName"
-                      type="text"
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                      placeholder="Organization name"
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                    />
+                    <input name="companyName" type="text" value={formData.companyName} onChange={handleInputChange} placeholder="Organization name" className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -819,12 +685,7 @@ const AdminUsers = () => {
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       User Role *
                     </label>
-                    <select
-                      name="role"
-                      value={formData.role}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-                    >
+                    <select name="role" value={formData.role} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                       <option value="attendee">Attendee</option>
                       <option value="exhibitor">Exhibitor</option>
                     </select>
@@ -833,12 +694,7 @@ const AdminUsers = () => {
                     <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                       Account Status *
                     </label>
-                    <select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleInputChange}
-                      className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
-                    >
+                    <select name="status" value={formData.status} onChange={handleInputChange} className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors">
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                       <option value="suspended">Suspended</option>
@@ -849,63 +705,33 @@ const AdminUsers = () => {
                   <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Password (Min. 6 characters) *
                   </label>
-                  <input
-                    name="password"
-                    type="password"
-                    required
-                    minLength={6}
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Create a secure password"
-                    className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors"
-                  />
+                  <input name="password" type="password" required minLength={6} value={formData.password} onChange={handleInputChange} placeholder="Create a secure password" className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-gold transition-colors" />
                 </div>}
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
-                  <button
-                    type="button"
-                    onClick={() => setIsFormModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-sm text-muted hover:text-foreground transition-colors"
-                  >
+                  <button type="button" onClick={() => setIsFormModalOpen(false)} className="px-4 py-2 rounded-xl text-sm text-muted hover:text-foreground transition-colors">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-gold text-background font-semibold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-                  >
-                    {isSubmitting
-                      ? "Saving..."
-                      : editingUserId
-                        ? "Update User"
-                        : "Create User"}
-                  </button>
+                  <button type="submit" disabled={isSubmitting} className="bg-gold text-background font-semibold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+                    {isSubmitting ? "Saving..." : editingUserId ? "Update User" : "Create User"} </button>
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        <AlertDialog
-          open={!!userToDelete}
-          onOpenChange={(open) => !open && setUserToDelete(null)}
-        >
+        <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
           <AlertDialogContent className="border border-[#eadfc9] bg-[#fffdf9] text-[#2f2a24] ring-[#eadfc9]">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-[#2f2a24]">Delete User Account?</AlertDialogTitle>
               <AlertDialogDescription className="text-[#5d574f]">
                 This will permanently remove{" "}
-                <span className="text-[#2f2a24] font-semibold">"{userToDelete?.name}"</span> (
-                {userToDelete?.email}) and their permissions. This action cannot be undone.
-              </AlertDialogDescription>
+                <span className="text-[#2f2a24] font-semibold">"{userToDelete?.name}"</span> ( {userToDelete?.email}) and their permissions. This action cannot be undone. </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="border-[#eadfc9] bg-[#fffdf9]">
               <AlertDialogCancel className="border-[#eadfc9] bg-transparent text-[#5d574f] hover:bg-[#f8f5ef] hover:text-[#2f2a24]">
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteConfirm}
-                className="bg-red-500/90 text-white hover:bg-red-600 transition-colors"
-              >
+              <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-500/90 text-white hover:bg-red-600 transition-colors">
                 Delete User
               </AlertDialogAction>
             </AlertDialogFooter>

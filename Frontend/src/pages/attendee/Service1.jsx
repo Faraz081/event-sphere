@@ -1,6 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import servicesImage from '../../assets/service-gallery/service.jpg'
 import eventPlanningImage from '../../assets/service-gallery/event-planning.jpg'
@@ -10,7 +10,7 @@ import mehndi from '../../assets/service-gallery/mehndinew.jpg'
 import engaged from '../../assets/service-gallery/engaged.jpg'
 import graduationevent from '../../assets/service-gallery/graduation-event.jpg'
 
-import { ArrowUpRight,} from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react';
 
 const Service1 = () => {
   const websiteSettings = useSelector((state) => state.websiteSettings.settings)
@@ -103,11 +103,7 @@ const Service1 = () => {
             </div>
 
             <div className="group overflow-hidden rounded-[2rem] shadow-xl">
-              <img
-                src={servicesImage}
-                alt="Event management services"
-                className="h-[420px] w-full object-cover transition duration-700 group-hover:scale-105 sm:h-[450px]"
-              />
+              <img src={servicesImage} alt="Event management services" className="h-[420px] w-full object-cover transition duration-700 group-hover:scale-105 sm:h-[450px]" />
             </div>
 
           </div>
@@ -146,11 +142,7 @@ const Service1 = () => {
                 >
                   {service.image && (
                     <div className="mb-6 overflow-hidden rounded-2xl">
-                      <img
-                        src={service.image}
-                        alt={service.title}
-                        className="h-52 w-full object-cover transition duration-500 group-hover:scale-105"
-                      />
+                      <img src={service.image} alt={service.title} className="h-52 w-full object-cover transition duration-500 group-hover:scale-105" />
                     </div>
                   )}
 
@@ -163,20 +155,12 @@ const Service1 = () => {
                   </p>
 
                   {service.title !== 'Feedback & Support' ? (
-                    <Link
-                      to="/book-now"
-                      className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-                    >
+                    <Link to="/book-now" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg">
                       Book Now
                       <ArrowUpRight className="h-4 w-4" />
                     </Link>
                   ) : (
-                    <button
-                      onClick={() => {
-                        window.location.href = '/feedback'
-                      }}
-                      className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg"
-                    >
+                    <button onClick={() => { window.location.href = '/feedback' }} className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c49424] px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#b48620] hover:shadow-lg">
                       Get in Touch
                       <ArrowUpRight className="h-4 w-4" />
                     </button>

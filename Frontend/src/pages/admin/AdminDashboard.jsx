@@ -8,19 +8,7 @@ import { fetchAnalytics } from "@/api/analyticsService";
 import { RotateCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const BOOTH_COLORS = {
   Available: "#C9A227",
@@ -120,12 +108,7 @@ const AdminDashboard = () => {
               Overview of expos, booths, exhibitors and attendees.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={loadDashboardStats}
-            disabled={loading}
-            className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-background self-start sm:self-auto"
-          >
+          <button type="button" onClick={loadDashboardStats} disabled={loading} className="inline-flex items-center gap-2 border border-border bg-surface text-muted hover:text-foreground px-3.5 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-background self-start sm:self-auto">
             <RotateCcw size={16} className={loading ? "animate-spin text-gold" : ""} />
             <span>{loading ? "Refreshing..." : "Refresh Stats"}</span>
           </button>
@@ -137,11 +120,7 @@ const AdminDashboard = () => {
               <AlertCircle size={18} className="shrink-0" />
               <span>{error}</span>
             </div>
-            <button
-              type="button"
-              onClick={loadDashboardStats}
-              className="underline font-medium hover:text-white"
-            >
+            <button type="button" onClick={loadDashboardStats} className="underline font-medium hover:text-white">
               Try again
             </button>
           </div>
@@ -154,45 +133,33 @@ const AdminDashboard = () => {
         </StatGrid>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <Link
-            to="/admin/exhibitors"
-            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
-          >
+          <Link to="/admin/exhibitors" className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors">
             <p className="text-sm text-muted">Pending approvals</p>
             <p className="text-2xl font-semibold text-gold mt-1">
               {loading ? "..." : stats.pendingExhibitors}
             </p>
             <p className="text-xs text-muted mt-1">Review exhibitors →</p>
           </Link>
-          <Link
-            to="/admin/booths"
-            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
-          >
+          <Link to="/admin/booths" className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors">
             <p className="text-sm text-muted">Booth occupancy</p>
             <p className="text-2xl font-semibold text-foreground mt-1">
               {loading ? "..." : `${stats.occupancyRate}%`}
             </p>
             <p className="text-xs text-muted mt-1">Manage booths →</p>
           </Link>
-          <Link
-            to="/admin/expos"
-            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
-          >
+          <Link to="/admin/expos" className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors">
             <p className="text-sm text-muted">Expos</p>
             <p className="text-2xl font-semibold text-foreground mt-1">
               {loading ? "..." : stats.totalExpos}
             </p>
             <p className="text-xs text-muted mt-1">Manage expos →</p>
           </Link>
-          <button
-            type="button"
-            onClick={() =>
+          <button type="button" onClick={() =>
               document
                 .getElementById("dashboard-analytics")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
-            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors"
-          >
+            className="rounded-xl border border-border bg-surface p-4 hover:border-gold/40 transition-colors">
             <p className="text-sm text-muted">Analytics charts</p>
             <p className="text-2xl font-semibold text-foreground mt-1">View</p>
             <p className="text-xs text-muted mt-1">Charts & reports →</p>
@@ -212,13 +179,7 @@ const AdminDashboard = () => {
                   <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" />
                   <XAxis dataKey="name" stroke="var(--color-muted)" />
                   <YAxis stroke="var(--color-muted)" allowDecimals={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-foreground)",
-                    }}
-                  />
+                  <Tooltip contentStyle={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-foreground)", }} />
                   <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                     {analytics.boothStatusBreakdown.map((entry) => (
                       <Cell key={entry.name} fill={BOOTH_COLORS[entry.name] || "#C9A227"} />
@@ -238,28 +199,15 @@ const AdminDashboard = () => {
             ) : (
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
-                  <Pie
-                    data={analytics.exhibitorStatusBreakdown.filter((entry) => entry.value > 0)}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    label={({ name, value }) => `${name}: ${value}`}
-                  >
+                  <Pie data={analytics.exhibitorStatusBreakdown.filter((entry) => entry.value > 0)} dataKey="value" nameKey="name"
+                    cx="50%" cy="50%" outerRadius={90} label={({ name, value }) => `${name}: ${value}`}>
                     {analytics.exhibitorStatusBreakdown
                       .filter((entry) => entry.value > 0)
                       .map((entry, index) => (
                         <Cell key={entry.name} fill={EXHIBITOR_COLORS[index % EXHIBITOR_COLORS.length]} />
                       ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-foreground)",
-                    }}
-                  />
+                  <Tooltip contentStyle={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-foreground)", }} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -278,17 +226,17 @@ const AdminDashboard = () => {
               <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-border text-muted">
-                    <th className="break-words py-2 pr-2 text-left font-medium sm:pr-4">Title</th>
-                    <th className="break-words py-2 pr-2 text-left font-medium sm:pr-4">Date</th>
-                    <th className="hidden break-words py-2 pr-2 text-left font-medium sm:pr-4 md:table-cell">Location</th>
-                    <th className="break-words py-2 text-left font-medium">Status</th>
+                    <th className="wrap-break-word py-2 pr-2 text-left font-medium sm:pr-4">Title</th>
+                    <th className="wrap-break-word py-2 pr-2 text-left font-medium sm:pr-4">Date</th>
+                    <th className="hidden wrap-break-word py-2 pr-2 text-left font-medium sm:pr-4 md:table-cell">Location</th>
+                    <th className="wrap-break-word py-2 text-left font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {analytics.recentExpos.map((expo) => (
                     <tr key={expo._id} className="border-b border-border last:border-0">
-                      <td className="break-words py-3 pr-2 font-medium text-foreground sm:pr-4">{expo.title}</td>
-                      <td className="break-words py-3 pr-2 text-muted sm:pr-4">
+                      <td className="wrap-break-word py-3 pr-2 font-medium text-foreground sm:pr-4">{expo.title}</td>
+                      <td className="wrap-break-word py-3 pr-2 text-muted sm:pr-4">
                         {expo.date
                           ? new Date(expo.date).toLocaleDateString("en-US", {
                               month: "short",
@@ -297,8 +245,8 @@ const AdminDashboard = () => {
                             })
                           : "—"}
                       </td>
-                      <td className="hidden break-words py-3 pr-2 text-muted sm:pr-4 md:table-cell">{expo.location || "—"}</td>
-                      <td className="break-words py-3 text-muted capitalize">{expo.status}</td>
+                      <td className="hidden wrap-break-word py-3 pr-2 text-muted sm:pr-4 md:table-cell">{expo.location || "—"}</td>
+                      <td className="wrap-break-word py-3 text-muted capitalize">{expo.status}</td>
                     </tr>
                   ))}
                 </tbody>
