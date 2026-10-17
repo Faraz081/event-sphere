@@ -280,7 +280,7 @@ const AdminExhibitors = () => {
           <span className="text-xs text-muted">Applied {formatDate(a.createdAt)}</span>
           <button
             onClick={() => openReview(a)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-gold/15 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/25 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors"
           >
             <Eye size={14} />
             Review
@@ -365,7 +365,7 @@ const AdminExhibitors = () => {
                     <div className="flex items-center justify-end">
                       <button
                         onClick={() => openReview(a)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gold/15 text-gold hover:bg-gold/25 transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
                       >
                         <Eye size={14} />
                         Review
