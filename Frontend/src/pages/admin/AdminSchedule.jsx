@@ -488,7 +488,7 @@ const AdminSchedule = () => {
 
         
         <div className="hidden md:block">
-        <ResponsiveTable minWidth="800px">
+        <ResponsiveTable>
           <thead className="border-b border-border">
             <tr>
               <th className="px-6 py-3 text-sm text-muted font-medium">Session</th>

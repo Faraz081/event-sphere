@@ -5,7 +5,7 @@ import { generatePassCode } from "../utils/passCode.js";
 
 const VALID_REGISTRATION_STATUSES = ["registered", "confirmed", "attended", "cancelled"];
 const VALID_BOOKING_STATUSES = ["confirmed", "pending", "cancelled"];
-const VALID_PASS_STATUSES = ["issued", "claimed", "scanned", "revoked"];
+const VALID_PASS_STATUSES = ["pending", "issued", "claimed", "scanned", "revoked"];
 const eventKey = (expoId, name) => expoId
   ? `expo:${expoId}`
   : name?.trim() && name.trim() !== "General Platform Event"
@@ -268,7 +268,8 @@ export const updateAttendee = async (req, res) => {
     if (
       attendee.passStatus === "scanned" &&
       ((bookingStatus && bookingStatus !== attendee.bookingStatus) ||
-        (registrationStatus && registrationStatus !== attendee.registrationStatus))
+        (registrationStatus && registrationStatus !== attendee.registrationStatus) ||
+        (passStatus && passStatus !== "scanned"))
     ) {
       return res.status(409).json({ error: "A checked-in pass cannot be reset." });
     }
@@ -296,7 +297,11 @@ export const updateAttendee = async (req, res) => {
           error: `Invalid registration status. Must be one of: ${VALID_REGISTRATION_STATUSES.join(", ")}`,
         });
       }
-      if (registrationStatus === "attended" && attendee.registrationStatus !== "attended") {
+      if (
+        registrationStatus === "attended" &&
+        attendee.registrationStatus !== "attended" &&
+        passStatus !== "scanned"
+      ) {
         return res.status(400).json({ error: "Check-in status is set only by scanning the pass QR code." });
       }
       attendee.registrationStatus = registrationStatus;
@@ -318,7 +323,17 @@ export const updateAttendee = async (req, res) => {
         });
       }
       if (passStatus === "scanned" && attendee.passStatus !== "scanned") {
-        return res.status(400).json({ error: "Check-in status is set only by scanning the pass QR code." });
+        if (
+          !["issued", "claimed"].includes(attendee.passStatus) ||
+          (bookingStatus || attendee.bookingStatus) !== "confirmed" ||
+          !(attendee.passCode || attendee.entryPassId)
+        ) {
+          return res.status(409).json({
+            error: "Only a confirmed pass with a pass code can be checked in.",
+          });
+        }
+        attendee.registrationStatus = "attended";
+        attendee.checkedInAt = new Date();
       }
       if (attendee.passStatus === "scanned" && passStatus !== "scanned") {
         return res.status(409).json({ error: "A checked-in pass cannot be reactivated." });

@@ -50,6 +50,7 @@ const bookingStatusStyles = {
 };
 
 const passStatusStyles = {
+  pending: "bg-muted/20 text-muted border border-border",
   issued: "bg-gold/20 text-gold border border-gold/40",
   claimed: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
   scanned: "bg-emerald/20 text-emerald-300 border border-emerald/40",
@@ -358,6 +359,7 @@ const AdminAttendees = () => {
                 className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
               >
                 <option value="all">All Pass Statuses</option>
+                <option value="pending">Pending</option>
                 <option value="issued">Issued</option>
                 <option value="claimed">Claimed</option>
                 <option value="scanned">Scanned</option>
@@ -435,28 +437,37 @@ const AdminAttendees = () => {
           )}
         </div>
 
-        <ResponsiveTable minWidth="860px">
+        <ResponsiveTable>
+          <colgroup>
+            <col className="w-[20%]" />
+            <col className="w-[18%]" />
+            <col className="w-[11%]" />
+            <col className="w-[10%]" />
+            <col className="w-[17%]" />
+            <col className="hidden 2xl:table-column 2xl:w-[12%]" />
+            <col className="w-[12%]" />
+          </colgroup>
           <thead className="border-b border-border bg-surface/50">
             <tr>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider xl:px-3">
                 Attendee
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider xl:px-3">
                 Event / Expo
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider xl:px-3">
                 Registration
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider xl:px-3">
                 Booking
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider xl:px-3">
                 Pass Status
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider">
+              <th className="hidden px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider 2xl:table-cell 2xl:px-3">
                 Registered Date
               </th>
-              <th className="px-6 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider text-right">
+              <th className="px-2 py-3.5 text-xs text-muted font-semibold uppercase tracking-wider text-right xl:px-3">
                 Actions
               </th>
             </tr>
@@ -464,7 +475,7 @@ const AdminAttendees = () => {
           <tbody>
             {loading ? (
   <tr>
-    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="!block md:!table-cell px-3 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
         <p className="text-sm">Loading attendees directory...</p>
@@ -473,7 +484,7 @@ const AdminAttendees = () => {
   </tr>
 ) : attendees.length === 0 ? (
   <tr>
-    <td colSpan={7} className="!block md:!table-cell px-6 py-12 text-center text-muted">
+    <td colSpan={7} className="!block md:!table-cell px-3 py-12 text-center text-muted">
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <AlertCircle size={32} className="text-muted/60" />
         <p className="font-medium text-foreground">
@@ -498,7 +509,7 @@ const AdminAttendees = () => {
                   key={item._id}
                   className="border-b border-border hover:bg-surface/60 transition-colors last:border-0"
                 >
-                  <td data-label="Attendee" className="px-6 py-4">
+                  <td data-label="Attendee" className="px-2 py-4 xl:px-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface border border-border text-gold font-semibold text-sm">
                         {item.user?.name ? item.user.name[0].toUpperCase() : "A"}
@@ -511,7 +522,7 @@ const AdminAttendees = () => {
                           {item.user?.email || "No email"}
                         </p>
                         {item.user?.phone && (
-                          <p className="text-xs text-muted/80 truncate font-mono">
+                          <p className="hidden text-xs text-muted/80 truncate font-mono xl:block">
                             {item.user.phone}
                           </p>
                         )}
@@ -519,19 +530,21 @@ const AdminAttendees = () => {
                     </div>
                   </td>
 
-                  <td data-label="Event" className="px-6 py-4 text-sm text-foreground">
+                  <td data-label="Event" className="px-2 py-4 text-sm text-foreground xl:px-3">
                     <div className="flex items-center gap-2">
                       <Calendar size={14} className="text-gold shrink-0" />
-                      <span className="truncate">
+                      <span className="min-w-0 truncate">
                         {item.eventName || item.expo?.title || "General Platform Event"}
                       </span>
                     </div>
                     {item.ticketType && (
-                      <p className="text-xs text-muted pl-5 font-mono">{item.ticketType}</p>
+                      <p className="truncate pl-5 font-mono text-xs text-muted" title={item.ticketType}>
+                        {item.ticketType}
+                      </p>
                     )}
                   </td>
 
-                  <td data-label="Registration" className="px-6 py-4">
+                  <td data-label="Registration" className="px-2 py-4 xl:px-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
                         registrationStatusStyles[item.registrationStatus] || "bg-muted/20 text-muted"
@@ -541,7 +554,7 @@ const AdminAttendees = () => {
                     </span>
                   </td>
 
-                  <td data-label="Booking" className="px-6 py-4">
+                  <td data-label="Booking" className="px-2 py-4 xl:px-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
                         bookingStatusStyles[item.bookingStatus] || "bg-muted/20 text-muted"
@@ -551,17 +564,17 @@ const AdminAttendees = () => {
                     </span>
                   </td>
 
-                  <td data-label="Pass" className="px-6 py-4">
+                  <td data-label="Pass" className="px-2 py-4 xl:px-3">
                     <div className="flex flex-col gap-1 items-start">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
                           passStatusStyles[item.passStatus] || "bg-muted/20 text-muted"
                         }`}
                       >
-                        {item.passStatus === "scanned" ? "Checked in" : item.passStatus}
+                        {item.passStatus}
                       </span>
                       {(item.passCode || item.entryPassId) && (
-                        <span className="text-xs text-muted font-mono flex items-center gap-1">
+                        <span className="max-w-full break-all text-xs text-muted font-mono flex items-center gap-1">
                           <Ticket size={12} className="text-gold" />
                           {item.passCode || item.entryPassId}
                         </span>
@@ -574,38 +587,35 @@ const AdminAttendees = () => {
                     </div>
                   </td>
 
-                  <td
-                    data-label="Registered Date"
-                    className="px-6 py-4 text-sm text-muted font-mono"
-                  >
+                  <td data-label="Registered Date" className="hidden px-2 py-4 text-sm text-muted font-mono 2xl:table-cell 2xl:px-3">
                     {formatDate(item.createdAt)}
                   </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <td data-label="Actions" className="px-2 py-4 xl:px-3">
+                    <div className="flex items-center justify-end gap-0">
                       <button
                         type="button"
                         onClick={() => handleOpenViewModal(item)}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-foreground hover:bg-surface transition-colors"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-foreground"
                         title="View Attendee"
                       >
-                        <Eye size={15} />
+                        <Eye size={14} />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleOpenEditModal(item)}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-gold hover:bg-surface transition-colors"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-gold"
                         title="Edit Attendee"
                       >
-                        <Edit2 size={15} />
+                        <Edit2 size={14} />
                       </button>
                       <button
                         type="button"
                         onClick={() => setAttendeeToDelete(item)}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-background text-muted hover:text-red-400 hover:bg-surface transition-colors"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted transition-colors hover:bg-surface hover:text-red-400"
                         title="Delete Attendee"
                       >
-                        <Trash2 size={15} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </td>
@@ -690,7 +700,7 @@ const AdminAttendees = () => {
                       passStatusStyles[attendeeToView.passStatus] || "bg-muted/20 text-muted"
                     }`}
                   >
-                    {attendeeToView.passStatus === "scanned" ? "Checked in" : attendeeToView.passStatus}
+                    {attendeeToView.passStatus}
                   </span>
                 </div>
 
@@ -887,10 +897,11 @@ const AdminAttendees = () => {
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-gold transition-colors"
                     >
-                      <option value="issued">Issued</option>
-                      <option value="claimed">Claimed</option>
-                      {formData.passStatus === "scanned" && <option value="scanned" disabled>Scanned (QR check-in)</option>}
-                      <option value="revoked">Revoked</option>
+                      <option value="pending" disabled={formData.passStatus === "scanned"}>Pending</option>
+                      <option value="issued" disabled={formData.passStatus === "scanned"}>Issued</option>
+                      <option value="claimed" disabled={formData.passStatus === "scanned"}>Claimed</option>
+                      {editingAttendeeId && <option value="scanned">Scanned</option>}
+                      <option value="revoked" disabled={formData.passStatus === "scanned"}>Revoked</option>
                     </select>
                   </div>
                   <div>

@@ -251,7 +251,7 @@ const AdminContactMessages = () => {
           </div>
         ) : (
           <>
-            <div className="space-y-3 lg:hidden">
+            <div className="space-y-3 xl:hidden">
               {filteredMessages.map((message) => (
                 <article
                   key={message._id}
@@ -296,7 +296,7 @@ const AdminContactMessages = () => {
               ))}
             </div>
 
-            <div className="hidden overflow-hidden rounded-2xl border border-border bg-surface lg:block">
+            <div className="hidden overflow-hidden rounded-2xl border border-border bg-surface xl:block">
               <table className="w-full table-fixed border-collapse text-left">
                 <colgroup>
                   <col className="w-[13%]" />

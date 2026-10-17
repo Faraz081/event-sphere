@@ -111,15 +111,41 @@ export const getAllExpos = async (req, res) => {
       ? (limit === "all" ? 0 : Math.max(1, Number.parseInt(limit, 10) || 10))
       : (isPageSpecified ? 10 : 0);
 
-    let query = Expo.find(filter)
-      .populate("createdBy", "name email")
-      .sort({ date: -1 });
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const upcomingFilter = { ...filter, date: { $gte: startOfToday } };
+    const pastFilter = { ...filter, date: { $lt: startOfToday } };
+    const upcomingCount = await Expo.countDocuments(upcomingFilter);
+    const makeQuery = (queryFilter, sort) =>
+      Expo.find(queryFilter).populate("createdBy", "name email").sort(sort);
+    let upcomingExpos;
+    let pastExpos;
 
     if (limitNum > 0) {
-      query = query.skip((pageNum - 1) * limitNum).limit(limitNum);
+      const offset = (pageNum - 1) * limitNum;
+
+      if (offset < upcomingCount) {
+        upcomingExpos = await makeQuery(upcomingFilter, { date: 1 })
+          .skip(offset)
+          .limit(limitNum);
+        const remaining = limitNum - upcomingExpos.length;
+        pastExpos = remaining
+          ? await makeQuery(pastFilter, { date: -1 }).limit(remaining)
+          : [];
+      } else {
+        upcomingExpos = [];
+        pastExpos = await makeQuery(pastFilter, { date: -1 })
+          .skip(offset - upcomingCount)
+          .limit(limitNum);
+      }
+    } else {
+      [upcomingExpos, pastExpos] = await Promise.all([
+        makeQuery(upcomingFilter, { date: 1 }),
+        makeQuery(pastFilter, { date: -1 }),
+      ]);
     }
 
-    const expos = await query;
+    const expos = [...upcomingExpos, ...pastExpos];
     const boothCounts = await Booth.aggregate([
       { $match: { expo: { $in: expos.map((expo) => expo._id) } } },
       { $group: { _id: "$expo", totalBooths: { $sum: 1 } } },
