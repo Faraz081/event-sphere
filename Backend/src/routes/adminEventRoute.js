@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  getAdminEvents,
-  getPendingEvents,
-  approveEvent,
-  rejectEvent,
-  deleteAdminEvent,
-} from "../controllers/eventController.js";
+import {getAdminEvents, getPendingEvents, approveEvent, rejectEvent, deleteAdminEvent} from "../controllers/eventController.js";
 import { adminAuth } from "../middleware/authMiddleware.js";
 
 const adminEventRoute = express.Router();

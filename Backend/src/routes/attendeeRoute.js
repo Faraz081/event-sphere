@@ -1,12 +1,5 @@
 import express from "express";
-import {
-  getAllAttendees,
-  getAttendeeById,
-  getAttendeeStats,
-  createAttendee,
-  updateAttendee,
-  deleteAttendee,
-} from "../controllers/attendeeController.js";
+import {getAllAttendees, getAttendeeById, getAttendeeStats, createAttendee, updateAttendee, deleteAttendee} from "../controllers/attendeeController.js";
 import { adminAuth } from "../middleware/authMiddleware.js";
 
 const attendeeRoute = express.Router();

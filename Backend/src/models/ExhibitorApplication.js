@@ -15,12 +15,10 @@ const exhibitorApplicationSchema = new mongoose.Schema(
     status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
     adminNote: { type: String, default: "" },
     reviewedAt: { type: Date },
-  },
-  { timestamps: true }
+  }, { timestamps: true }
 );
 
 exhibitorApplicationSchema.index({ userId: 1, expo: 1 }, { unique: true });
-
 const ExhibitorApplication = mongoose.model("ExhibitorApplication", exhibitorApplicationSchema);
 
 export default ExhibitorApplication;

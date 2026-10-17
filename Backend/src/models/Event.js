@@ -1,102 +1,30 @@
-
 import mongoose from "mongoose";
 
 const stallSchema = new mongoose.Schema({
-  stallNumber: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  name: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  size: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  description: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  price: {
-  type: Number,
-  min: 0,
-  default: 0,
-},
+  stallNumber: {type: String, required: true, trim: true},
+  name: {type: String, trim: true, default: ""},
+  size: {type: String, trim: true, default: ""},
+  description: {type: String, trim: true, default: ""},
+  price: {type: Number, min: 0, default: 0},
 });
 
 const eventSchema = new mongoose.Schema({
-  expo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Expo",
-  },
-  exhibitor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  title: {
-    type: String,
-    required: [true, "Title is required"],
-    trim: true,
-  },
-  description: {
-    type: String,
-    required: [true, "Description is required"],
-  },
-  location: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  date: {
-    type: Date,
-  },
-  eventType: {
-    type: String,
-    trim: true,
-  },
-  images: {
-    type: [String],
-    default: [],
-  },
-  boothCapacity: {
-    type: Number,
-    min: 1,
-  },
-  price: {
-    type: Number,
-    min: 0,
-    default: 0,
-  },
-  stalls: {
-    type: [stallSchema],
-    default: [],
-  },
-  banner: {
-    type: String,
-  },
-  status: {
-    type: String,
-    enum: ["pending", "approved", "rejected"],
-    default: "pending",
-  },
-  adminNote: {
-    type: String,
-    default: "",
-  },
-  rejectionReason: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  reviewedAt: {
-    type: Date,
-  },
+  expo: {type: mongoose.Schema.Types.ObjectId, ref: "Expo"},
+  exhibitor: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
+  title: {type: String, required: [true, "Title is required"], trim: true},
+  description: {type: String, required: [true, "Description is required"]},
+  location: {type: String, trim: true, default: ""},
+  date: {type: Date},
+  eventType: {type: String, trim: true},
+  images: {type: [String], default: []},
+  boothCapacity: {type: Number, min: 1},
+  price: {type: Number, min: 0, default: 0},
+  stalls: {type: [stallSchema], default: []},
+  banner: {type: String},
+  status: {type: String, enum: ["pending", "approved", "rejected"], default: "pending"},
+  adminNote: {type: String, default: ""},
+  rejectionReason: {type: String, trim: true, default: ""},
+  reviewedAt: {type: Date}
 }, { timestamps: true });
 
 export default mongoose.model("Event", eventSchema);

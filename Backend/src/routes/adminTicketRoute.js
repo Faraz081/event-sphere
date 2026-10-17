@@ -1,11 +1,6 @@
 import express from "express";
 import { adminAuth, protect } from "../middleware/authMiddleware.js";
-import {
-  getExpoTicketRequests,
-  approveExpoTicket,
-  rejectExpoTicket,
-  cancelExpoTicket,
-} from "../controllers/adminTicketController.js";
+import { getExpoTicketRequests,approveExpoTicket,rejectExpoTicket,cancelExpoTicket} from "../controllers/adminTicketController.js";
 
 const adminTicketRoute = express.Router();
 

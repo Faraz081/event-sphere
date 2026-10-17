@@ -3,10 +3,7 @@ import Event from "../models/Event.js";
 
 const getPendingEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: "pending" })
-      .populate("exhibitor", "name email companyName")
-      .sort({ createdAt: -1 });
-
+    const events = await Event.find({ status: "pending" }).populate("exhibitor", "name email companyName").sort({ createdAt: -1 });
     return res.status(200).json({ msg: "Pending events fetched", events });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -16,19 +13,16 @@ const getPendingEvents = async (req, res) => {
 const approveEvent = async (req, res) => {
   try {
     const { id } = req.params;
-
     if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: "Invalid event ID" });
     }
 
-    const event = await Event.findByIdAndUpdate(
-      id,
+    const event = await Event.findByIdAndUpdate(id,
       {
         status: "approved",
         reviewedAt: new Date(),
         rejectionReason: ""
-      },
-      { new: true }
+      }, { new: true }
     );
 
     if (!event) {
