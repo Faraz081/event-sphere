@@ -100,12 +100,12 @@
   }
 }
 
-/* Image overlays */
+
 :root {
   --image-overlay: rgba(20, 22, 28, 0.45);
 }
 
-/* Light Theme */
+
 .light {
   --color-background: #F7F5EF;
   --color-surface: #FFFFFF;

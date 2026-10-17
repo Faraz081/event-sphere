@@ -5,6 +5,10 @@ import ExhibitorApplication from "../models/ExhibitorApplication.js";
 import Schedule from "../models/Schedule.js";
 
 const VALID_STATUSES = ["draft", "published", "ongoing", "completed", "cancelled"];
+const SELECTABLE_STATUSES = ["draft", "published", "completed", "cancelled"];
+
+const getStartOfUtcDay = (date) =>
+  new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 
 export const createExpo = async (req, res) => {
   try {
@@ -33,15 +37,15 @@ export const createExpo = async (req, res) => {
       return res.status(400).json({ error: "Invalid date format" });
     }
 
-    if (parsedDate < new Date()) {
-      return res.status(400).json({ error: "Expo date and time must be in the future" });
+    if (parsedDate < getStartOfUtcDay(new Date())) {
+      return res.status(400).json({ error: "Expo date must be today or in the future" });
     }
 
     let expoStatus = "draft";
     if (status) {
-      if (!VALID_STATUSES.includes(status)) {
+      if (!SELECTABLE_STATUSES.includes(status)) {
         return res.status(400).json({
-          error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+          error: `Invalid status. Must be one of: ${SELECTABLE_STATUSES.join(", ")}`,
         });
       }
       expoStatus = status;
@@ -81,7 +85,7 @@ export const getAllExpos = async (req, res) => {
   try {
     await Expo.updateLifecycleStatuses();
 
-    const { status, search, page, limit } = req.query;
+    const { status, search, date, page, limit } = req.query;
     const filter = {};
 
     if (status && status !== "all") {
@@ -91,6 +95,17 @@ export const getAllExpos = async (req, res) => {
         });
       }
       filter.status = status;
+    }
+
+    if (date) {
+      const dateMatch = /^\d{4}-\d{2}-\d{2}$/.test(date);
+      const dayStart = dateMatch ? new Date(`${date}T00:00:00.000Z`) : new Date(NaN);
+      if (Number.isNaN(dayStart.getTime()) || dayStart.toISOString().slice(0, 10) !== date) {
+        return res.status(400).json({ error: "Invalid date filter. Expected YYYY-MM-DD" });
+      }
+      const nextDayStart = new Date(dayStart);
+      nextDayStart.setUTCDate(nextDayStart.getUTCDate() + 1);
+      filter.date = { $gte: dayStart, $lt: nextDayStart };
     }
 
     if (search && search.trim()) {
@@ -113,8 +128,15 @@ export const getAllExpos = async (req, res) => {
 
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
-    const upcomingFilter = { ...filter, date: { $gte: startOfToday } };
-    const pastFilter = { ...filter, date: { $lt: startOfToday } };
+    const { date: selectedDateFilter, ...baseFilter } = filter;
+    const upcomingDateFilter = { $gte: startOfToday };
+    const pastDateFilter = { $lt: startOfToday };
+    const upcomingFilter = selectedDateFilter
+      ? { ...baseFilter, $and: [{ date: selectedDateFilter }, { date: upcomingDateFilter }] }
+      : { ...baseFilter, date: upcomingDateFilter };
+    const pastFilter = selectedDateFilter
+      ? { ...baseFilter, $and: [{ date: selectedDateFilter }, { date: pastDateFilter }] }
+      : { ...baseFilter, date: pastDateFilter };
     const upcomingCount = await Expo.countDocuments(upcomingFilter);
     const makeQuery = (queryFilter, sort) =>
       Expo.find(queryFilter).populate("createdBy", "name email").sort(sort);
@@ -252,13 +274,16 @@ export const updateExpo = async (req, res) => {
       if (Number.isNaN(parsedDate.getTime())) {
         return res.status(400).json({ error: "Invalid date format" });
       }
+      if (parsedDate < getStartOfUtcDay(new Date())) {
+        return res.status(400).json({ error: "Expo date must be today or in the future" });
+      }
       updates.date = parsedDate;
     }
 
     if (req.body.status !== undefined) {
-      if (!VALID_STATUSES.includes(req.body.status)) {
+      if (!SELECTABLE_STATUSES.includes(req.body.status)) {
         return res.status(400).json({
-          error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+          error: `Invalid status. Must be one of: ${SELECTABLE_STATUSES.join(", ")}`,
         });
       }
       updates.status = req.body.status;
@@ -293,9 +318,9 @@ export const updateExpoStatus = async (req, res) => {
     }
 
     const { status } = req.body;
-    if (!VALID_STATUSES.includes(status)) {
+    if (!SELECTABLE_STATUSES.includes(status)) {
       return res.status(400).json({
-        error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+        error: `Invalid status. Must be one of: ${SELECTABLE_STATUSES.join(", ")}`,
       });
     }
 

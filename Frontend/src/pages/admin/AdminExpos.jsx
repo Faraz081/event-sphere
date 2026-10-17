@@ -87,6 +87,7 @@ const AdminExpos = () => {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -124,6 +125,10 @@ const AdminExpos = () => {
         params.status = statusFilter;
       }
 
+      if (dateFilter) {
+        params.date = dateFilter;
+      }
+
       const data = await fetchExpos(params);
       setExpos(data.expos || []);
       setTotalPages(data.totalPages || 1);
@@ -136,7 +141,7 @@ const AdminExpos = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, search, statusFilter]);
+  }, [currentPage, search, statusFilter, dateFilter]);
 
   useEffect(() => {
     loadExpos();
@@ -149,6 +154,11 @@ const AdminExpos = () => {
 
   const handleStatusFilterChange = (e) => {
     setStatusFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleDateFilterChange = (e) => {
+    setDateFilter(e.target.value);
     setCurrentPage(1);
   };
 
@@ -211,7 +221,7 @@ const AdminExpos = () => {
       location: expo.location || "",
       description: expo.description || "",
       theme: expo.theme || "",
-      status: expo.status || "draft",
+      status: expo.status === "ongoing" ? "published" : expo.status || "draft",
       banner: expo.banner || "",
       maxBooths: String(expo.maxBooths || 10),
     });
@@ -253,8 +263,10 @@ const AdminExpos = () => {
       return;
     }
 
-    if (!editingId && selectedDate < new Date()) {
-      toast.error("Expo date and time must be in the future");
+    const now = new Date();
+    const startOfTodayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    if (selectedDate < startOfTodayUtc) {
+      toast.error("Expo date must be today or in the future");
       return;
     }
 
@@ -331,9 +343,7 @@ const AdminExpos = () => {
     }
   };
 
-  const minimumDateTime = toDateTimeInputValue(
-    new Date(Math.ceil(Date.now() / 60000) * 60000)
-  );
+  const today = toDateTimeInputValue(new Date(new Date().setHours(0, 0, 0, 0)));
 
   return (
     <DashboardLayout role="admin">
@@ -379,7 +389,7 @@ const AdminExpos = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted hidden sm:inline">Status:</span>
             <select
               value={statusFilter}
@@ -393,6 +403,15 @@ const AdminExpos = () => {
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
+            <label htmlFor="expo-date-filter" className="text-sm text-muted hidden sm:inline">Date:</label>
+            <input
+              id="expo-date-filter"
+              type="date"
+              value={dateFilter}
+              onChange={handleDateFilterChange}
+              aria-label="Filter expos by date"
+              className="bg-background border border-border rounded-xl px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/40"
+            />
           </div>
         </div>
 
@@ -422,15 +441,16 @@ const AdminExpos = () => {
       <Calendar size={36} className="text-muted/50" />
       <p className="text-base font-medium text-foreground">No expos found</p>
       <p className="text-sm text-muted">
-        {search || statusFilter !== "all"
-          ? "No expos match your active search or status filter. Try clearing filters."
+        {search || statusFilter !== "all" || dateFilter
+          ? "No expos match your active search or filters. Try clearing filters."
           : "No expos have been created yet. Create your first expo to get started."}
       </p>
-      {search || statusFilter !== "all" ? (
+      {search || statusFilter !== "all" || dateFilter ? (
         <button
           onClick={() => {
             setSearch("");
             setStatusFilter("all");
+            setDateFilter("");
             setCurrentPage(1);
           }}
           className="text-sm text-gold hover:underline"
@@ -468,20 +488,25 @@ const AdminExpos = () => {
               {expo.theme ? `${expo.theme} · ` : ""}Booths: {expo.totalBooths ?? 0} / {expo.maxBooths ?? 10}
             </p>
           </div>
-          <select
-            value={expo.status}
-            disabled={updatingStatusId === expo._id}
-            onChange={(e) => handleQuickStatusChange(expo._id, e.target.value)}
-            className={`shrink-0 cursor-pointer rounded-full border px-2.5 py-1 text-xs font-semibold focus:outline-none ${
-              statusStyles[expo.status] || statusStyles.draft
-            }`}
-          >
-            <option value="draft" className="bg-background text-foreground">Draft</option>
-            <option value="published" className="bg-background text-foreground">Published</option>
-            <option value="ongoing" className="bg-background text-foreground">Ongoing</option>
-            <option value="completed" className="bg-background text-foreground">Completed</option>
-            <option value="cancelled" className="bg-background text-foreground">Cancelled</option>
-          </select>
+          {expo.status === "ongoing" ? (
+            <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${statusStyles.ongoing}`}>
+              Ongoing
+            </span>
+          ) : (
+            <select
+              value={expo.status}
+              disabled={updatingStatusId === expo._id}
+              onChange={(e) => handleQuickStatusChange(expo._id, e.target.value)}
+              className={`shrink-0 cursor-pointer rounded-full border px-2.5 py-1 text-xs font-semibold focus:outline-none ${
+                statusStyles[expo.status] || statusStyles.draft
+              }`}
+            >
+              <option value="draft" className="bg-background text-foreground">Draft</option>
+              <option value="published" className="bg-background text-foreground">Published</option>
+              <option value="completed" className="bg-background text-foreground">Completed</option>
+              <option value="cancelled" className="bg-background text-foreground">Cancelled</option>
+            </select>
+          )}
         </div>
 
         <div className="mt-3 space-y-1.5 text-xs text-muted">
@@ -555,15 +580,16 @@ const AdminExpos = () => {
                     <Calendar size={36} className="text-muted/50" />
                     <p className="text-base font-medium text-foreground">No expos found</p>
                     <p className="text-sm text-muted max-w-sm">
-                      {search || statusFilter !== "all"
-                        ? "No expos match your active search or status filter. Try clearing filters."
+                      {search || statusFilter !== "all" || dateFilter
+                        ? "No expos match your active search or filters. Try clearing filters."
                         : "No expos have been created yet. Create your first expo to get started."}
                     </p>
-                    {search || statusFilter !== "all" ? (
+                    {search || statusFilter !== "all" || dateFilter ? (
                       <button
                         onClick={() => {
                           setSearch("");
                           setStatusFilter("all");
+                          setDateFilter("");
                           setCurrentPage(1);
                         }}
                         className="mt-2 text-sm text-gold hover:underline"
@@ -629,31 +655,34 @@ const AdminExpos = () => {
 
                   <td data-label="Status" className="px-6 py-4">
                     <div className="inline-flex items-center">
-                      <select
-                        value={expo.status}
-                        disabled={updatingStatusId === expo._id}
-                        onChange={(e) => handleQuickStatusChange(expo._id, e.target.value)}
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-full cursor-pointer transition-colors border focus:outline-none ${
-                          statusStyles[expo.status] || statusStyles.draft
-                        }`}
-                        title="Click to change status"
-                      >
-                        <option value="draft" className="bg-background text-foreground">
-                          Draft
-                        </option>
-                        <option value="published" className="bg-background text-foreground">
-                          Published
-                        </option>
-                        <option value="ongoing" className="bg-background text-foreground">
+                      {expo.status === "ongoing" ? (
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusStyles.ongoing}`}>
                           Ongoing
-                        </option>
-                        <option value="completed" className="bg-background text-foreground">
-                          Completed
-                        </option>
-                        <option value="cancelled" className="bg-background text-foreground">
-                          Cancelled
-                        </option>
-                      </select>
+                        </span>
+                      ) : (
+                        <select
+                          value={expo.status}
+                          disabled={updatingStatusId === expo._id}
+                          onChange={(e) => handleQuickStatusChange(expo._id, e.target.value)}
+                          className={`text-xs font-semibold px-2.5 py-1 rounded-full cursor-pointer transition-colors border focus:outline-none ${
+                            statusStyles[expo.status] || statusStyles.draft
+                          }`}
+                          title="Click to change status"
+                        >
+                          <option value="draft" className="bg-background text-foreground">
+                            Draft
+                          </option>
+                          <option value="published" className="bg-background text-foreground">
+                            Published
+                          </option>
+                          <option value="completed" className="bg-background text-foreground">
+                            Completed
+                          </option>
+                          <option value="cancelled" className="bg-background text-foreground">
+                            Cancelled
+                          </option>
+                        </select>
+                      )}
                     </div>
                   </td>
 
@@ -817,7 +846,7 @@ const AdminExpos = () => {
                     <input
                       name="date"
                       type="datetime-local"
-                      min={!editingId ? minimumDateTime : undefined}
+                      min={today}
                       value={formData.date}
                       onChange={handleInputChange}
                       className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm"
@@ -833,7 +862,6 @@ const AdminExpos = () => {
                     >
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
-                      <option value="ongoing">Ongoing</option>
                       <option value="completed">Completed</option>
                       <option value="cancelled">Cancelled</option>
                     </select>
@@ -902,18 +930,18 @@ const AdminExpos = () => {
           open={!!expoToDelete}
           onOpenChange={(open) => !open && setExpoToDelete(null)}
         >
-          <AlertDialogContent>
+          <AlertDialogContent className="border border-[#eadfc9] bg-[#f8f5ef] text-[#2f2a24]">
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete this expo?</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-[#2f2a24]">Delete this expo?</AlertDialogTitle>
+              <AlertDialogDescription className="text-[#5d574f]">
                 This will permanently delete "{expoToDelete?.title}". Any associated booths or
                 schedules will be affected. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
+            <AlertDialogFooter className="border-t-[#eadfc9] bg-[#fffdf9]">
               <AlertDialogCancel
                 disabled={deleting}
-                className="bg-transparent border border-border text-muted hover:text-foreground"
+                className="border border-[#d8c9a6] bg-transparent text-[#4b463e] hover:bg-[#f3eee4] hover:text-[#2f2a24]"
               >
                 Cancel
               </AlertDialogCancel>
