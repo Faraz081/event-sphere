@@ -20,26 +20,26 @@ export default function AboutPlatform() {
   const teamMembers = [
    { 
   name: 'Muhammad Faraz', 
-  role: 'Project Lead & Admin', 
+  role: 'Project Lead ', 
   description: 'Oversees overall project architecture, manages administrative operations, and ensures seamless platform integration.', 
 }, 
 { 
-  name: 'Saif', 
+  name: 'Saif ur Rehman', 
   role: 'Co-Lead & Technical Manager', 
   description: 'Manages core system functionality, coordinates development phases, and oversees technical implementation.', 
 }, 
 { 
-  name: 'Amna', 
+  name: 'Amna Idrees', 
   role: 'Operations Specialist', 
   description: 'Focuses on user management, operational workflows, and optimizing portal experiences for partners.', 
 }, 
 { 
-  name: 'Aliza', 
+  name: 'Alizah ', 
   role: 'Platform Coordinator', 
   description: 'Ensures efficient platform workflows, coordinates interface alignment, and enhances user engagement.', 
 }, 
 { 
-  name: 'Saim', 
+  name: 'Hafiz Saim Ali', 
   role: 'UI/UX & Frontend Lead', 
   description: 'Designs immersive user experiences, shapes landing page dynamics, and handles client-facing interfaces.', 
 },
