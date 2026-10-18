@@ -18,37 +18,31 @@ export default function AboutPlatform() {
   const aboutImage = aboutSettings.image?.trim() || ''
 
   const teamMembers = [
-    {
-      name: 'Deepak Kumar',
-      role: 'Founder & Manager',
-      description:
-        'I am the Founder & Manager. We are always here to provide event services.',
-    },
-    {
-      name: 'Shahid Raza',
-      role: 'Online Booking Manager',
-      description:
-        'I am an Online Booking Manager who solves client questions related to bookings.',
-    },
-    {
-      name: 'Rohit Raj',
-      role: 'Creative Manager',
-      description:
-        'I am a creative manager who leads design teams and translates brand visions into immersive event experiences.',
-    },
-    
-    {
-      name: 'Member Four',
-      role: 'Event Coordinator',
-      description:
-        'Responsible for coordinating event activities and ensuring smooth communication between the team and clients.',
-    },
-    {
-      name: 'Member Five',
-      role: 'Operations Manager',
-      description:
-        'Oversees event operations, manages resources and helps ensure every event runs smoothly.',
-    },
+   { 
+  name: 'Muhammad Faraz', 
+  role: 'Project Lead & Admin', 
+  description: 'Oversees overall project architecture, manages administrative operations, and ensures seamless platform integration.', 
+}, 
+{ 
+  name: 'Saif', 
+  role: 'Co-Lead & Technical Manager', 
+  description: 'Manages core system functionality, coordinates development phases, and oversees technical implementation.', 
+}, 
+{ 
+  name: 'Amna', 
+  role: 'Operations Specialist', 
+  description: 'Focuses on user management, operational workflows, and optimizing portal experiences for partners.', 
+}, 
+{ 
+  name: 'Aliza', 
+  role: 'Platform Coordinator', 
+  description: 'Ensures efficient platform workflows, coordinates interface alignment, and enhances user engagement.', 
+}, 
+{ 
+  name: 'Saim', 
+  role: 'UI/UX & Frontend Lead', 
+  description: 'Designs immersive user experiences, shapes landing page dynamics, and handles client-facing interfaces.', 
+},
 
   ]
 
