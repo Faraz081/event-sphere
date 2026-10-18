@@ -51,18 +51,7 @@ const applyForExpo = async (req, res) => {
       logoUrl = uploadResult.secure_url;
     }
 
-    const application = await ExhibitorApplication.create({
-      userId: req.user._id,
-      expo,
-      companyName,
-      productsServices,
-      description,
-      email,
-      phone,
-      address,
-      logo: logoUrl,
-      documents: docs.map((f) => `/uploads/${f.filename}`),
-    });
+    const application = await ExhibitorApplication.create({ userId: req.user._id, expo, companyName, productsServices, description,  email, phone, address, logo: logoUrl, documents: docs.map((f) => `/uploads/${f.filename}`)});
 
     return res.status(201).json({ msg: "Application submitted successfully", application });
   } catch (error) {

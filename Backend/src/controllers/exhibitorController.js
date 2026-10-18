@@ -6,7 +6,6 @@ import mongoose from "mongoose";
 export const getExhibitors = async (req, res) => {
   try {
     const { exhibitorStatus, search } = req.query;
-
     const filter = { role: "exhibitor" };
 
     if (exhibitorStatus && exhibitorStatus !== "all") {

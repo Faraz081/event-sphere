@@ -212,9 +212,9 @@ export const getPublicExhibitorProfile = async (req, res) => {
 
 export const getPublicExhibitorList = async (req, res) => {
   try {
-    const exhibitors = await User.find({ role: "exhibitor" })
-      .select("name companyName email status exhibitorStatus")
-      .sort({ companyName: 1, name: 1 });
+   const exhibitors = await User.find({ role: "exhibitor", status: "active" })
+  .select("name companyName")
+  .sort({ companyName: 1, name: 1 });
 
     return res.status(200).json({ exhibitors });
   } catch (error) {

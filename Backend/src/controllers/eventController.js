@@ -2,11 +2,24 @@ import mongoose from "mongoose";
 import Event from "../models/Event.js";
 import Attendee from "../models/Attendee.js";
 import User from "../models/User.js";
-import Expo from "../models/Expo.js";
-import Booth from "../models/Booth.js";
 
 const getMyId = (req) =>
   String(req.user?.userId ?? req.user?._id ?? req.user?.id ?? req.user?.sub ?? "");
+
+const isActiveUser = async (userId) => {
+  const user = await User.findById(userId).select("status");
+  return !!user && user.status === "active";
+};
+
+const isValidPrice = (price) => Number.isFinite(price) && price >= 0;
+const isValidCapacity = (capacity) => Number.isInteger(capacity) && capacity >= 1;
+const eventNotFoundOrReviewed = async (res, id) => {
+  const exists = await Event.exists({ _id: id });
+  if (exists) {
+    return res.status(409).json({ error: "Event already reviewed or not pending" });
+  }
+  return res.status(404).json({ error: "Event not found" });
+};
 
 const createEvent = async (req, res) => {
   try {
@@ -15,98 +28,40 @@ const createEvent = async (req, res) => {
     if (!mongoose.isValidObjectId(exhibitor)) {
       return res.status(401).json({ error: "Please login again" });
     }
-
-    const user = await User.findById(exhibitor).select("status");
-
-    if (!user || user.status !== "active") {
-      return res.status(403).json({
-        error: "Your account is not active. Please contact the admin",
-      });
+    if (!(await isActiveUser(exhibitor))) {
+      return res.status(403).json({ error: "Your account is not active. Please contact the admin" });
     }
 
-    const { title, description, date, eventType, images, boothCapacity, banner, location, expo } = req.body;
+    const { title, description, eventType, images, boothCapacity, location } = req.body;
     const eventPrice = Number(req.body.price ?? 0);
 
-    if (!Number.isFinite(eventPrice) || eventPrice < 0) {
+    if (!isValidPrice(eventPrice)) {
       return res.status(400).json({ error: "Event price must be a valid non-negative amount" });
     }
-
-    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !boothCapacity || (!expo && !location?.trim()) || (expo && !date)
-    ) {
-      return res.status(400).json({
-        error: "Title, description, event type, booth capacity and either location or an expo with date are required",
-      });
-    }
-
-    let expoDoc = null;
-    let parsedDate;
-
-    if (expo) {
-      if (!mongoose.isValidObjectId(expo)) {
-        return res.status(400).json({ error: "Invalid expo" });
-      }
-
-      expoDoc = await Expo.findById(expo);
-      if (!expoDoc) {
-        return res.status(404).json({ error: "Expo not found" });
-      }
-
-      if (expoDoc.status !== "published") {
-        return res.status(400).json({ error: "You can only add events to a published expo" });
-      }
-
-      const hasBooth = await Booth.findOne({
-        exhibitor,
-        expo,
-        status: { $in: ["reserved", "occupied"] },
-      });
-      if (!hasBooth) {
-        return res.status(403).json({
-          error: "You need a reserved booth on this expo before creating an event",
-        });
-      }
-    }
-
-    if (date) {
-      parsedDate = new Date(date);
-      if (isNaN(parsedDate.getTime())) {
-        return res.status(400).json({ error: "Invalid date" });
-      }
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (parsedDate < today) {
-        return res.status(400).json({ error: "Event date must be today or in the future" });
-      }
+    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !boothCapacity || !location?.trim()) {
+      return res.status(400).json({ error: "Title, description, event type, booth capacity and location are required" });
     }
 
     const parsedBoothCapacity = Number(boothCapacity);
-
-    if (!Number.isInteger(parsedBoothCapacity) || parsedBoothCapacity < 1) {
+    if (!isValidCapacity(parsedBoothCapacity)) {
       return res.status(400).json({ error: "Booth capacity must be at least 1" });
     }
 
     const event = await Event.create({
-      ...(expoDoc && { expo: expoDoc._id }),
       exhibitor,
       title: title.trim(),
       description: description.trim(),
       eventType: eventType.trim(),
-      location: expoDoc?.location ?? location.trim(),
-      ...(parsedDate && { date: parsedDate }),
+      location: location.trim(),
       images: Array.isArray(images) ? images : [],
       boothCapacity: parsedBoothCapacity,
       price: eventPrice,
-      banner,
       status: "pending",
     });
 
-    if (expoDoc) await event.populate("expo", "title date location status");
     await event.populate("exhibitor", "name companyName");
 
-    return res.status(201).json({
-      msg: "Event submitted for admin approval",
-      event,
-    });
+    return res.status(201).json({ msg: "Event submitted for admin approval", event });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -139,10 +94,9 @@ const getAllEvents = async (req, res) => {
     }
 
     const allEvents = await Event.find(filter)
-  .populate({ path: "exhibitor", select: "name companyName", match: { status: "active" } })
-  .sort({ createdAt: -1 });
-
-const events = allEvents.filter((e) => e.exhibitor);
+      .populate({ path: "exhibitor", select: "name companyName", match: { status: "active" } })
+      .sort({ createdAt: -1 });
+    const events = allEvents.filter((e) => e.exhibitor);
 
     return res.status(200).json({ msg: "All approved events fetched", events });
   } catch (error) {
@@ -171,17 +125,8 @@ const getAdminEvents = async (req, res) => {
     }
 
     if (req.query.search?.trim()) {
-      const regex = new RegExp(
-        req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "i"
-      );
-
-      filter.$or = [
-        { title: regex },
-        { description: regex },
-        { eventType: regex },
-        { location: regex },
-      ];
+      const regex = new RegExp(req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      filter.$or = [{ title: regex }, { description: regex }, { eventType: regex }, { location: regex }];
     }
 
     const events = await Event.find(filter)
@@ -209,11 +154,7 @@ const approveEvent = async (req, res) => {
     ).populate("exhibitor", "name companyName email");
 
     if (!event) {
-      const exists = await Event.exists({ _id: id });
-
-      return exists
-        ? res.status(409).json({ error: "Event already reviewed or not pending" })
-        : res.status(404).json({ error: "Event not found" });
+      return eventNotFoundOrReviewed(res, id);
     }
 
     return res.status(200).json({ msg: "Event approved", event });
@@ -230,30 +171,18 @@ const rejectEvent = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: "Invalid event ID" });
     }
-
     if (!note) {
       return res.status(400).json({ error: "Please add a reason for rejection" });
     }
 
     const event = await Event.findOneAndUpdate(
       { _id: id, status: "pending" },
-      {
-        $set: {
-          status: "rejected",
-          adminNote: note,
-          rejectionReason: note,
-          reviewedAt: new Date(),
-        },
-      },
+      { $set: { status: "rejected", adminNote: note, rejectionReason: note, reviewedAt: new Date() } },
       { new: true }
     ).populate("exhibitor", "name companyName email");
 
     if (!event) {
-      const exists = await Event.exists({ _id: id });
-
-      return exists
-        ? res.status(409).json({ error: "Event already reviewed or not pending" })
-        : res.status(404).json({ error: "Event not found" });
+      return eventNotFoundOrReviewed(res, id);
     }
 
     return res.status(200).json({ msg: "Event rejected", event });
@@ -270,22 +199,15 @@ const removeEvent = async (req, res, isAdmin) => {
     if (!isAdmin && !mongoose.isValidObjectId(exhibitor)) {
       return res.status(401).json({ error: "Please login again" });
     }
-
     if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: "Invalid event ID" });
     }
 
-    const event = await Event.findOneAndDelete({
-      _id: id,
-      ...(!isAdmin && { exhibitor }),
-    });
+    const event = await Event.findOneAndDelete({ _id: id, ...(!isAdmin && { exhibitor }) });
 
     if (!event) {
-      return res.status(404).json({
-        error: isAdmin ? "Event not found" : "Event not found or not yours",
-      });
+      return res.status(404).json({ error: isAdmin ? "Event not found" : "Event not found or not yours" });
     }
-
     await Attendee.updateMany(
       { event: id, bookingStatus: { $ne: "cancelled" }, passStatus: { $ne: "scanned" } },
       {
@@ -297,10 +219,7 @@ const removeEvent = async (req, res, isAdmin) => {
     );
     await Attendee.updateMany(
       { event: id, bookingStatus: { $ne: "cancelled" }, passStatus: "scanned" },
-      {
-        bookingStatus: "cancelled",
-        decisionNote: "This event was deleted after check-in",
-      }
+      { bookingStatus: "cancelled", decisionNote: "This event was deleted after check-in" }
     );
 
     return res.status(200).json({ msg: "Event deleted successfully" });
@@ -320,49 +239,30 @@ const updateEvent = async (req, res) => {
     if (!mongoose.isValidObjectId(exhibitor)) {
       return res.status(401).json({ error: "Please login again" });
     }
-
     if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ error: "Invalid event ID" });
     }
-
-    const user = await User.findById(exhibitor).select("status");
-
-    if (!user || user.status !== "active") {
-      return res.status(403).json({
-        error: "Your account is not active. Please contact the admin",
-      });
+    if (!(await isActiveUser(exhibitor))) {
+      return res.status(403).json({ error: "Your account is not active. Please contact the admin" });
     }
 
     const event = await Event.findOne({ _id: id, exhibitor });
-
     if (!event) {
       return res.status(404).json({ error: "Event not found or not yours" });
     }
 
-    const { title, description, eventType, images, boothCapacity, location, date, banner } = req.body;
+    const { title, description, eventType, images, boothCapacity, location } = req.body;
 
-    if (
-      !title?.trim() ||
-      !description?.trim() ||
-      !eventType?.trim() ||
-      !boothCapacity ||
-      !location?.trim()
-    ) {
-      return res.status(400).json({
-        error: "Title, description, event type, booth capacity and location are required",
-      });
+    if (!title?.trim() || !description?.trim() || !eventType?.trim() || !boothCapacity || !location?.trim()) {
+      return res.status(400).json({ error: "Title, description, event type, booth capacity and location are required" });
     }
 
     const parsedBoothCapacity = Number(boothCapacity);
-
-    if (!Number.isInteger(parsedBoothCapacity) || parsedBoothCapacity < 1) {
+    if (!isValidCapacity(parsedBoothCapacity)) {
       return res.status(400).json({ error: "Booth capacity must be at least 1" });
     }
-
     if (parsedBoothCapacity < (event.stalls?.length ?? 0)) {
-      return res.status(400).json({
-        error: `Capacity cannot be less than your current stalls (${event.stalls.length})`,
-      });
+      return res.status(400).json({ error: `Capacity cannot be less than your current stalls (${event.stalls.length})` });
     }
 
     event.title = title.trim();
@@ -373,27 +273,15 @@ const updateEvent = async (req, res) => {
 
     if (req.body.price !== undefined) {
       const eventPrice = Number(req.body.price);
-      if (!Number.isFinite(eventPrice) || eventPrice < 0) {
+      if (!isValidPrice(eventPrice)) {
         return res.status(400).json({ error: "Event price must be a valid non-negative amount" });
       }
       event.price = eventPrice;
     }
 
-    if (banner !== undefined) event.banner = banner;
-
-    if (date !== undefined) {
-      const parsedDate = new Date(date);
-      if (isNaN(parsedDate.getTime())) {
-        return res.status(400).json({ error: "Invalid date" });
-      }
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (parsedDate < today) {
-        return res.status(400).json({ error: "Event date must be today or in the future" });
-      }
-      event.date = parsedDate;
+    if (Array.isArray(images)) {
+      event.images = images;
     }
-    if (Array.isArray(images)) event.images = images;
 
     event.status = "pending";
     event.rejectionReason = undefined;
@@ -403,13 +291,10 @@ const updateEvent = async (req, res) => {
     await event.save();
     await event.populate("exhibitor", "name companyName");
 
-    return res.status(200).json({
-      msg: "Event updated and sent for admin approval",
-      event,
-    });
+    return res.status(200).json({ msg: "Event updated and sent for admin approval", event });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
 
-export { createEvent, getMyEvents, getAllEvents, getPendingEvents, getAdminEvents, approveEvent, rejectEvent, deleteEvent, deleteAdminEvent, updateEvent};
+export { createEvent, getMyEvents, getAllEvents, getPendingEvents, getAdminEvents, approveEvent, rejectEvent, deleteEvent, deleteAdminEvent, updateEvent };

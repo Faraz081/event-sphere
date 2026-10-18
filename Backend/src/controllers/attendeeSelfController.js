@@ -66,10 +66,9 @@ export const bookEvent = async (req, res) => {
         return res.status(400).json({ error: "Please select a valid exhibitor" });
       }
       customExhibitor = await User.findOne({
-        _id: requestedExhibitorId,
-        role: "exhibitor",
-        status: "active",
-        exhibitorStatus: "approved",
+      _id: requestedExhibitorId,
+      role: "exhibitor",
+      status: "active",
       }).select("_id");
       if (!customExhibitor) {
         return res.status(404).json({ error: "Exhibitor not found or not approved" });
