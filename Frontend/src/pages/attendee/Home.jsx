@@ -375,14 +375,11 @@ const [eventsLoading, setEventsLoading] = useState(true)
   <div className="mx-auto max-w-7xl">
 
     <div className="mb-14 text-center">
-      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-        Live & Upcoming
-      </p>
       <h2 className="mt-3 font-serif text-4xl font-bold sm:text-5xl">
         Our <span className="text-[#c49424]">Events</span>
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-[#5d574f]">
-        Discover exhibitor events currently happening or coming soon and reserve your spot.
+         Explore a variety of exciting events hosted by our exhibitors and find experiences that match your interests.
       </p>
     </div>
 
@@ -1042,6 +1039,8 @@ const [eventsLoading, setEventsLoading] = useState(true)
         </div>
 
       </section>
+
+
 
 
     </div>

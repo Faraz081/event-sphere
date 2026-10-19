@@ -53,18 +53,15 @@ const OngoingEvents = () => {
           <Radio className="h-8 w-8 text-[#c49424]" />
         </div>
 
-        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-[#b48620]">
-          Live & Ongoing Events
-        </p>
 
         <h1 className="mt-4 font-serif text-4xl font-bold text-[#2f2a24] sm:text-5xl">
           Explore Our{' '}
-          <span className="text-[#c49424]">Ongoing Events</span>
+          <span className="text-[#c49424]">Events</span>
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
-          Discover exhibitor events currently happening or coming soon.
-          Choose one and reserve your spot today.
+       Discover a variety of exciting events hosted by our exhibitors. Explore different experiences, 
+       find events that match your interests, and book your spot with ease.
         </p>
       </section>
 
