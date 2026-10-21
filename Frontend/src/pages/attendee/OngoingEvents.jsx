@@ -61,6 +61,7 @@ const OngoingEvents = () => {
 
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-[#5d574f]">
        Discover a variety of exciting events hosted by our exhibitors. Explore different experiences, 
+       
        find events that match your interests, and book your spot with ease.
         </p>
       </section>
